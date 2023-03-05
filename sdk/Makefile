@@ -7,6 +7,7 @@
 # GCCSDK_INSTALL_CROSSBIN -- /path/to/toolchain/bin
 #
 # supported targets are:
+#                       arm-riscos-gnueabi
 #                       arm-unknown-riscos  
 #                       m68k-atari-mint
 #			m5475-atari-mint
@@ -76,6 +77,10 @@ pkg_config_libdir__ := $(GCCSDK_INSTALL_ENV)/lib/pkgconfig
 # Target
 TARGET := $(shell $(cc__) -dumpmachine)
 
+ifeq ($(findstring -riscos,$(TARGET)),-riscos)
+  cflags__ := $(cflags__) -mpoke-function-name
+endif
+
 # Environment
 # Newer autotools objects to -I appearing in CFLAGS
 cleanenv := PATH="$(path__)" CC="$(cc__)" CXX="$(cxx__)" AR="$(ar__)" RANLIB="$(ranlib__)" CPPFLAGS="$(cppflags__)" LDFLAGS="$(ldflags__)" PKG_CONFIG_LIBDIR="$(pkg_config_libdir__)"
@@ -117,6 +122,13 @@ FREETYPE_ENV := LIBPNG_CFLAGS=$$($(GCCSDK_INSTALL_ENV)/bin/libpng-config --cflag
 LIBJPEG_TURBO_BUILDDIR:=$(BUILDDIR)/libjpegturbo
 
 # Target Specific setup
+ifeq ($(TARGET),arm-riscos-gnueabi)
+  SDK_ITEMS := $(addprefix $(BUILDSTEPS)/, $(COMMON_SDK_ITEMS) libjpeg-turbo.d libwebp.d)
+  EXTRAARGS_LIBCARES := --disable-shared
+  EXTRAARGS_LIBCURL := --enable-nonblocking --enable-ares --with-random="/dev/urandom" $(LIBCURL_DISABLES)
+  EXTRAARGS_OPENSSL := no-asm
+endif
+
 ifeq ($(TARGET),arm-unknown-riscos)
   SDK_ITEMS := $(addprefix $(BUILDSTEPS)/, $(COMMON_SDK_ITEMS) libjpeg-turbo.d libwebp.d)
   EXTRAARGS_LIBCARES := --disable-shared
