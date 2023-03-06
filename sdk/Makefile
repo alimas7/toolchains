@@ -13,6 +13,7 @@
 #			m5475-atari-mint
 #                       ppc-amigaos 
 #                       i686-w64-mingw32    
+#                       x86_64-w64-mingw32
 #                       m68k-unknown-amigaos
 
 ifeq ($(GCCSDK_INSTALL_ENV),)
@@ -160,6 +161,14 @@ ifeq ($(TARGET),ppc-amigaos)
 endif
 
 ifeq ($(TARGET),i686-w64-mingw32)
+  SDK_ITEMS := $(addprefix $(BUILDSTEPS)/, libiconv.d libgnurx.d $(COMMON_SDK_ITEMS) libjpeg.d libwebp.d)
+  EXTRAARGS_LIBCARES := --disable-shared
+  EXTRAARGS_LIBCURL := --enable-nonblocking --enable-ares --disable-ldap --without-random
+  LIBCURL_ENV := CFLAGS="-DCARES_STATICLIB" LIBS="-lgdi32 -lcrypt32"
+  EXTRAARGS_OPENSSL := no-asm enable-capieng
+endif
+
+ifeq ($(TARGET),x86_64-w64-mingw32)
   SDK_ITEMS := $(addprefix $(BUILDSTEPS)/, libiconv.d libgnurx.d $(COMMON_SDK_ITEMS) libjpeg.d libwebp.d)
   EXTRAARGS_LIBCARES := --disable-shared
   EXTRAARGS_LIBCURL := --enable-nonblocking --enable-ares --disable-ldap --without-random
