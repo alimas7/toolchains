@@ -15,7 +15,15 @@ Index: libunixlib/signal/post.c
 ===================================================================
 --- libunixlib/signal/post.c	(revision 7698)
 +++ libunixlib/signal/post.c	(working copy)
-@@ -267,9 +267,86 @@
+@@ -259,15 +259,115 @@
+ #ifdef __clang__
+ #define FP_OFFSET (0)
+ #define LR_OFFSET (1)
+-#elif defined (__ARM_EABI__)
+-#define FP_OFFSET (-1)
+-#define LR_OFFSET (0)
+ #else
+ #define LR_OFFSET (-1)
  #define FP_OFFSET (-3)
  #endif
  
@@ -46,6 +54,22 @@ Index: libunixlib/signal/post.c
 +
 +#include <unwind.h>
 +
++static void __attribute__((naked))
++__do_unwind (_Unwind_Trace_Fn fn, const void *pw)
++{
++  __asm volatile(
++    "stmfd sp!, {fp, lr};"
++    "add fp, sp, #4;"
++    /* Registers at this point in time will be the initial state.
++     * The trace function must unwind the stack frame we just created
++     * because the personality function will be told there is nothing
++     * to do as we are declared naked.
++     */
++    "bl _Unwind_Backtrace;"
++    "ldmfd sp!, {fp, pc};"
++  );
++}
++
 +static _Unwind_Reason_Code
 +__write_backtrace_cb (_Unwind_Context *ctx, void *pw)
 +{
@@ -54,6 +78,25 @@ Index: libunixlib/signal/post.c
 +
 +  ucbp = (_Unwind_Control_Block *) _Unwind_GetGR(ctx, UNWIND_POINTER_REG);
 +  fn = (const unsigned int *) ucbp->pr_cache.fnstart;
++
++  if (fn == (const unsigned int *) __do_unwind)
++    {
++      /* First call */
++      if (pw == NULL)
++        {
++          /* Running thread: unwind on behalf of __do_unwind */
++          _Unwind_VRS_Pop (ctx, _UVRSC_CORE, (1<<11)|(1<<14), _UVRSD_UINT32);
++        }
++      else
++        {
++          /* Thread backtrace: replace entire VRS */
++          int idx;
++          for (idx = 16; idx > 0; idx--)
++            _Unwind_SetGR (ctx, idx - 1, ((unsigned int *) pw)[idx - 1]);
++        }
++
++      return _URC_NO_REASON;
++    }
 +
 +  fprintf (stderr, "  (%8x) fn: %8x pc: %8x sp: %8x ",
 +	   _Unwind_GetGR (ctx, 11), (unsigned int)fn, _Unwind_GetIP (ctx),
@@ -81,28 +124,17 @@ Index: libunixlib/signal/post.c
 +}
 +
  static void
- __write_backtrace_thread (const unsigned int *fp)
- {
-+  if (fp != NULL)
-+    {
-+      /* TODO: thread stack traces */
-+      fprintf (stderr, "Thread stack traces not supported\n");
-+    }
-+  else
-+    {
-+      _Unwind_Backtrace(__write_backtrace_cb, NULL);
-+    }
-+
++__write_backtrace_thread (const unsigned int *regs)
++{
++  __do_unwind (__write_backtrace_cb, regs);
 +  fputc ('\n', stderr);
 +}
 +#else
 +static void
-+__write_backtrace_thread (const unsigned int *fp)
-+{
+ __write_backtrace_thread (const unsigned int *fp)
+ {
    /* Running as USR26 or USR32 ?  */
-   unsigned int is32bit;
-   __asm__ volatile ("SUBS	%[is32bit], r0, r0\n\t" /* Set at least one status flag. */
-@@ -306,22 +383,6 @@
+@@ -306,22 +406,6 @@
  	  break;
  	}
  
@@ -125,7 +157,7 @@ Index: libunixlib/signal/post.c
        /* Retrieve PC counter.
  	 PC counter has been saved using STMxx ..., { ..., PC } so it can be
  	 8 or 12 bytes away from the STMxx instruction depending on the ARM
-@@ -347,10 +408,9 @@
+@@ -347,10 +431,9 @@
        int cplusplus_name;
        const char *name = extract_name (pc, &cplusplus_name);
        fprintf (stderr, (cplusplus_name) ? " %s\n" : " %s()\n", name);
@@ -137,7 +169,7 @@ Index: libunixlib/signal/post.c
        if (__ul_callbackfp != NULL && fp == __ul_callbackfp)
  	{
  	  /* At &oldfp[1] = cpsr, a1-a4, v1-v6, sl, fp, ip, sp, lr, pc */
-@@ -424,18 +484,17 @@
+@@ -424,19 +507,16 @@
  
  	  fputs ("\n\n", stderr);
  	}
@@ -152,9 +184,59 @@ Index: libunixlib/signal/post.c
  void
  __write_backtrace (int signo)
  {
- #ifdef __ARM_EABI__
+-#ifdef __ARM_EABI__
 -  register const unsigned int *fp = __builtin_frame_address(0);
-+  register const unsigned int *fp = NULL;
- #else
+-#else
++#ifndef __ARM_EABI__
    register const unsigned int *fp __asm ("fp");
  #endif
+ 
+@@ -485,7 +565,11 @@
+   /* Dump first the details of the current thread.  */
+   fprintf (stderr, "Stack backtrace:\n\nRunning thread %p (%s)\n",
+ 	   __pthread_running_thread, __pthread_running_thread->name);
++#ifdef __ARM_EABI__
++  __write_backtrace_thread (NULL);
++#else
+   __write_backtrace_thread (fp);
++#endif
+ 
+   /* And then the other suspended threads if any.  */
+   for (pthread_t th = __pthread_thread_list; th != NULL; th = th->next)
+@@ -494,7 +578,10 @@
+         continue;
+ 
+       fprintf (stderr, "\nThread %p (%s)\n", th, th->name);
+-#ifdef __clang__
++#ifdef __ARM_EABI__
++      __write_backtrace_thread (&th->saved_context->r[0]);
++#else
++# ifdef __clang__
+       const unsigned int fakestackframe[] =
+         {
+           (unsigned int)th->saved_context->r[11],
+@@ -501,22 +588,16 @@
+           (unsigned int)th->saved_context->r[14]
+         };
+       __write_backtrace_thread (&fakestackframe[0]);
+-#elif defined (__ARM_EABI__)
++# else
+       const unsigned int fakestackframe[] =
+         {
+           (unsigned int)th->saved_context->r[11],
+-          (unsigned int)th->saved_context->r[14]
+-        };
+-      __write_backtrace_thread (&fakestackframe[1]);
+-#else
+-      const unsigned int fakestackframe[] =
+-        {
+-          (unsigned int)th->saved_context->r[11],
+           (unsigned int)th->saved_context->r[13],
+           (unsigned int)th->saved_context->r[14],
+           (unsigned int)th->saved_context->r[15]
+         };
+       __write_backtrace_thread (&fakestackframe[3]);
++# endif
+ #endif
+     }
+ }
