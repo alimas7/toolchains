@@ -1,3 +1,16 @@
+Index: libunixlib/Makefile.am
+===================================================================
+--- libunixlib/Makefile.am      (revision 7698)
++++ libunixlib/Makefile.am      (working copy)
+@@ -33,7 +33,7 @@
+ # arguments can not be tested for NULL in UnixLib itself.
+ if ARM_EABI
+ AM_CFLAGS = -D__GNU_LIBRARY__ -DNO_LONG_DOUBLE -D_GNU_SOURCE=1 \
+-	-D__UNIXLIB_NO_NONNULL -std=c99 $(LIBM_FLAGS)
++	-D__UNIXLIB_NO_NONNULL -std=c99 -mpoke-function-name -funwind-tables $(LIBM_FLAGS)
+ UNIXLIB_CHUNKED_STACK=0
+ else
+ AM_CFLAGS = -D__GNU_LIBRARY__ -DNO_LONG_DOUBLE -D_GNU_SOURCE=1 \
 Index: libunixlib/signal/post.c
 ===================================================================
 --- libunixlib/signal/post.c	(revision 7698)
