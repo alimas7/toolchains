@@ -80,6 +80,9 @@ TARGET := $(shell $(cc__) -dumpmachine)
 
 ifeq ($(findstring -riscos,$(TARGET)),-riscos)
   cflags__ := $(cflags__) -mpoke-function-name
+  ifeq ($(findstring -gnueabi,$(TARGET)),-gnueabi)
+    cflags__ := $(cflags__) -funwind-tables
+  endif
 endif
 
 # Environment
