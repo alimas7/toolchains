@@ -2,7 +2,16 @@ Index: elf2aif/src/elf2aif.c
 ===================================================================
 --- elf2aif/src/elf2aif.c	(revision 7698)
 +++ elf2aif/src/elf2aif.c	(working copy)
-@@ -72,12 +72,14 @@
+@@ -54,7 +54,7 @@
+ typedef struct
+ {
+   uint8_t decompress[4];	/* BL to decompression code for compressed images */
+-  uint8_t selfreloc[4];		/* BL to self-relocation code */
++  uint8_t selfreloc[4];		/* BL to self-relocation code (*) */
+   uint8_t zeroinit[4];		/* BL to zero init code */
+   uint8_t entrypoint[4];	/* BL to image entry point (*) */
+   uint8_t exitinst[4];		/* Exit instruction */
+@@ -72,47 +72,50 @@
  } aifheader_t;
  
  static int opt_verbose = 0;
@@ -14,37 +23,79 @@ Index: elf2aif/src/elf2aif.c
 +static uint32_t got_addr = 0;
  
 -static const unsigned int aifcode[] = {
+-  0xE1A00000,			/* NOP (BL decompress)      */
+-  0xE1A00000,			/* NOP (BL self-relocate)   */
+-  0xEB00000C,			/* BL zero-init             */
+-  0xEB000000,			/* BL entrypoint (*)        */
+-  0xEF000011,			/* SWI OS_Exit              */
+-  0x00000000,			/* Image R/O size (*)       */
+-  0x00000000,			/* Image R/W size (*)       */
+-  0x00000000,			/* Image debug size         */
+-  0x00000000,			/* Image zero-init size (*) */
+-  0x00000000,			/* Image debug type         */
+-  0x00000000,			/* Image base (*)           */
+-  0x00000000,			/* Workspace size           */
+-  0x00000020,			/* 32-bit addressing        */
+-  0x00000000,			/* Data base                */
+-  0x00000000,			/* Reserved                 */
+-  0x00000000,			/* Reserved                 */
+-  0xE1A00000,			/* MOV   R0, R0             */
+-  0xE04EC00F,			/* SUB   R12, R14, PC       */
+-  0xE08FC00C,			/* ADD   R12, PC, R12       */
+-  0xE99C0017,			/* LDMIB R12, {R0-R2, R4}   */
+-  0xE24CC010,			/* SUB   R12, R12, #0x10    */
+-  0xE08CC000,			/* ADD   R12, R12, R0       */
+-  0xE08CC001,			/* ADD   R12, R12, R1       */
+-  0xE3A00000,			/* MOV   R0, #0             */
+-  0xE3A01000,			/* MOV   R1, #0             */
+-  0xE3A02000,			/* MOV   R2, #0             */
+-  0xE3A03000,			/* MOV   R3, #0             */
+-  0xE3540000,			/* CMP   R4, #0             */
 +static const uint32_t aifcode[] = {
-   0xE1A00000,			/* NOP (BL decompress)      */
-   0xE1A00000,			/* NOP (BL self-relocate)   */
-   0xEB00000C,			/* BL zero-init             */
-@@ -113,6 +115,25 @@
-   0xEAFFFFFB			/* B     zeroloop           */
++  0xE1A00000,			/* NOP (BL decompress)        */
++  0xE1A00000,			/* NOP (BL self-relocate) (*) */
++  0xEB00000C,			/* BL zero-init               */
++  0xEB000000,			/* BL entrypoint (*)          */
++  0xEF000011,			/* SWI OS_Exit                */
++  0x00000000,			/* Image R/O size (*)         */
++  0x00000000,			/* Image R/W size (*)         */
++  0x00000000,			/* Image debug size           */
++  0x00000000,			/* Image zero-init size (*)   */
++  0x00000000,			/* Image debug type           */
++  0x00000000,			/* Image base (*)             */
++  0x00000000,			/* Workspace size             */
++  0x00000020,			/* 32-bit addressing          */
++  0x00000000,			/* Data base                  */
++  0x00000000,			/* Reserved                   */
++  0x00000000,			/* Reserved                   */
++  0xE1A00000,			/* MOV   R0, R0               */
++  0xE04EC00F,			/* SUB   R12, R14, PC         */
++  0xE08FC00C,			/* ADD   R12, PC, R12         */
++  0xE99C0017,			/* LDMIB R12, {R0-R2, R4}     */
++  0xE24CC010,			/* SUB   R12, R12, #16        */
++  0xE08CC000,			/* ADD   R12, R12, R0         */
++  0xE08CC001,			/* ADD   R12, R12, R1         */
++  0xE3A00000,			/* MOV   R0, #0               */
++  0xE3A01000,			/* MOV   R1, #0               */
++  0xE3A02000,			/* MOV   R2, #0               */
++  0xE3A03000,			/* MOV   R3, #0               */
++  0xE3540000,			/* CMP   R4, #0               */
+ /* zeroloop: */
+-  0xD1A0F00E,			/* MOVLE PC, R14            */
+-  0xE8AC000F,			/* STMIA R12!, {R0-R3}      */
+-  0xE2544010,			/* SUBS  R4, R4, #16        */
+-  0xEAFFFFFB			/* B     zeroloop           */
++  0xD1A0F00E,			/* MOVLE PC, R14              */
++  0xE8AC000F,			/* STMIA R12!, {R0-R3}        */
++  0xE2544010,			/* SUBS  R4, R4, #16          */
++  0xEAFFFFFB			/* B     zeroloop             */
  };
  
-+static const uint32_t crt0code[] = {
-+  0xE59F3010,			/* LDR   R3, =crt1_data     */
-+  0xE583000C,			/* STR   R0, [R3, #12]      */
-+  0xE583101C,			/* STR   R1, [R3, #28]      */
-+  0xE5832020,			/* STR   R2, [R3, #32]      */
-+  0xE1A00003			/* MOV   R0, R3             */
-+ 				/* B     __main             */
-+};
-+
-+static const uint32_t eabi_crt0code[] = {
-+  0xE59F0010,			/* LDR   R0, =crt1_data     */
-+  0xE59F1004,			/* LDR   R1, =got_addr      */
-+  0xE3A020FF,			/* MOV   R2, #&FF           */
-+  0xEA000000,			/* B     go                 */
-+  0x00000000,			/* got_addr (*)             */
-+/* go: */
-+  				/* B     __main             */
-+};
 +
  /* Read a little-endian 'short' value.  */
  static uint16_t
  RdShort (const uint8_t sh[2])
-@@ -143,6 +164,7 @@
+@@ -143,6 +146,7 @@
    fprintf (stderr, "Usage: elf2aif [options] <ELF file> [<AIF file>]\n"
  	   "Convert static ARM ELF binary to AIF (Acorn Image Format) binary.\n"
  	   "Options:\n"
@@ -52,7 +103,7 @@ Index: elf2aif/src/elf2aif.c
  	   "  -v, --verbose	prints informational messages during processing\n"
  	   "      --help	display this help and exit\n"
  	   "      --version	output version information and exit\n");
-@@ -201,7 +223,8 @@
+@@ -201,7 +205,8 @@
        return EXIT_FAILURE;
      }
  
@@ -62,7 +113,7 @@ Index: elf2aif/src/elf2aif.c
      {
        fprintf (stderr, "ELF file '%s' is not for ARM\n", elf_filename);
        return EXIT_FAILURE;
-@@ -344,6 +367,97 @@
+@@ -344,6 +349,97 @@
  }
  
  static int
@@ -160,7 +211,44 @@ Index: elf2aif/src/elf2aif.c
  e2a_copy (FILE * elfhandle, FILE * aifhandle)
  {
    const phdr_list_t *phdrP;
-@@ -503,6 +617,40 @@
+@@ -488,21 +584,135 @@
+     }
+ 
+   memcpy (&aifhdr, aifcode, sizeof (aifcode));
+-  WrLong (aifhdr.entrypoint,
+-	  RdLong (aifhdr.entrypoint) +
+-	  ((exec_addr - load_addr -
+-	    (offsetof (aifheader_t, entrypoint) + 8)) >> 2));
++  if (opt_eabi)
++    {
++      /* BL to relocation code */
++      WrLong (aifhdr.selfreloc,
++	      /* Default is a NOP, so reading it is useless */
++	      0xEB000000 +
++	      ((aifend - (offsetof (aifheader_t, selfreloc) + 8)) >> 2));
++
++      /* BL to EABI startcode */
++      WrLong (aifhdr.entrypoint,
++	      RdLong (aifhdr.entrypoint) +
++	      ((sizeof(aifcode) - (offsetof (aifheader_t, entrypoint) + 8)) >> 2));
++    }
++  else
++    {
++      /* BL to program entrypoint */
++      WrLong (aifhdr.entrypoint,
++	      RdLong (aifhdr.entrypoint) +
++	      ((exec_addr - load_addr -
++		(offsetof (aifheader_t, entrypoint) + 8)) >> 2));
++    }
+   WrLong (aifhdr.rosize, rosize);
+   WrLong (aifhdr.rwsize, rwsize);
+   WrLong (aifhdr.zisize, zisize);
+   WrLong (aifhdr.imagebase, load_addr);
+-  if (fwrite (&aifhdr, sizeof (aifhdr), 1, aifhandle) != 1
+-      || fseek (aifhandle, aifend, SEEK_SET) != 0)
++  if (fwrite (&aifhdr, sizeof (aifhdr), 1, aifhandle) != 1)
+     {
+       fprintf (stderr, "Failed to write aif header\n");
        return EXIT_FAILURE;
      }
  
@@ -168,40 +256,104 @@ Index: elf2aif/src/elf2aif.c
 +   * the ARMEABISupport abort handler */
 +  if (opt_eabi)
 +    {
-+      uint32_t crt0[5];
-+      assert(sizeof (crt0code) == sizeof (crt0));
-+      assert(sizeof (eabi_crt0code) == sizeof (crt0));
++      assert (128 == sizeof (aifcode));
++      uint32_t entrycode[] = {
++	/* Copy GOTT_BASE, if it's in the wrong place (see below) */
++	0xE24FC088,			/* ADR   R12, &8000             */
++	0xE59C003C,			/* LDR   R0, [R12, #&3c]        */
++	0xE3300000,			/* TEQ   R0, #0                 */
++	0x158C0038,			/* STRNE R0, [R12, #&38]        */
++	/* Install the abort handler */
++	0xE3A00002,			/* MOV   R0, #2                 */
++	0xEF059D01,			/* SWI   ARMEABISupport_AbortOp */
++	/* Proceed to the real program start */
++	0xEA000000,			/* B     <program_start> (*)    */
++	/* Offset of the GOT relative to the load address (or 0 if none) */
++	0x00000000,			/* DCD   <got_offset> (*)       */
++      };
++
++      const uint32_t reloccode[] = {
++      /* RelocCode: */
++	0xE1A00000,			/* MOV   R0, R0                 */
++	/* Dynamically compute the program load address */
++	0xE04EC00F,			/* SUB   R12, LR, PC            */
++	0xE08FC00C,			/* ADD   R12, PC, R12           */
++	0xE24CC00C,			/* SUB   R12, R12, #12          */
++	/* Prevent reentry by replacing the branch to the relocation code */
++	0xE51F0018,			/* LDR   R0, =RelocCode         */
++	0xE58C0004,			/* STR   R0, [R12, #4]          */
++        /* Relocate the GOT offset (above) to its absolute address */
++	0xE59C009C,			/* LDR   R0, [R12, #&9c]        */
++	0xE3300000,			/* TEQ   R0, #0                 */
++	0x1080000C,			/* ADDNE R0, R0, R12            */
++	0xE58C009C,			/* STR   R0, [R12, #&9c]        */
++	/* Fill in GOTT_BASE at load + 0x38.
++	 * Unfortunately, this interacts badly with DDT, which uses
++	 * the reserved field at &8038 to temporarily store the address
++	 * of the zero-initialisation code during program start (it
++	 * subsequently puts it back after its replacement is called).
++	 * Make this less surprising by placing GOTT_BASE in the other
++	 * reserved field at &803c and then rely on the entrycode
++	 * (see above) fixing things up. Do it properly in the non-DDT
++	 * case, however, so that the OS can mark the entire RO area
++	 * non-writeable once the relocation code has completed.
++	 */
++	0xE59C0038,			/* LDR   R0, [R12, #&38]        */
++	0xE3300000,			/* TEQ   R0, #0                 */
++	0xE28C009C,			/* ADD   R0, R12, #&9c          */
++	0x058C0038,			/* STREQ R0, [R12, #&38]        */
++	0x158C003C,			/* STRNE R0, [R12, #&3c]        */
++	0xE1A0F00E,			/* MOV   PC, LR                 */
++	/* Relocation sentinel: just in case anything expects one */
++	0xFFFFFFFF,			/* DCD   -1                     */
++      };
++
++      /* Ensure there is sufficient space for the EABI entry code */
++      if (opt_eabi && exec_addr - load_addr < sizeof (aifcode) + sizeof (entrycode))
++	{
++	  fprintf (stderr, "First program segment is not what we hoped to be "
++		   "(not enough place before _start symbol for EABI entrycode)\n");
++	  return EXIT_FAILURE;
++	}
 +
 +      if (opt_verbose)
-+	printf ("Rewriting crt0 at offset 0x%x\n", (exec_addr - load_addr));
++	printf ("Writing EABI entry code at offset 0x%x\n", sizeof (aifcode));
 +
-+      if (fseek (elfhandle, (exec_addr - load_addr), SEEK_SET) != 0 ||
-+	  fread (crt0, sizeof (crt0), 1, elfhandle) != 1)
++      entrycode[6] |= (exec_addr - load_addr - (sizeof (aifcode) + 6*4 + 8)) >> 2;
++      if (got_addr)
++        {
++          if (opt_verbose)
++	    printf ("Found GOT at 0x%x\n", got_addr);
++          entrycode[7] = (got_addr - load_addr);
++	}
++      if (fseek (aifhandle, sizeof (aifcode), SEEK_SET) != 0
++	  || fwrite (&entrycode, sizeof (entrycode), 1, aifhandle) != 1)
 +	{
-+	  fprintf (stderr, "Failed to read crt0\n");
++	  fprintf (stderr, "Failed to write EABI entrycode\n");
 +	  return EXIT_FAILURE;
 +	}
-+      if (memcmp(crt0, crt0code, sizeof (crt0)) != 0)
++
++      if (opt_verbose)
++	printf ("Writing relocation code at offset 0x%x\n", aifend);
++
++      if (fseek (aifhandle, aifend, SEEK_SET) != 0
++	  || fwrite (&reloccode, sizeof (reloccode), 1, aifhandle) != 1)
 +	{
-+	  fprintf (stderr, "crt0 code not as expected\n");
++	  fprintf (stderr, "Failed to write relocation code\n");
 +	  return EXIT_FAILURE;
 +	}
-+      /* Inject GOT address */
-+      memcpy (crt0, eabi_crt0code, sizeof (crt0));
-+      crt0[4] = got_addr;
-+      if (fseek (aifhandle, (exec_addr - load_addr), SEEK_SET) != 0 ||
-+	  fwrite (crt0, sizeof (crt0), 1, aifhandle) != 1 ||
-+	  fseek (aifhandle, aifend, SEEK_SET) != 0)
-+	{
-+	  fprintf (stderr, "Failed to write crt0\n");
-+	  return EXIT_FAILURE;
-+	}
++    }
++
++  if (fseek (aifhandle, aifend, SEEK_SET) != 0)
++    {
++      fprintf (stderr, "Failed to seek to end of file\n");
++      return EXIT_FAILURE;
 +    }
 +
    return EXIT_SUCCESS;
  }
  
-@@ -557,6 +705,7 @@
+@@ -557,6 +767,7 @@
    elf_filename = elffilename;
  
    if (e2a_readehdr (elfhandle) == EXIT_SUCCESS
@@ -209,7 +361,7 @@ Index: elf2aif/src/elf2aif.c
        && e2a_readphdr (elfhandle) == EXIT_SUCCESS
        && e2a_copy (elfhandle, aifhandle) == EXIT_SUCCESS)
      status = EXIT_SUCCESS;
-@@ -683,6 +832,9 @@
+@@ -683,6 +894,9 @@
  	    fprintf (stderr, "Warning: extra options/arguments ignored\n");
  	  return EXIT_SUCCESS;
  	}
