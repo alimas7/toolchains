@@ -211,7 +211,7 @@ Index: elf2aif/src/elf2aif.c
  e2a_copy (FILE * elfhandle, FILE * aifhandle)
  {
    const phdr_list_t *phdrP;
-@@ -488,21 +584,135 @@
+@@ -488,21 +584,156 @@
      }
  
    memcpy (&aifhdr, aifcode, sizeof (aifcode));
@@ -258,11 +258,9 @@ Index: elf2aif/src/elf2aif.c
 +    {
 +      assert (128 == sizeof (aifcode));
 +      uint32_t entrycode[] = {
-+	/* Copy GOTT_BASE, if it's in the wrong place (see below) */
-+	0xE24FC088,			/* ADR   R12, &8000             */
-+	0xE59C003C,			/* LDR   R0, [R12, #&3c]        */
-+	0xE3300000,			/* TEQ   R0, #0                 */
-+	0x158C0038,			/* STRNE R0, [R12, #&38]        */
++	/* Space for GOTT_BASE injection (see below) */
++	0xE1A00000,			/* MOV   R0, R0                 */
++	0xE1A00000,			/* MOV   R0, R0                 */
 +	/* Install the abort handler */
 +	0xE3A00002,			/* MOV   R0, #2                 */
 +	0xEF059D01,			/* SWI   ARMEABISupport_AbortOp */
@@ -279,31 +277,54 @@ Index: elf2aif/src/elf2aif.c
 +	0xE04EC00F,			/* SUB   R12, LR, PC            */
 +	0xE08FC00C,			/* ADD   R12, PC, R12           */
 +	0xE24CC00C,			/* SUB   R12, R12, #12          */
-+	/* Prevent reentry by replacing the branch to the relocation code */
++	/* Prevent reentry by replacing the branch to the relocation code. */
 +	0xE51F0018,			/* LDR   R0, =RelocCode         */
 +	0xE58C0004,			/* STR   R0, [R12, #4]          */
 +        /* Relocate the GOT offset (above) to its absolute address */
-+	0xE59C009C,			/* LDR   R0, [R12, #&9c]        */
++	0xE59C0094,			/* LDR   R0, [R12, #&94]        */
 +	0xE3300000,			/* TEQ   R0, #0                 */
 +	0x1080000C,			/* ADDNE R0, R0, R12            */
-+	0xE58C009C,			/* STR   R0, [R12, #&9c]        */
-+	/* Fill in GOTT_BASE at load + 0x38.
-+	 * Unfortunately, this interacts badly with DDT, which uses
-+	 * the reserved field at &8038 to temporarily store the address
-+	 * of the zero-initialisation code during program start (it
-+	 * subsequently puts it back after its replacement is called).
-+	 * Make this less surprising by placing GOTT_BASE in the other
-+	 * reserved field at &803c and then rely on the entrycode
-+	 * (see above) fixing things up. Do it properly in the non-DDT
-+	 * case, however, so that the OS can mark the entire RO area
-+	 * non-writeable once the relocation code has completed.
-+	 */
++	0x158C0094,			/* STRNE R0, [R12, #&94]        */
++	/* Fill in GOTT_BASE at load + 0x38, unless running under DDT  */
 +	0xE59C0038,			/* LDR   R0, [R12, #&38]        */
 +	0xE3300000,			/* TEQ   R0, #0                 */
-+	0xE28C009C,			/* ADD   R0, R12, #&9c          */
-+	0x058C0038,			/* STREQ R0, [R12, #&38]        */
-+	0x158C003C,			/* STRNE R0, [R12, #&3c]        */
++	0x1A000002,			/* BNE   ddt_hack               */
++	0xE28C0094,			/* ADD   R0, R12, #&94          */
++	0xE58C0038,			/* STR   R0, [R12, #&38]        */
 +	0xE1A0F00E,			/* MOV   PC, LR                 */
++	/* Hack for DDT (which uses the reserved field at &8038 to
++	 * temporarily store the address of the zero-initialisation code
++	 * during program start, which is reinstated after DDT's
++	 * replacement is called). In this case, modify the entrycode
++	 * (above) to inject it for us.
++	 *
++	 * This does prevent the RO area being marked non-writeable if
++	 * the modified entrycode gets executed, however (in the non-DDT
++	 * case, the entrycode does not write to the AIF header, so
++	 * there is no reason the RO area can't be non-writeable then).
++	 * By definition the RO area must be writeable for relocations to
++	 * work, so it is perfectly safe to assume that it is when this
++	 * code runs.
++	 */
++	/* ddt_hack: */
++	0xE59F001C,			/* LDR   R0, =ddt_hack_data     */
++	0xE59F101C,			/* LDR   R1, =ddt_hack_data+4   */
++	0xE58C0080,			/* STR   R0, [R12, #&80]        */
++	0xE58C1084,			/* STR   R1, [R12, #&84]        */
++	/* Invalidate instruction cache */
++	0xE3A00001,			/* MOV   R0, #1                 */
++	0xE28C1080,			/* ADD   R1, R12, #&80          */
++	0xE28C2088,			/* ADD   R2, R12, #&88		*/
++	0xEF02006E,			/* SWI   XOSSynchroniseCodeAreas */
++	0xE1A0F00E,			/* MOV   PC, LR                 */
++	/* Instructions to inject into entrycode. Uses PC-relative
++	 * addressing, so must be kept in sync with changes to entrycode
++	 * or the location of entrycode within memory. */
++	/* ddt_hack_data: */
++	/* Compute address of GOT field after entrycode */
++	0xE28F000C,			/* ADR   R0, got_address        */
++	/* Store computed address in GOTT_BASE (load + 0x38) */
++	0xE50F0054,			/* STR   R0, [pc, #-&54]        */
 +	/* Relocation sentinel: just in case anything expects one */
 +	0xFFFFFFFF,			/* DCD   -1                     */
 +      };
@@ -319,12 +340,12 @@ Index: elf2aif/src/elf2aif.c
 +      if (opt_verbose)
 +	printf ("Writing EABI entry code at offset 0x%x\n", sizeof (aifcode));
 +
-+      entrycode[6] |= (exec_addr - load_addr - (sizeof (aifcode) + 6*4 + 8)) >> 2;
++      entrycode[4] |= (exec_addr - load_addr - (sizeof (aifcode) + 4*4 + 8)) >> 2;
 +      if (got_addr)
 +        {
 +          if (opt_verbose)
 +	    printf ("Found GOT at 0x%x\n", got_addr);
-+          entrycode[7] = (got_addr - load_addr);
++          entrycode[5] = (got_addr - load_addr);
 +	}
 +      if (fseek (aifhandle, sizeof (aifcode), SEEK_SET) != 0
 +	  || fwrite (&entrycode, sizeof (entrycode), 1, aifhandle) != 1)
@@ -353,7 +374,7 @@ Index: elf2aif/src/elf2aif.c
    return EXIT_SUCCESS;
  }
  
-@@ -557,6 +767,7 @@
+@@ -557,6 +788,7 @@
    elf_filename = elffilename;
  
    if (e2a_readehdr (elfhandle) == EXIT_SUCCESS
@@ -361,7 +382,7 @@ Index: elf2aif/src/elf2aif.c
        && e2a_readphdr (elfhandle) == EXIT_SUCCESS
        && e2a_copy (elfhandle, aifhandle) == EXIT_SUCCESS)
      status = EXIT_SUCCESS;
-@@ -683,6 +894,9 @@
+@@ -683,6 +915,9 @@
  	    fprintf (stderr, "Warning: extra options/arguments ignored\n");
  	  return EXIT_SUCCESS;
  	}
