@@ -68,6 +68,7 @@ cc__ := $(word 1,$(wildcard $(GCCSDK_INSTALL_CROSSBIN)/*gcc))
 cxx__ := $(word 1,$(wildcard $(GCCSDK_INSTALL_CROSSBIN)/*g++))
 ar__ := $(word 1,$(wildcard $(GCCSDK_INSTALL_CROSSBIN)/*ar))
 ranlib__ := $(word 1,$(wildcard $(GCCSDK_INSTALL_CROSSBIN)/*ranlib))
+windres__ := $(word 1,$(wildcard $(GCCSDK_INSTALL_CROSSBIN)/*windres))
 
 # Flags
 cflags__ := -I$(GCCSDK_INSTALL_ENV)/include
@@ -125,6 +126,9 @@ FREETYPE_ENV := LIBPNG_CFLAGS=$$($(GCCSDK_INSTALL_ENV)/bin/libpng-config --cflag
 # per target environments
 LIBJPEG_TURBO_BUILDDIR:=$(BUILDDIR)/libjpegturbo
 
+# Openssl target has to alter for mingw
+TARGET_OPENSSL:=$(TARGET)
+
 # Target Specific setup
 ifeq ($(TARGET),arm-riscos-gnueabi)
   SDK_ITEMS := $(addprefix $(BUILDSTEPS)/, $(COMMON_SDK_ITEMS) libjpeg-turbo.d libwebp.d)
@@ -168,6 +172,8 @@ ifeq ($(TARGET),i686-w64-mingw32)
   EXTRAARGS_LIBCARES := --disable-shared
   EXTRAARGS_LIBCURL := --enable-nonblocking --enable-ares --disable-ldap --without-random
   LIBCURL_ENV := CFLAGS="-DCARES_STATICLIB" LIBS="-lgdi32 -lcrypt32"
+  TARGET_OPENSSL := mingw
+  ENV_OPENSSL := WINDRES="$(windres__)"
   EXTRAARGS_OPENSSL := no-asm enable-capieng
 endif
 
@@ -176,6 +182,7 @@ ifeq ($(TARGET),x86_64-w64-mingw32)
   EXTRAARGS_LIBCARES := --disable-shared
   EXTRAARGS_LIBCURL := --enable-nonblocking --enable-ares --disable-ldap --without-random
   LIBCURL_ENV := CFLAGS="-DCARES_STATICLIB" LIBS="-lgdi32 -lcrypt32"
+  TARGET_OPENSSL := mingw64
   EXTRAARGS_OPENSSL := no-asm enable-capieng
 endif
 
@@ -189,7 +196,7 @@ ifeq ($(TARGET),m68k-unknown-amigaos)
   LIBJPEG_ENV := LDFLAGS="-lm"
   LIBJPEG_TURBO_ENV := LDFLAGS="-lm"
   # XXX: build openssl against bsdsocket.library?
-  #OPENSSL_ENV := CFLAGS="-I$(GCCSDK_INSTALL_ENV)/netinclude" CPPFLAGS="-D__NO_NET_API"
+  #ENV_OPENSSL := CFLAGS="-I$(GCCSDK_INSTALL_ENV)/netinclude" CPPFLAGS="-D__NO_NET_API"
   ifeq ($(LIBCURL_SSL),openssl)
     LIBCURL_ENV := LIBS="-lm -lnet"
   else
@@ -421,7 +428,7 @@ $(SOURCEDIR)/pbl_$(VERSION_LIBPBL).tar.gz:
 # OpenSSL
 $(BUILDSTEPS)/openssl.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/zlib.d $(BUILDSTEPS)/openssl-src.d
 ifeq ($(LIBCURL_SSL),openssl)
-	cd $(BUILDDIR)/openssl/openssl-$(VERSION_OPENSSL) && $(env) $(OPENSSL_ENV) ./Configure --prefix=$(GCCSDK_INSTALL_ENV) $(TARGET) no-shared no-threads $(EXTRAARGS_OPENSSL)
+	cd $(BUILDDIR)/openssl/openssl-$(VERSION_OPENSSL) && $(env) $(ENV_OPENSSL) ./Configure --prefix=$(GCCSDK_INSTALL_ENV) $(TARGET_OPENSSL) no-shared no-threads $(EXTRAARGS_OPENSSL)
 	cd $(BUILDDIR)/openssl/openssl-$(VERSION_OPENSSL) && $(env) make install
 endif
 	touch $@
