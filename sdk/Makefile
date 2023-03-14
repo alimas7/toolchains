@@ -171,7 +171,7 @@ ifeq ($(TARGET),i686-w64-mingw32)
   SDK_ITEMS := $(addprefix $(BUILDSTEPS)/, libiconv.d libgnurx.d $(COMMON_SDK_ITEMS) libjpeg.d libwebp.d)
   EXTRAARGS_LIBCARES := --disable-shared
   EXTRAARGS_LIBCURL := --enable-nonblocking --enable-ares --disable-ldap --without-random
-  LIBCURL_ENV := CFLAGS="-DCARES_STATICLIB" LIBS="-lgdi32 -lcrypt32"
+  LIBCURL_ENV := CFLAGS="-DCARES_STATICLIB" LIBS="-lgdi32 -lcrypt32 -liphlpapi"
   TARGET_OPENSSL := mingw
   ENV_OPENSSL := WINDRES="$(windres__)"
   EXTRAARGS_OPENSSL := no-asm enable-capieng
@@ -181,7 +181,7 @@ ifeq ($(TARGET),x86_64-w64-mingw32)
   SDK_ITEMS := $(addprefix $(BUILDSTEPS)/, libiconv.d libgnurx.d $(COMMON_SDK_ITEMS) libjpeg.d libwebp.d)
   EXTRAARGS_LIBCARES := --disable-shared
   EXTRAARGS_LIBCURL := --enable-nonblocking --enable-ares --disable-ldap --without-random
-  LIBCURL_ENV := CFLAGS="-DCARES_STATICLIB" LIBS="-lgdi32 -lcrypt32"
+  LIBCURL_ENV := CFLAGS="-DCARES_STATICLIB" LIBS="-lgdi32 -lcrypt32 -liphlpapi"
   TARGET_OPENSSL := mingw64
   EXTRAARGS_OPENSSL := no-asm enable-capieng
 endif
