@@ -18,8 +18,8 @@ UPSTREAM_MPC_VERSION := 1.0.2
 UPSTREAM_MPC_TARBALL := mpc-$(UPSTREAM_MPC_VERSION).tar.gz
 UPSTREAM_MPC_URI := http://ftp.gnu.org/gnu/mpc/$(UPSTREAM_MPC_TARBALL)
 
-UPSTREAM_NDK_TARBALL := SDK_53.29.lha
-UPSTREAM_NDK_URI := "http://hyperion-entertainment.biz/index.php/downloads?view=download&format=raw&file=82"
+UPSTREAM_NDK_TARBALL := SDK_54.16.lha
+UPSTREAM_NDK_URI := "http://hyperion-entertainment.biz/index.php/downloads?view=download&format=raw&file=127"
 
 UPSTREAM_NDK_UPDATE_TARBALL := SDK_addon_final_edition_update2.zip
 UPSTREAM_NDK_UPDATE_URI := http://kas1e.mikendezign.com/aos4/SDK_addon_final_edition_update2.zip
@@ -96,9 +96,9 @@ $(BUILDSTEPS)/ndk.d: $(SOURCESDIR)/$(UPSTREAM_NDK_TARBALL) $(SOURCESDIR)/$(UPSTR
 	mkdir -p $(BUILDDIR)/ndk/tmp/
 	lha xw=$(BUILDDIR)/ndk $(SOURCESDIR)/$(UPSTREAM_NDK_TARBALL)
 	lha xw=$(BUILDDIR)/ndk/tmp $(BUILDDIR)/ndk/SDK_Install/base.lha
-	lha xw=$(BUILDDIR)/ndk/tmp $(BUILDDIR)/ndk/SDK_Install/newlib-53.30.lha
-	lha xw=$(BUILDDIR)/ndk/tmp $(BUILDDIR)/ndk/SDK_Install/clib2-1.206.lha
-	lha xw=$(BUILDDIR)/ndk/tmp $(BUILDDIR)/ndk/SDK_Install/pthreads-53.11.lha
+	lha xw=$(BUILDDIR)/ndk/tmp $(BUILDDIR)/ndk/SDK_Install/newlib-53.80.lha
+	lha xw=$(BUILDDIR)/ndk/tmp $(BUILDDIR)/ndk/SDK_Install/clib2.lha
+	lha xw=$(BUILDDIR)/ndk/tmp $(BUILDDIR)/ndk/SDK_Install/pthreads-53.12.lha
 	lha xw=$(BUILDDIR)/ndk/tmp $(SOURCESDIR)/$(UPSTREAM_ONCHIPMEM_TARBALL)
 	mkdir -p $(PREFIX)/$(TARGET_NAME)/SDK
 	unzip -o $(SOURCESDIR)/$(UPSTREAM_NDK_UPDATE_TARBALL) -d $(BUILDDIR)/ndk/tmp
