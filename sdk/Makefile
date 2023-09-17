@@ -32,19 +32,19 @@ VERSION_LIBICONV := 1.17
 # https://laurikari.net/tre/
 VERSION_LIBTRE := 0.8.0
 # https://www.openssl.org/
-VERSION_OPENSSL := 3.0.8
+VERSION_OPENSSL := 3.0.10
 # http://www.libpng.org/pub/png/libpng.html
-VERSION_LIBPNG := 1.6.39
+VERSION_LIBPNG := 1.6.40
 # http://libjpeg.sourceforge.net/
 VERSION_LIBJPEG := 8d
 # https://libjpeg-turbo.org/
 VERSION_LIBJPEG_TURBO := 2.1.5.1
 # https://developers.google.com/speed/webp/
-VERSION_LIBWEBP := 1.3.0
+VERSION_LIBWEBP := 1.3.2
 # https://c-ares.haxx.se/
-VERSION_LIBCARES := 1.19.0
+VERSION_LIBCARES := 1.19.1
 # https://curl.haxx.se/
-VERSION_LIBCURL := 7.88.1
+VERSION_LIBCURL := 8.3.0
 VERSION_LIBGNURX := 2.5.1
 # http://mission-base.com/peter/source/
 # 1.7.0: https://github.com/peterGraf/pbl/releases
@@ -58,7 +58,7 @@ VERSION_WINDOM := 2.0.1
 # https://github.com/berkus/hermes-pixel-format/archive/refs/tags/v1.3.3.tar.gz
 VERSION_HERMES := 1.3.3
 # https://www.freetype.org/
-VERSION_FREETYPE := 2.13.0
+VERSION_FREETYPE := 2.13.2
 
 # Path
 path__ := $(GCCSDK_INSTALL_CROSSBIN):$(PATH)
