@@ -18,6 +18,10 @@ UPSTREAM_MPC_VERSION := 1.0.2
 UPSTREAM_MPC_TARBALL := mpc-$(UPSTREAM_MPC_VERSION).tar.gz
 UPSTREAM_MPC_URI := http://ftp.gnu.org/gnu/mpc/$(UPSTREAM_MPC_TARBALL)
 
+UPSTREAM_LHASA_VERSION := 887d68ebca0cbad392af3709203745d202a2020b
+UPSTREAM_LHASA_TARBALL := lhasa-$(UPSTREAM_LHASA_VERSION).zip
+UPSTREAM_LHASA_URI := https://github.com/fragglet/lhasa/archive/$(UPSTREAM_LHASA_VERSION).zip
+
 UPSTREAM_NDK_TARBALL := SDK_54.16.lha
 UPSTREAM_NDK_URI := "http://hyperion-entertainment.biz/index.php/downloads?view=download&format=raw&file=127"
 
@@ -92,15 +96,15 @@ $(BUILDSTEPS)/stage2.d: $(BUILDSTEPS)/srcdir-step3.d $(BUILDSTEPS)/binutils.d $(
 # Rules to install the NDK
 ###
 
-$(BUILDSTEPS)/ndk.d: $(SOURCESDIR)/$(UPSTREAM_NDK_TARBALL) $(SOURCESDIR)/$(UPSTREAM_NDK_UPDATE_TARBALL) $(SOURCESDIR)/$(UPSTREAM_OPENURL_TARBALL) $(SOURCESDIR)/$(UPSTREAM_ONCHIPMEM_TARBALL) $(SOURCESDIR)/$(UPSTREAM_GUIGFX_TARBALL) $(SOURCESDIR)/$(UPSTREAM_RENDER_TARBALL) $(SOURCESDIR)/$(UPSTREAM_CODESETS_TARBALL)
+$(BUILDSTEPS)/ndk.d: $(BUILDSTEPS)/lhasa.d $(SOURCESDIR)/$(UPSTREAM_NDK_TARBALL) $(SOURCESDIR)/$(UPSTREAM_NDK_UPDATE_TARBALL) $(SOURCESDIR)/$(UPSTREAM_OPENURL_TARBALL) $(SOURCESDIR)/$(UPSTREAM_ONCHIPMEM_TARBALL) $(SOURCESDIR)/$(UPSTREAM_GUIGFX_TARBALL) $(SOURCESDIR)/$(UPSTREAM_RENDER_TARBALL) $(SOURCESDIR)/$(UPSTREAM_CODESETS_TARBALL)
 	mkdir -p $(BUILDDIR)/ndk/tmp/
-	lha xw=$(BUILDDIR)/ndk $(SOURCESDIR)/$(UPSTREAM_NDK_TARBALL)
-	lha xw=$(BUILDDIR)/ndk/tmp $(BUILDDIR)/ndk/SDK_Install/base.lha
-	lha xw=$(BUILDDIR)/ndk/tmp $(BUILDDIR)/ndk/SDK_Install/execsg_sdk-54.31.lha
-	lha xw=$(BUILDDIR)/ndk/tmp $(BUILDDIR)/ndk/SDK_Install/newlib-53.80.lha
-	lha xw=$(BUILDDIR)/ndk/tmp $(BUILDDIR)/ndk/SDK_Install/clib2.lha
-	lha xw=$(BUILDDIR)/ndk/tmp $(BUILDDIR)/ndk/SDK_Install/pthreads-53.12.lha
-	lha xw=$(BUILDDIR)/ndk/tmp $(SOURCESDIR)/$(UPSTREAM_ONCHIPMEM_TARBALL)
+	$(BUILDDIR)/prefix/bin/lha xw=$(BUILDDIR)/ndk $(SOURCESDIR)/$(UPSTREAM_NDK_TARBALL)
+	$(BUILDDIR)/prefix/bin/lha xw=$(BUILDDIR)/ndk/tmp $(BUILDDIR)/ndk/SDK_Install/base.lha
+	$(BUILDDIR)/prefix/bin/lha xw=$(BUILDDIR)/ndk/tmp $(BUILDDIR)/ndk/SDK_Install/execsg_sdk-54.31.lha
+	$(BUILDDIR)/prefix/bin/lha xw=$(BUILDDIR)/ndk/tmp $(BUILDDIR)/ndk/SDK_Install/newlib-53.80.lha
+	$(BUILDDIR)/prefix/bin/lha xw=$(BUILDDIR)/ndk/tmp $(BUILDDIR)/ndk/SDK_Install/clib2.lha
+	$(BUILDDIR)/prefix/bin/lha xw=$(BUILDDIR)/ndk/tmp $(BUILDDIR)/ndk/SDK_Install/pthreads-53.12.lha
+	$(BUILDDIR)/prefix/bin/lha xw=$(BUILDDIR)/ndk/tmp $(SOURCESDIR)/$(UPSTREAM_ONCHIPMEM_TARBALL)
 	mkdir -p $(PREFIX)/$(TARGET_NAME)/SDK
 	unzip -o $(SOURCESDIR)/$(UPSTREAM_NDK_UPDATE_TARBALL) -d $(BUILDDIR)/ndk/tmp
 	cp -r $(BUILDDIR)/ndk/tmp/Include $(PREFIX)/$(TARGET_NAME)/SDK/include
@@ -117,14 +121,32 @@ $(BUILDSTEPS)/ndk.d: $(SOURCESDIR)/$(UPSTREAM_NDK_TARBALL) $(SOURCESDIR)/$(UPSTR
 	cd $(BUILDDIR)/openurl && tar xaf $(SOURCESDIR)/$(UPSTREAM_OPENURL_TARBALL)
 	cp -r $(BUILDDIR)/openurl/libopenurl-$(UPSTREAM_OPENURL_VERSION)/include/* $(PREFIX)/$(TARGET_NAME)/SDK/include/include_h/
 	mkdir -p $(BUILDDIR)/guigfxlib
-	lha xw=$(BUILDDIR)/guigfxlib $(SOURCESDIR)/$(UPSTREAM_GUIGFX_TARBALL)
+	$(BUILDDIR)/prefix/bin/lha xw=$(BUILDDIR)/guigfxlib $(SOURCESDIR)/$(UPSTREAM_GUIGFX_TARBALL)
 	cp -r $(BUILDDIR)/guigfxlib/include_os4/* $(PREFIX)/$(TARGET_NAME)/SDK/include/include_h/
 	mkdir -p $(BUILDDIR)/renderlib
-	lha xw=$(BUILDDIR)/renderlib $(SOURCESDIR)/$(UPSTREAM_RENDER_TARBALL)
+	$(BUILDDIR)/prefix/bin/lha xw=$(BUILDDIR)/renderlib $(SOURCESDIR)/$(UPSTREAM_RENDER_TARBALL)
 	cp -r $(BUILDDIR)/renderlib/renderlib/include_os4/* $(PREFIX)/$(TARGET_NAME)/SDK/include/include_h/
 	mkdir -p $(BUILDDIR)/codesets
-	lha xw=$(BUILDDIR)/codesets $(SOURCESDIR)/$(UPSTREAM_CODESETS_TARBALL)
+	$(BUILDDIR)/prefix/bin/lha xw=$(BUILDDIR)/codesets $(SOURCESDIR)/$(UPSTREAM_CODESETS_TARBALL)
 	cp -r $(BUILDDIR)/codesets/codesets/Developer/include/* $(PREFIX)/$(TARGET_NAME)/SDK/include/include_h/
+	touch $@
+
+###
+# Rules to build and install lhasa
+###
+
+$(BUILDSTEPS)/lhasa.d: $(BUILDSTEPS)/lhasa-srcdir.d
+	mkdir -p $(BUILDDIR)/lhasa
+	mkdir -p $(BUILDDIR)/prefix
+	cd $(BUILDDIR)/lhasa && $(SRCDIR)/lhasa/configure --prefix=$(BUILDDIR)/prefix
+	cd $(BUILDDIR)/lhasa && make
+	cd $(BUILDDIR)/lhasa && make install
+	touch $@
+
+$(BUILDSTEPS)/lhasa-srcdir.d: $(SOURCESDIR)/$(UPSTREAM_LHASA_TARBALL)
+	unzip $(SOURCESDIR)/$(UPSTREAM_LHASA_TARBALL)
+	mv lhasa-$(UPSTREAM_LHASA_VERSION) $(SRCDIR)/lhasa
+	cd $(SRCDIR)/lhasa && autoreconf -i
 	touch $@
 
 ###
@@ -192,6 +214,9 @@ $(SOURCESDIR)/$(UPSTREAM_MPC_TARBALL):
 
 $(SOURCESDIR)/$(UPSTREAM_BINUTILS_TARBALL):
 	wget -q -O $@ $(UPSTREAM_BINUTILS_URI)
+
+$(SOURCESDIR)/$(UPSTREAM_LHASA_TARBALL):
+	wget -q -O $@ $(UPSTREAM_LHASA_URI)
 
 $(SOURCESDIR)/$(UPSTREAM_NDK_TARBALL):
 	wget -q -O $@ $(UPSTREAM_NDK_URI)
