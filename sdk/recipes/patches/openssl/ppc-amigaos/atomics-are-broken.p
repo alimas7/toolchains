@@ -13,7 +13,7 @@
 +++ include/internal/refcount.h	2017-11-21 22:49:21.488219518 +0000
 @@ -15,7 +15,7 @@
  
- # ifndef OPENSSL_DEV_NO_ATOMICS
+ # if defined(OPENSSL_THREADS) && !defined(OPENSSL_DEV_NO_ATOMICS)
  #  if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L \
 -      && !defined(__STDC_NO_ATOMICS__)
 +      && !defined(__STDC_NO_ATOMICS__) && !defined(__AMIGA__)

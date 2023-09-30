@@ -1,8 +1,12 @@
 --- src/lib/ares_ipv6.h.orig	2017-10-10 15:19:45.611896396 +0100
 +++ src/lib/ares_ipv6.h	2017-10-17 15:42:25.304921197 +0100
-@@ -22,6 +22,7 @@
+@@ -22,6 +22,11 @@
  #endif
  
++#ifndef INET6_ADDRSTRLEN
++#define INET6_ADDRSTRLEN 46
++#endif
++
  #ifndef HAVE_STRUCT_SOCKADDR_IN6
 +#define s6_addr _S6_un._S6_u8
  struct sockaddr_in6
