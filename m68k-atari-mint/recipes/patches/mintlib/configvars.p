@@ -18,12 +18,12 @@
  
  # This is where include files get installed.
  includedir=${prefix}/include
-@@ -124,7 +124,7 @@
- CFLAGS=-O2 -fomit-frame-pointer
+@@ -141,7 +141,7 @@
+ LDFLAGS=
  
  # Additional defines.
 -DEFS=
 +DEFS=-DREGEX_MALLOC
  
  # Define this to the warning level you want.
- WARN=-Wall
+ WARN=-Wall -Werror -Wstrict-prototypes -Wmissing-prototypes -Wold-style-declaration -Wold-style-definition
