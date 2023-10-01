@@ -41,7 +41,7 @@ UPSTREAM_PML_URI := http://vincent.riviere.free.fr/soft/m68k-atari-mint/archives
 UPSTREAM_PML_PATCH := pml-2.03-mint-20191013.patch.bz2
 UPSTREAM_PML_PATCH_URI := http://vincent.riviere.free.fr/soft/m68k-atari-mint/archives/$(UPSTREAM_PML_PATCH)
 
-UPSTREAM_GEMLIB_VERSION := CVS-20230112
+UPSTREAM_GEMLIB_VERSION := Git-20230112
 UPSTREAM_GEMLIB_TARBALL := gemlib-$(UPSTREAM_GEMLIB_VERSION).tar.bz2
 UPSTREAM_GEMLIB_URI := http://vincent.riviere.free.fr/soft/m68k-atari-mint/archives/$(UPSTREAM_GEMLIB_TARBALL)
 
@@ -86,8 +86,8 @@ $(BUILDSTEPS)/gemlib.d: $(BUILDSTEPS)/stage2.d $(SOURCESDIR)/$(UPSTREAM_GEMLIB_T
 	tar xjf $(SOURCESDIR)/$(UPSTREAM_GEMLIB_TARBALL)
 	mv gemlib-$(UPSTREAM_GEMLIB_VERSION) $(BUILDDIR)/gemlib
 	for p in `ls $(RECIPES)/patches/gemlib/*.p` ; do patch -d $(BUILDDIR)/gemlib -p0 <$$p ; done
-	cd $(BUILDDIR)/gemlib/gemlib && PATH="$(PREFIX)/bin:$(PATH)" make
-	cd $(BUILDDIR)/gemlib/gemlib && PATH="$(PREFIX)/bin:$(PATH)" make install
+	cd $(BUILDDIR)/gemlib && PATH="$(PREFIX)/bin:$(PATH)" make
+	cd $(BUILDDIR)/gemlib && PATH="$(PREFIX)/bin:$(PATH)" make install
 	touch $@
 
 ###
