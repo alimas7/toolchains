@@ -247,7 +247,7 @@ endif
 	touch $@
 
 $(SOURCEDIR)/zlib-$(VERSION_ZLIB).tar.gz:
-	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://zlib.net/$(subst $(SOURCEDIR)/,,$@)" $@
+	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://zlib.net/fossils/$(subst $(SOURCEDIR)/,,$@)" $@
 
 # libiconv
 $(BUILDSTEPS)/libiconv.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/libiconv-src.d
