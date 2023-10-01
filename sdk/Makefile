@@ -53,7 +53,7 @@ VERSION_LIBPBL := 1_04
 VERSION_LIBCF := CVS-20130415
 # https://github.com/libexpat/libexpat
 VERSION_LIBEXPAT := 2.5.0
-VERSION_LDG := 2.35
+VERSION_LDG := SVN-20150827
 VERSION_WINDOM := 2.0.1
 # https://github.com/berkus/hermes-pixel-format/archive/refs/tags/v1.3.3.tar.gz
 VERSION_HERMES := 1.3.3
@@ -326,7 +326,7 @@ $(SOURCEDIR)/windom-$(VERSION_WINDOM).zip:
 # atari ldg library
 $(BUILDSTEPS)/ldg.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/ldg-src.d
 	mkdir -p $(BUILDDIR)/ldg
-	cd $(BUILDDIR)/ldg && unzip $(SOURCEDIR)/ldg-$(VERSION_LDG).zip
+	cd $(BUILDDIR)/ldg && tar xjf $(SOURCEDIR)/ldg-$(VERSION_LDG).tar.bz2
 	$(env) make -C $(BUILDDIR)/ldg/ldg-$(VERSION_LDG)/src/devel -f gcc.mak CROSS=yes PREFIX=$(GCCSDK_INSTALL_ENV) CC=${TARGET}-gcc AR=${TARGET}-ar
 	cp $(BUILDDIR)/ldg/ldg-$(VERSION_LDG)/lib/gcc/libldg.a $(GCCSDK_INSTALL_ENV)/lib/
 	cp $(BUILDDIR)/ldg/ldg-$(VERSION_LDG)/include/ldg.h $(GCCSDK_INSTALL_ENV)/include/ldg.h
@@ -334,11 +334,11 @@ $(BUILDSTEPS)/ldg.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/ldg-src.d
 	cp $(BUILDDIR)/ldg/ldg-$(VERSION_LDG)/include/ldg/mem.h $(GCCSDK_INSTALL_ENV)/include/ldg/
 	touch $@
 
-$(BUILDSTEPS)/ldg-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/ldg-$(VERSION_LDG).zip
+$(BUILDSTEPS)/ldg-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/ldg-$(VERSION_LDG).tar.bz2
 	touch $@
 
-$(SOURCEDIR)/ldg-$(VERSION_LDG).zip:
-	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://downloads.sourceforge.net/project/ldg/ldg-$(VERSION_LDG).zip" $@
+$(SOURCEDIR)/ldg-$(VERSION_LDG).tar.bz2:
+	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "http://vincent.riviere.free.fr/soft/m68k-atari-mint/archives/ldg-$(VERSION_LDG).tar.bz2" $@
 
 # hermes bitmap lib
 $(BUILDSTEPS)/hermes.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/hermes-src.d
