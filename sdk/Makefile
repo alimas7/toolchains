@@ -27,38 +27,62 @@ endif
 # Upstream package versions
 # https://zlib.net/
 VERSION_ZLIB := 1.2.13
+CKSUM_ZLIB := b3a24de97a8fdbc835b9833169501030b8977031bcb54b3b3ac13740f846ab30
 # https://www.gnu.org/software/libiconv/
 VERSION_LIBICONV := 1.17
+CKSUM_LIBICONV := 8f74213b56238c85a50a5329f77e06198771e70dd9a739779f4c02f65d971313
 # https://laurikari.net/tre/
 VERSION_LIBTRE := 0.8.0
+CKSUM_LIBTRE := 8dc642c2cde02b2dac6802cdbe2cda201daf79c4ebcbb3ea133915edf1636658
 # https://www.openssl.org/
-VERSION_OPENSSL := 3.0.11
+VERSION_OPENSSL := 3.0.12
+CKSUM_OPENSSL := f93c9e8edde5e9166119de31755fc87b4aa34863662f67ddfcba14d0b6b69b61
 # http://www.libpng.org/pub/png/libpng.html
 VERSION_LIBPNG := 1.6.40
+CKSUM_LIBPNG := 8f720b363aa08683c9bf2a563236f45313af2c55d542b5481ae17dd8d183bb42
 # http://libjpeg.sourceforge.net/
 VERSION_LIBJPEG := 8d
+CKSUM_LIBJPEG := 00029b1473f0f0ea72fbca3230e8cb25797fbb27e58ae2e46bb8bf5a806fe0b3
 # https://libjpeg-turbo.org/
-VERSION_LIBJPEG_TURBO := 2.1.5.1
+VERSION_LIBJPEG_TURBO := 3.0.1
+CKSUM_LIBJPEG_TURBO := 22429507714ae147b3acacd299e82099fce5d9f456882fc28e252e4579ba2a75
 # https://developers.google.com/speed/webp/
 VERSION_LIBWEBP := 1.3.2
-# https://c-ares.haxx.se/
-VERSION_LIBCARES := 1.19.1
-# https://curl.haxx.se/
-VERSION_LIBCURL := 8.4.0
+CKSUM_LIBWEBP := 2a499607df669e40258e53d0ade8035ba4ec0175244869d1025d460562aa09b4
+# https://c-ares.org/
+VERSION_LIBCARES := 1.23.0
+CKSUM_LIBCARES := cb614ecf78b477d35963ebffcf486fc9d55cc3d3216f00700e71b7d4868f79f5
+# https://curl.se/
+VERSION_LIBCURL := 8.5.0
+CKSUM_LIBCURL := ce4b6a6655431147624aaf582632a36fe1ade262d5fab385c60f78942dd8d87b
+#
 VERSION_LIBGNURX := 2.5.1
+CKSUM_LIBGNURX := 7147b7f806ec3d007843b38e19f42a5b7c65894a57ffc297a76b0dcd5f675d76
 # http://mission-base.com/peter/source/
 # 1.7.0: https://github.com/peterGraf/pbl/releases
 VERSION_LIBPBL := 1_04
+CKSUM_LIBPBL := 20f0ab1af09a22a8f3cb3ce3832247a6b51d8db57211f6bb0794af9485229a67
 # Git-20170304
 VERSION_LIBCF := CVS-20130415
+CKSUM_LIBCF := 5d25c4faa2f5b7fc106bb47d093646f79d0fa72a34aaf8122110a2e4cf9eb6cc
 # https://github.com/libexpat/libexpat
 VERSION_LIBEXPAT := 2.5.0
+CKSUM_LIBEXPAT := 6f0e6e01f7b30025fa05c85fdad1e5d0ec7fd35d9f61b22f34998de11969ff67
+#
 VERSION_LDG := SVN-20150827
+CKSUM_LDG := ca7959d31b46cb1e755005eddcc0daf6a91f7faad7d869d82e94d98d20650d94
+#
 VERSION_WINDOM := 2.0.1
+CKSUM_WINDOM := 2539c15c22f7b8ca48c015f0c3d33f3bd1666cc8aa56eef6f38de2cc98a3479e
 # https://github.com/berkus/hermes-pixel-format/archive/refs/tags/v1.3.3.tar.gz
 VERSION_HERMES := 1.3.3
+CKSUM_HERMES := e86374606105d2a251d4406e5f9fca8d09e2fd971ebb0dfd342e40953676c46e
 # https://www.freetype.org/
 VERSION_FREETYPE := 2.13.2
+CKSUM_FREETYPE := 1ac27e16c134a7f2ccea177faba19801131116fd682efc1f5737037c5db224b5
+#
+VERSION_ROADSHOW := 7_64_0-amissl
+CKSUM_ROADSHOW := 5af092c2319f184d49f5eda72d160231b3f3551f9884f8136c531521059a4ad2
 
 # Path
 path__ := $(GCCSDK_INSTALL_CROSSBIN):$(PATH)
@@ -247,7 +271,7 @@ endif
 	touch $@
 
 $(SOURCEDIR)/zlib-$(VERSION_ZLIB).tar.gz:
-	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://zlib.net/fossils/$(subst $(SOURCEDIR)/,,$@)" $@
+	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://zlib.net/fossils/$(subst $(SOURCEDIR)/,,$@)" $(CKSUM_ZLIB) $@
 
 # libiconv
 $(BUILDSTEPS)/libiconv.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/libiconv-src.d
@@ -265,7 +289,7 @@ $(BUILDSTEPS)/libiconv-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/libiconv-$(
 	touch $@
 
 $(SOURCEDIR)/libiconv-$(VERSION_LIBICONV).tar.gz:
-	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://ftp.gnu.org/pub/gnu/libiconv/$(subst $(SOURCEDIR)/,,$@)" $@
+	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://ftp.gnu.org/pub/gnu/libiconv/$(subst $(SOURCEDIR)/,,$@)" $(CKSUM_LIBICONV) $@
 
 # libgnurx
 $(BUILDSTEPS)/libgnurx.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/libgnurx-src.d
@@ -285,7 +309,7 @@ $(BUILDSTEPS)/libgnurx-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/libgnurx-$(
 	touch $@
 
 $(SOURCEDIR)/libgnurx-$(VERSION_LIBGNURX).tar.gz:
-	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://downloads.sourceforge.net/project/mingw/Other/UserContributed/regex/mingw-regex-$(VERSION_LIBGNURX)/mingw-libgnurx-$(VERSION_LIBGNURX)-src.tar.gz" $@
+	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://downloads.sourceforge.net/project/mingw/Other/UserContributed/regex/mingw-regex-$(VERSION_LIBGNURX)/mingw-libgnurx-$(VERSION_LIBGNURX)-src.tar.gz" $(CKSUM_LIBGNURX) $@
 
 # atari cf library
 $(BUILDSTEPS)/libcf.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/libcf-src.d
@@ -303,7 +327,7 @@ $(BUILDSTEPS)/libcf-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/libcf-$(VERSIO
 	touch $@
 
 $(SOURCEDIR)/libcf-$(VERSION_LIBCF).tar.bz2:
-	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://vincent.riviere.free.fr/soft/m68k-atari-mint/archives/cflib-$(VERSION_LIBCF).tar.bz2" $@
+	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "http://vincent.riviere.free.fr/soft/m68k-atari-mint/archives/cflib-$(VERSION_LIBCF).tar.bz2" $(CKSUM_LIBCF) $@
 
 # atari windom library
 $(BUILDSTEPS)/windom.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/windom-src.d
@@ -321,7 +345,7 @@ $(BUILDSTEPS)/windom-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/windom-$(VERS
 	touch $@
 
 $(SOURCEDIR)/windom-$(VERSION_WINDOM).zip:
-	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://downloads.sourceforge.net/project/windom/windom/$(VERSION_WINDOM)/windom-$(VERSION_WINDOM)-1.zip" $@
+	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://downloads.sourceforge.net/project/windom/windom/$(VERSION_WINDOM)/windom-$(VERSION_WINDOM)-1.zip" $(CKSUM_WINDOM) $@
 
 # atari ldg library
 $(BUILDSTEPS)/ldg.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/ldg-src.d
@@ -338,27 +362,27 @@ $(BUILDSTEPS)/ldg-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/ldg-$(VERSION_LD
 	touch $@
 
 $(SOURCEDIR)/ldg-$(VERSION_LDG).tar.bz2:
-	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "http://vincent.riviere.free.fr/soft/m68k-atari-mint/archives/ldg-$(VERSION_LDG).tar.bz2" $@
+	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "http://vincent.riviere.free.fr/soft/m68k-atari-mint/archives/ldg-$(VERSION_LDG).tar.bz2" $(CKSUM_LDG) $@
 
 # hermes bitmap lib
 $(BUILDSTEPS)/hermes.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/hermes-src.d
-	cd $(BUILDDIR)/hermes/Hermes-$(VERSION_HERMES)
-	for p in `ls $(RECIPES)/patches/hermes/*.p` ; do $(PATCH) -d $(BUILDDIR)/hermes/Hermes-$(VERSION_HERMES) -p0 <$$p ; done
+	cd $(BUILDDIR)/hermes/hermes-pixel-format-$(VERSION_HERMES)
+	for p in `ls $(RECIPES)/patches/hermes/*.p` ; do $(PATCH) -d $(BUILDDIR)/hermes/hermes-pixel-format-$(VERSION_HERMES) -p0 <$$p ; done
 ifneq ($(realpath $(RECIPES)/patches/hermes/$(TARGET)),)
-	for p in `ls $(RECIPES)/patches/hermes/$(TARGET)/*.p` ; do $(PATCH) -d $(BUILDDIR)/hermes/Hermes-$(VERSION_HERMES) -p0 <$$p ; done
+	for p in `ls $(RECIPES)/patches/hermes/$(TARGET)/*.p` ; do $(PATCH) -d $(BUILDDIR)/hermes/hermes-pixel-format-$(VERSION_HERMES) -p0 <$$p ; done
 endif
-	cd $(BUILDDIR)/hermes/Hermes-$(VERSION_HERMES) && $(env) ./configure --prefix=$(GCCSDK_INSTALL_ENV) --target=$(TARGET) --host=$(TARGET) --disable-shared --disable-x86asm
-	cd $(BUILDDIR)/hermes/Hermes-$(VERSION_HERMES) && $(env) make CFLAGS="-D__BIG_ENDIAN__" install 
+	cd $(BUILDDIR)/hermes/hermes-pixel-format-$(VERSION_HERMES) && $(env) ./configure --prefix=$(GCCSDK_INSTALL_ENV) --target=$(TARGET) --host=$(TARGET) --disable-shared --disable-x86asm
+	cd $(BUILDDIR)/hermes/hermes-pixel-format-$(VERSION_HERMES) && $(env) make CFLAGS="-D__BIG_ENDIAN__" install
 	touch $@
 
-$(BUILDSTEPS)/hermes-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/hermes-$(VERSION_HERMES).tar.bz2
+$(BUILDSTEPS)/hermes-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/hermes-$(VERSION_HERMES).tar.gz
 	$(RM) -rf $(BUILDDIR)/hermes
 	mkdir -p $(BUILDDIR)/hermes
-	cd $(BUILDDIR)/hermes && tar xaf $(SOURCEDIR)/hermes-$(VERSION_HERMES).tar.bz2
+	cd $(BUILDDIR)/hermes && tar xaf $(SOURCEDIR)/hermes-$(VERSION_HERMES).tar.gz
 	touch $@
 
-$(SOURCEDIR)/hermes-$(VERSION_HERMES).tar.bz2:
-	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "http://clanlib.org/download/legacy/Hermes-$(VERSION_HERMES).tar.bz2" $@
+$(SOURCEDIR)/hermes-$(VERSION_HERMES).tar.gz:
+	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://github.com/berkus/hermes-pixel-format/archive/refs/tags/v$(VERSION_HERMES).tar.gz" $(CKSUM_HERMES) $@
 
 # freetype font lib
 $(BUILDSTEPS)/freetype.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/freetype-src.d
@@ -377,21 +401,21 @@ endif
 	touch $@
 
 $(SOURCEDIR)/freetype-$(VERSION_FREETYPE).tar.gz:
-	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://download.savannah.gnu.org/releases/freetype/freetype-$(VERSION_FREETYPE).tar.gz" $@
+	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://download.savannah.gnu.org/releases/freetype/freetype-$(VERSION_FREETYPE).tar.gz" $(CKSUM_FREETYPE) $@
 
 # amiga roadshow sdk
 $(BUILDSTEPS)/roadshow.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/roadshow-src.d
 	mkdir -p $(BUILDDIR)/Roadshow-SDK
-	lha xw=$(BUILDDIR)/Roadshow-SDK $(SOURCEDIR)/Roadshow-SDK-NS.lha
+	lha xw=$(BUILDDIR)/Roadshow-SDK $(SOURCEDIR)/Roadshow-SDK-NS-$(VERSION_ROADSHOW).lha
 	mkdir -p $(GCCSDK_INSTALL_ENV)/netinclude
 	cp -r $(BUILDDIR)/Roadshow-SDK/SDK/netinclude/* $(GCCSDK_INSTALL_ENV)/netinclude/
 	touch $@
 
-$(BUILDSTEPS)/roadshow-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/Roadshow-SDK-NS.lha
+$(BUILDSTEPS)/roadshow-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/Roadshow-SDK-NS-$(VERSION_ROADSHOW).lha
 	touch $@
 
-$(SOURCEDIR)/Roadshow-SDK-NS.lha:
-	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://github.com/chris-y/curl/releases/download/curl-7_64_0-amissl/Roadshow-SDK-NS.lha" $@
+$(SOURCEDIR)/Roadshow-SDK-NS-$(VERSION_ROADSHOW).lha:
+	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://github.com/chris-y/curl/releases/download/curl-$(VERSION_ROADSHOW)/Roadshow-SDK-NS.lha" $(CKSUM_ROADSHOW) $@
 
 # regex
 $(BUILDSTEPS)/libtre.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/libtre-src.d
@@ -406,7 +430,7 @@ $(BUILDSTEPS)/libtre-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/tre-$(VERSION
 	touch $@
 
 $(SOURCEDIR)/tre-$(VERSION_LIBTRE).tar.bz2:
-	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://laurikari.net/tre/$(subst $(SOURCEDIR)/,,$@)" $@
+	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://laurikari.net/tre/$(subst $(SOURCEDIR)/,,$@)" $(CKSUM_LIBTRE) $@
 
 # libpbl
 $(BUILDSTEPS)/libpbl.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/libpbl-src.d
@@ -423,7 +447,7 @@ $(BUILDSTEPS)/libpbl-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/pbl_$(VERSION
 	touch $@
 
 $(SOURCEDIR)/pbl_$(VERSION_LIBPBL).tar.gz:
-	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://www.mission-base.com/peter/source/$(subst $(SOURCEDIR)/,,$@)" $@
+	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://www.mission-base.com/peter/source/$(subst $(SOURCEDIR)/,,$@)" $(CKSUM_LIBPBL) $@
 
 # OpenSSL
 $(BUILDSTEPS)/openssl.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/zlib.d $(BUILDSTEPS)/openssl-src.d
@@ -449,7 +473,7 @@ endif
 
 # get the openssl source tar
 $(SOURCEDIR)/openssl-$(VERSION_OPENSSL).tar.gz:
-	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://www.openssl.org/source/$(subst $(SOURCEDIR)/,,$@)" $@
+	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://www.openssl.org/source/$(subst $(SOURCEDIR)/,,$@)" $(CKSUM_OPENSSL) $@
 
 # libPNG
 $(BUILDSTEPS)/libpng.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/zlib.d $(BUILDSTEPS)/libpng-src.d
@@ -466,7 +490,7 @@ $(BUILDSTEPS)/libpng-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/libpng-$(VERS
 	touch $@
 
 $(SOURCEDIR)/libpng-$(VERSION_LIBPNG).tar.gz:
-	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://downloads.sourceforge.net/libpng/$(subst $(SOURCEDIR)/,,$@)" $@
+	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://downloads.sourceforge.net/libpng/$(subst $(SOURCEDIR)/,,$@)" $(CKSUM_LIBPNG) $@
 
 
 # libjpeg
@@ -485,7 +509,7 @@ $(BUILDSTEPS)/libjpeg-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/jpegsrc.v$(V
 	touch $@
 
 $(SOURCEDIR)/jpegsrc.v$(VERSION_LIBJPEG).tar.gz:
-	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://ijg.org/files/$(subst $(SOURCEDIR)/,,$@)" $@
+	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://ijg.org/files/$(subst $(SOURCEDIR)/,,$@)" $(CKSUM_LIBJPEG) $@
 
 # libjpegturbo
 $(BUILDSTEPS)/libjpeg-turbo.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/libjpeg-turbo-src.d
@@ -507,7 +531,7 @@ $(BUILDSTEPS)/libjpeg-turbo-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/libjpe
 	touch $@
 
 $(SOURCEDIR)/libjpeg-turbo-src-$(VERSION_LIBJPEG_TURBO).tar.gz:
-	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://sourceforge.net/projects/libjpeg-turbo/files/$(VERSION_LIBJPEG_TURBO)/libjpeg-turbo-$(VERSION_LIBJPEG_TURBO).tar.gz/download" $@
+	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://github.com/libjpeg-turbo/libjpeg-turbo/releases/download/$(VERSION_LIBJPEG_TURBO)/libjpeg-turbo-$(VERSION_LIBJPEG_TURBO).tar.gz" $(CKSUM_LIBJPEG_TURBO) $@
 
 
 # libwebp
@@ -526,7 +550,7 @@ $(BUILDSTEPS)/libwebp-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/libwebp-$(VE
 	touch $@
 
 $(SOURCEDIR)/libwebp-$(VERSION_LIBWEBP).tar.gz:
-	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-$(VERSION_LIBWEBP).tar.gz" $@
+	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-$(VERSION_LIBWEBP).tar.gz" $(CKSUM_LIBWEBP) $@
 
 
 # libcares
@@ -545,7 +569,7 @@ $(BUILDSTEPS)/libcares-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/c-ares-$(VE
 	touch $@
 
 $(SOURCEDIR)/c-ares-$(VERSION_LIBCARES).tar.gz:
-	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://c-ares.haxx.se/download/$(subst $(SOURCEDIR)/,,$@)" $@
+	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://c-ares.org/download/$(subst $(SOURCEDIR)/,,$@)" $(CKSUM_LIBCARES) $@
 
 
 # libcurl
@@ -564,7 +588,7 @@ endif
 	touch $@
 
 $(SOURCEDIR)/curl-$(VERSION_LIBCURL).tar.bz2:
-	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://curl.haxx.se/download/$(subst $(SOURCEDIR)/,,$@)" $@
+	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://curl.se/download/$(subst $(SOURCEDIR)/,,$@)" $(CKSUM_LIBCURL) $@
 
 
 # libexpat
@@ -582,5 +606,5 @@ endif
 	touch $@
 
 $(SOURCEDIR)/expat-$(VERSION_LIBEXPAT).tar.bz2:
-	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://downloads.sourceforge.net/project/expat/expat/$(VERSION_LIBEXPAT)/expat-$(VERSION_LIBEXPAT).tar.bz2" $@
+	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://github.com/libexpat/libexpat/releases/download/R_$(subst $(VERSION_LIBEXPAT),.,_)/expat-$(VERSION_LIBEXPAT).tar.bz2" $(CKSUM_LIBEXPAT) $@
 
