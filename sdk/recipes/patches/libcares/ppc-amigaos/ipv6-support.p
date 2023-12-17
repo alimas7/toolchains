@@ -1,6 +1,6 @@
 --- src/lib/ares_ipv6.h.orig	2017-10-10 15:19:45.611896396 +0100
 +++ src/lib/ares_ipv6.h	2017-10-17 15:42:25.304921197 +0100
-@@ -22,6 +22,11 @@
+@@ -32,6 +32,11 @@
  #endif
  
 +#ifndef INET6_ADDRSTRLEN
@@ -9,14 +9,14 @@
 +
  #ifndef HAVE_STRUCT_SOCKADDR_IN6
 +#define s6_addr _S6_un._S6_u8
- struct sockaddr_in6
- {
+ struct sockaddr_in6 {
    unsigned short       sin6_family;
+   unsigned short       sin6_port;
 --- src/lib/ares__sortaddrinfo.c.orig	2017-10-10 15:19:45.611896396 +0100
 +++ src/lib/ares__sortaddrinfo.c	2017-10-17 15:42:25.304921197 +0100
-@@ -71,6 +71,39 @@
- 
- #define ARES_IN_LOOPBACK(a) ((((long int)(a)) & 0xff000000) == 0x7f000000)
+@@ -73,6 +73,39 @@
+ #define ARES_IN_LOOPBACK(a) \
+   ((((long unsigned int)(a)) & 0xff000000) == 0x7f000000)
  
 +#ifndef IN6_IS_ADDR_LINKLOCAL
 +#define IN6_IS_ADDR_LINKLOCAL(a) \
@@ -54,7 +54,7 @@
  /* RFC 4193. */
  #define ARES_IN6_IS_ADDR_ULA(a) (((a)->s6_addr[0] & 0xfe) == 0xfc)
  
-@@ -253,8 +286,13 @@
+@@ -205,8 +238,13 @@
  /*
   * Find number of matching initial bits between the two addresses a1 and a2.
   */
@@ -66,5 +66,5 @@
                               const struct in6_addr *a2)
 +#endif
  {
-   const char *p1 = (const char *)a1;
-   const char *p2 = (const char *)a2;
+   const unsigned char *p1 = (const unsigned char *)a1;
+   const unsigned char *p2 = (const unsigned char *)a2;
