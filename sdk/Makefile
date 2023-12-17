@@ -213,6 +213,7 @@ endif
 ifeq ($(TARGET),m68k-unknown-amigaos)
   SDK_ITEMS := $(addprefix $(BUILDSTEPS)/, roadshow.d libiconv.d libtre.d libpbl.d $(COMMON_SDK_ITEMS) libjpeg.d)
   EXTRAARGS_LIBCARES := --disable-shared --without-random
+  LIBCARES_ENV := LIBS="-lm"
   # XXX: reinstate amissl when there's v5 sdk?
   #LIBCURL_SSL := amissl
   EXTRAARGS_LIBCURL := --disable-ntlm-wb --without-random --disable-threaded-resolver --with-zlib --disable-rt --disable-ipv6
@@ -561,7 +562,7 @@ $(BUILDSTEPS)/libcares.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/libcares-src.d
 ifneq ($(realpath $(RECIPES)/patches/libcares/$(TARGET)),)
 	for p in `ls $(RECIPES)/patches/libcares/$(TARGET)/*.p` ; do $(PATCH) -d $(BUILDDIR)/libcares/c-ares-$(VERSION_LIBCARES) -p0 <$$p ; done
 endif
-	cd $(BUILDDIR)/libcares/c-ares-$(VERSION_LIBCARES) && $(cleanenv) ./configure --prefix=$(GCCSDK_INSTALL_ENV) --target=$(TARGET) --host=$(TARGET) $(EXTRAARGS_LIBCARES)
+	cd $(BUILDDIR)/libcares/c-ares-$(VERSION_LIBCARES) && $(cleanenv) $(LIBCARES_ENV) ./configure --prefix=$(GCCSDK_INSTALL_ENV) --target=$(TARGET) --host=$(TARGET) $(EXTRAARGS_LIBCARES)
 	cd $(BUILDDIR)/libcares/c-ares-$(VERSION_LIBCARES) && $(cleanenv) make install
 	touch $@
 
