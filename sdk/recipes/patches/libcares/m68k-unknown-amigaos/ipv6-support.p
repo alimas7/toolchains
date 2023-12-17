@@ -60,11 +60,11 @@
   * Find number of matching initial bits between the two addresses a1 and a2.
   */
 +#ifndef HAVE_STRUCT_SOCKADDR_IN6
-+static int common_prefix_len(const struct ares_in6_addr *a1,
-+                             const struct ares_in6_addr *a2)
++static size_t common_prefix_len(const struct ares_in6_addr *a1,
++                                const struct ares_in6_addr *a2)
 +#else
- static int common_prefix_len(const struct in6_addr *a1,
-                              const struct in6_addr *a2)
+ static size_t common_prefix_len(const struct in6_addr *a1,
+                                 const struct in6_addr *a2)
 +#endif
  {
    const unsigned char *p1 = (const unsigned char *)a1;
