@@ -607,5 +607,5 @@ endif
 	touch $@
 
 $(SOURCEDIR)/expat-$(VERSION_LIBEXPAT).tar.bz2:
-	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://github.com/libexpat/libexpat/releases/download/R_$(subst $(VERSION_LIBEXPAT),.,_)/expat-$(VERSION_LIBEXPAT).tar.bz2" $(CKSUM_LIBEXPAT) $@
+	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://github.com/libexpat/libexpat/releases/download/R_$(subst .,_,$(VERSION_LIBEXPAT))/expat-$(VERSION_LIBEXPAT).tar.bz2" $(CKSUM_LIBEXPAT) $@
 
