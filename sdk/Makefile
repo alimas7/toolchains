@@ -219,7 +219,8 @@ ifeq ($(TARGET),m68k-unknown-amigaos)
   LIBICONV_ENV := CFLAGS="-DPATH_MAX=1024 -DRLIMIT_NOFILE=6"
   LIBJPEG_ENV := LDFLAGS="-lm"
   LIBJPEG_TURBO_ENV := LDFLAGS="-lm"
-  ENV_OPENSSL := CFLAGS="-I$(GCCSDK_INSTALL_ENV)/netinclude" CPPFLAGS="-D__NO_NET_API"
+  # XXX: build openssl against bsdsocket.library?
+  # ENV_OPENSSL := CFLAGS="-I$(GCCSDK_INSTALL_ENV)/netinclude" CPPFLAGS="-D__NO_NET_API"
   ifeq ($(LIBCURL_SSL),openssl)
     LIBCURL_ENV := LIBS="-lm -lnet"
   else
