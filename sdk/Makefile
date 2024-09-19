@@ -187,27 +187,9 @@ endif
 
 ifeq ($(TARGET),ppc-amigaos)
   SDK_ITEMS := $(addprefix $(BUILDSTEPS)/, libiconv.d libtre.d libpbl.d $(COMMON_SDK_ITEMS) libjpeg-turbo.d)
+  LIBCURL_SSL := amissl
   EXTRAARGS_LIBCARES := --disable-shared
   EXTRAARGS_LIBCURL := --disable-ntlm-wb --without-random --enable-threaded-resolver --disable-ipv6 LIBS=-lpthread
-endif
-
-ifeq ($(TARGET),i686-w64-mingw32)
-  SDK_ITEMS := $(addprefix $(BUILDSTEPS)/, libiconv.d libgnurx.d $(COMMON_SDK_ITEMS) libjpeg.d libwebp.d)
-  EXTRAARGS_LIBCARES := --disable-shared
-  EXTRAARGS_LIBCURL := --enable-nonblocking --enable-ares --disable-ldap --without-random
-  LIBCURL_ENV := CFLAGS="-DCARES_STATICLIB" LIBS="-lgdi32 -lcrypt32 -liphlpapi"
-  TARGET_OPENSSL := mingw
-  ENV_OPENSSL := WINDRES="$(windres__)"
-  EXTRAARGS_OPENSSL := no-asm enable-capieng
-endif
-
-ifeq ($(TARGET),x86_64-w64-mingw32)
-  SDK_ITEMS := $(addprefix $(BUILDSTEPS)/, libiconv.d libgnurx.d $(COMMON_SDK_ITEMS) libjpeg.d libwebp.d)
-  EXTRAARGS_LIBCARES := --disable-shared
-  EXTRAARGS_LIBCURL := --enable-nonblocking --enable-ares --disable-ldap --without-random
-  LIBCURL_ENV := CFLAGS="-DCARES_STATICLIB" LIBS="-lgdi32 -lcrypt32 -liphlpapi"
-  TARGET_OPENSSL := mingw64
-  EXTRAARGS_OPENSSL := no-asm enable-capieng
 endif
 
 ifeq ($(TARGET),m68k-unknown-amigaos)
@@ -231,6 +213,26 @@ ifeq ($(TARGET),m68k-unknown-amigaos)
   # Hack around it by forcing the link order here.
   LIBEXPAT_ENV := LDFLAGS="-lgcc -lm"
 endif
+
+ifeq ($(TARGET),i686-w64-mingw32)
+  SDK_ITEMS := $(addprefix $(BUILDSTEPS)/, libiconv.d libgnurx.d $(COMMON_SDK_ITEMS) libjpeg.d libwebp.d)
+  EXTRAARGS_LIBCARES := --disable-shared
+  EXTRAARGS_LIBCURL := --enable-nonblocking --enable-ares --disable-ldap --without-random
+  LIBCURL_ENV := CFLAGS="-DCARES_STATICLIB" LIBS="-lgdi32 -lcrypt32 -liphlpapi"
+  TARGET_OPENSSL := mingw
+  ENV_OPENSSL := WINDRES="$(windres__)"
+  EXTRAARGS_OPENSSL := no-asm enable-capieng
+endif
+
+ifeq ($(TARGET),x86_64-w64-mingw32)
+  SDK_ITEMS := $(addprefix $(BUILDSTEPS)/, libiconv.d libgnurx.d $(COMMON_SDK_ITEMS) libjpeg.d libwebp.d)
+  EXTRAARGS_LIBCARES := --disable-shared
+  EXTRAARGS_LIBCURL := --enable-nonblocking --enable-ares --disable-ldap --without-random
+  LIBCURL_ENV := CFLAGS="-DCARES_STATICLIB" LIBS="-lgdi32 -lcrypt32 -liphlpapi"
+  TARGET_OPENSSL := mingw64
+  EXTRAARGS_OPENSSL := no-asm enable-capieng
+endif
+
 
 ifeq ($(SDK_ITEMS),)
   $(error Unable to compute SDK components for target $(TARGET))
