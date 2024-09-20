@@ -189,7 +189,7 @@ ifeq ($(TARGET),ppc-amigaos)
   SDK_ITEMS := $(addprefix $(BUILDSTEPS)/, libiconv.d libtre.d libpbl.d $(COMMON_SDK_ITEMS) libjpeg-turbo.d)
   LIBCURL_SSL := amissl
   EXTRAARGS_LIBCARES := --disable-shared
-  EXTRAARGS_LIBCURL := --disable-ntlm-wb --without-random --enable-threaded-resolver --disable-ipv6 LIBS=-lpthread
+  EXTRAARGS_LIBCURL := --disable-ntlm-wb --without-random --disable-threaded-resolver --disable-ipv6 LIBS=-lpthread
 endif
 
 ifeq ($(TARGET),m68k-unknown-amigaos)
