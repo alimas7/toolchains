@@ -50,8 +50,9 @@ CKSUM_LIBJPEG_TURBO := 22429507714ae147b3acacd299e82099fce5d9f456882fc28e252e457
 VERSION_LIBWEBP := 1.3.2
 CKSUM_LIBWEBP := 2a499607df669e40258e53d0ade8035ba4ec0175244869d1025d460562aa09b4
 # https://c-ares.org/
-VERSION_LIBCARES := 1.23.0
-CKSUM_LIBCARES := cb614ecf78b477d35963ebffcf486fc9d55cc3d3216f00700e71b7d4868f79f5
+# https://github.com/c-ares/c-ares/releases/download/
+VERSION_LIBCARES := 1.34.2
+CKSUM_LIBCARES := 35410aa625cc9ee95b66475f54aea7c81c673fb63d75fad5eee267711503b72a
 # https://curl.se/
 VERSION_LIBCURL := 8.5.0
 CKSUM_LIBCURL := ce4b6a6655431147624aaf582632a36fe1ade262d5fab385c60f78942dd8d87b
@@ -156,14 +157,14 @@ TARGET_OPENSSL:=$(TARGET)
 # Target Specific setup
 ifeq ($(TARGET),arm-riscos-gnueabi)
   SDK_ITEMS := $(addprefix $(BUILDSTEPS)/, $(COMMON_SDK_ITEMS) libjpeg-turbo.d libwebp.d)
-  EXTRAARGS_LIBCARES := --disable-shared
+  EXTRAARGS_LIBCARES := --disable-shared 'ac_cv_have_decl_getservbyport_r=no'
   EXTRAARGS_LIBCURL := --enable-nonblocking --enable-ares --with-random="/dev/urandom" $(LIBCURL_DISABLES)
   EXTRAARGS_OPENSSL := no-asm
 endif
 
 ifeq ($(TARGET),arm-unknown-riscos)
   SDK_ITEMS := $(addprefix $(BUILDSTEPS)/, $(COMMON_SDK_ITEMS) libjpeg-turbo.d libwebp.d)
-  EXTRAARGS_LIBCARES := --disable-shared
+  EXTRAARGS_LIBCARES := --disable-shared 'ac_cv_have_decl_getservbyport_r=no'
   EXTRAARGS_LIBCURL := --enable-nonblocking --enable-ares --with-random="/dev/urandom" $(LIBCURL_DISABLES)
   EXTRAARGS_OPENSSL := no-asm
 endif
@@ -195,7 +196,7 @@ endif
 ifeq ($(TARGET),m68k-unknown-amigaos)
   SDK_ITEMS := $(addprefix $(BUILDSTEPS)/, roadshow.d libiconv.d libtre.d libpbl.d $(COMMON_SDK_ITEMS) libjpeg.d)
   EXTRAARGS_LIBCARES := --disable-shared --without-random
-  LIBCARES_ENV := LIBS="-lm"
+  LIBCARES_ENV := LIBS="-lm -lnet -lunix"
   LIBCURL_SSL := amissl
   EXTRAARGS_LIBCURL := --disable-ntlm-wb --without-random --disable-threaded-resolver --with-zlib --disable-rt --disable-ipv6
   LIBICONV_ENV := CFLAGS="-DPATH_MAX=1024 -DRLIMIT_NOFILE=6"
@@ -571,7 +572,7 @@ $(BUILDSTEPS)/libcares-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/c-ares-$(VE
 	touch $@
 
 $(SOURCEDIR)/c-ares-$(VERSION_LIBCARES).tar.gz:
-	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://c-ares.org/download/$(subst $(SOURCEDIR)/,,$@)" $(CKSUM_LIBCARES) $@
+	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://github.com/c-ares/c-ares/releases/download/v$(VERSION_LIBCARES)/$(subst $(SOURCEDIR)/,,$@)" $(CKSUM_LIBCARES) $@
 
 
 # libcurl
