@@ -275,13 +275,16 @@ $(SOURCESDIR)/$(UPSTREAM_CODESETS_TARBALL):
 $(SOURCESDIR)/$(UPSTREAM_AMISSL_TARBALL):
 	wget -q -O $@ $(UPSTREAM_AMISSL_URI)
 
+
 ###
-# Rule to create buildsteps dir
+# Rule to create directories for building
 ###
 
-$(BUILDSTEPS)/buildsteps.d: $(SOURCESDIR) $(SRCDIR)
-	mkdir -p $(BUILDSTEPS)
+$(BUILDSTEPS)/buildsteps.d: | $(BUILDSTEPS) $(SOURCESDIR) $(SRCDIR)
 	touch $@
+
+$(BUILDSTEPS):
+	mkdir -p $@
 
 $(SOURCESDIR):
 	mkdir -p $@

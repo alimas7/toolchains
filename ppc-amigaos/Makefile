@@ -1,3 +1,5 @@
+# NetSurf build script for Amigaos 4 PPC cross compliation toolchain.
+
 UPSTREAM_GCC_VERSION := 6.1.0
 UPSTREAM_GCC_TARBALL := gcc-$(UPSTREAM_GCC_VERSION).tar.bz2
 UPSTREAM_GCC_URI := http://ftp.gnu.org/gnu/gcc/gcc-$(UPSTREAM_GCC_VERSION)/$(UPSTREAM_GCC_TARBALL)
@@ -252,12 +254,14 @@ $(SOURCESDIR)/$(UPSTREAM_AMISSL_TARBALL):
 	wget -q -O $@ $(UPSTREAM_AMISSL_URI)
 
 ###
-# Rule to create buildsteps dir
+# Rule to create directories for building
 ###
 
-$(BUILDSTEPS)/buildsteps.d: $(SOURCESDIR) $(SRCDIR)
-	mkdir -p $(BUILDSTEPS)
+$(BUILDSTEPS)/buildsteps.d: | $(BUILDSTEPS) $(SOURCESDIR) $(SRCDIR)
 	touch $@
+
+$(BUILDSTEPS):
+	mkdir -p $@
 
 $(SOURCESDIR):
 	mkdir -p $@

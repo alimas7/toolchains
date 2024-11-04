@@ -1,3 +1,5 @@
+# NetSurf build script for RISCOS cross compilation toolchain.
+
 # Use a tested trunk version of GCCSDK
 UPSTREAM_GCCSDK_VERSION := release_4_7_4_v6
 UPSTREAM_GCCSDK_TARBALL := gcc4$(UPSTREAM_GCCSDK_VERSION).tar.gz
@@ -159,13 +161,14 @@ $(SOURCESDIR)/$(UPSTREAM_INFOZIP_TARBALL):
 	$(FETCHSRC) arm-unknown-riscos $(subst $(SOURCESDIR)/,,$@) $(UPSTREAM_INFOZIP_URI) $@
 
 ###
-# Rule to create buildsteps dir
+# Rule to create directories for building
 ###
 
-$(BUILDSTEPS)/buildsteps.d: $(SOURCESDIR)
-	mkdir -p $(BUILDSTEPS)
+$(BUILDSTEPS)/buildsteps.d: | $(BUILDSTEPS) $(SOURCESDIR)
 	touch $@
+
+$(BUILDSTEPS):
+	mkdir -p $@
 
 $(SOURCESDIR):
 	mkdir -p $@
-
