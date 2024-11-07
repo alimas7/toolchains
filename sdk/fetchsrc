@@ -8,9 +8,9 @@ set -x
 
 NSSRV="https://ci.netsurf-browser.org/toolchain/"
 
-wget -q -O ${5} ${NSSRV}/${1}/${2}
+wget -q --no-use-server-timestamps -O ${5} ${NSSRV}/${1}/${2}
 if [ $? -ne 0 ];then
-    wget -q -O ${5} ${3}
+    wget -q --no-use-server-timestamps -O ${5} ${3}
     if [ $? -ne 0 ];then
         rm ${5}
 	exit 1

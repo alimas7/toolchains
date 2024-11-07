@@ -26,8 +26,8 @@ endif
 
 # Upstream package versions
 # https://zlib.net/
-VERSION_ZLIB := 1.2.13
-CKSUM_ZLIB := b3a24de97a8fdbc835b9833169501030b8977031bcb54b3b3ac13740f846ab30
+VERSION_ZLIB := 1.3.1
+CKSUM_ZLIB := 9a93b2b7dfdac77ceba5a558a580e74667dd6fede4585b91eefb60f03b72df23
 # https://www.gnu.org/software/libiconv/
 VERSION_LIBICONV := 1.17
 CKSUM_LIBICONV := 8f74213b56238c85a50a5329f77e06198771e70dd9a739779f4c02f65d971313
@@ -35,17 +35,17 @@ CKSUM_LIBICONV := 8f74213b56238c85a50a5329f77e06198771e70dd9a739779f4c02f65d9713
 VERSION_LIBTRE := 0.8.0
 CKSUM_LIBTRE := 8dc642c2cde02b2dac6802cdbe2cda201daf79c4ebcbb3ea133915edf1636658
 # https://www.openssl.org/
-VERSION_OPENSSL := 3.0.12
-CKSUM_OPENSSL := f93c9e8edde5e9166119de31755fc87b4aa34863662f67ddfcba14d0b6b69b61
+VERSION_OPENSSL := 3.0.15
+CKSUM_OPENSSL := 23c666d0edf20f14249b3d8f0368acaee9ab585b09e1de82107c66e1f3ec9533
 # http://www.libpng.org/pub/png/libpng.html
-VERSION_LIBPNG := 1.6.40
-CKSUM_LIBPNG := 8f720b363aa08683c9bf2a563236f45313af2c55d542b5481ae17dd8d183bb42
+VERSION_LIBPNG := 1.6.44
+CKSUM_LIBPNG := 8c25a7792099a0089fa1cc76c94260d0bb3f1ec52b93671b572f8bb61577b732
 # http://libjpeg.sourceforge.net/
 VERSION_LIBJPEG := 8d
 CKSUM_LIBJPEG := 00029b1473f0f0ea72fbca3230e8cb25797fbb27e58ae2e46bb8bf5a806fe0b3
 # https://libjpeg-turbo.org/
-VERSION_LIBJPEG_TURBO := 3.0.1
-CKSUM_LIBJPEG_TURBO := 22429507714ae147b3acacd299e82099fce5d9f456882fc28e252e4579ba2a75
+VERSION_LIBJPEG_TURBO := 3.0.4
+CKSUM_LIBJPEG_TURBO := 99130559e7d62e8d695f2c0eaeef912c5828d5b84a0537dcb24c9678c9d5b76b
 # https://developers.google.com/speed/webp/
 VERSION_LIBWEBP := 1.3.2
 CKSUM_LIBWEBP := 2a499607df669e40258e53d0ade8035ba4ec0175244869d1025d460562aa09b4
@@ -54,8 +54,8 @@ CKSUM_LIBWEBP := 2a499607df669e40258e53d0ade8035ba4ec0175244869d1025d460562aa09b
 VERSION_LIBCARES := 1.34.2
 CKSUM_LIBCARES := 35410aa625cc9ee95b66475f54aea7c81c673fb63d75fad5eee267711503b72a
 # https://curl.se/
-VERSION_LIBCURL := 8.5.0
-CKSUM_LIBCURL := ce4b6a6655431147624aaf582632a36fe1ade262d5fab385c60f78942dd8d87b
+VERSION_LIBCURL := 8.11.0
+CKSUM_LIBCURL := c95d5a1368803729345a632ce42cceeefd5f09c3b4d9582f858f6779f4b8b254
 #
 VERSION_LIBGNURX := 2.5.1
 CKSUM_LIBGNURX := 7147b7f806ec3d007843b38e19f42a5b7c65894a57ffc297a76b0dcd5f675d76
@@ -69,6 +69,9 @@ CKSUM_LIBCF := 5d25c4faa2f5b7fc106bb47d093646f79d0fa72a34aaf8122110a2e4cf9eb6cc
 # https://github.com/libexpat/libexpat
 VERSION_LIBEXPAT := 2.5.0
 CKSUM_LIBEXPAT := 6f0e6e01f7b30025fa05c85fdad1e5d0ec7fd35d9f61b22f34998de11969ff67
+# editions later than 2.5.0 require c++11 support and arm-unknown-riscos fails
+#VERSION_LIBEXPAT := 2.6.3
+#CKSUM_LIBEXPAT := b8baef92f328eebcf731f4d18103951c61fa8c8ec21d5ff4202fb6f2198aeb2d
 #
 VERSION_LDG := SVN-20150827
 CKSUM_LDG := ca7959d31b46cb1e755005eddcc0daf6a91f7faad7d869d82e94d98d20650d94
@@ -79,11 +82,14 @@ CKSUM_WINDOM := 2539c15c22f7b8ca48c015f0c3d33f3bd1666cc8aa56eef6f38de2cc98a3479e
 VERSION_HERMES := 1.3.3
 CKSUM_HERMES := e86374606105d2a251d4406e5f9fca8d09e2fd971ebb0dfd342e40953676c46e
 # https://www.freetype.org/
-VERSION_FREETYPE := 2.13.2
-CKSUM_FREETYPE := 1ac27e16c134a7f2ccea177faba19801131116fd682efc1f5737037c5db224b5
+VERSION_FREETYPE := 2.13.3
+CKSUM_FREETYPE := 5c3a8e78f7b24c20b25b54ee575d6daa40007a5f4eea2845861c3409b3021747
 #
 VERSION_ROADSHOW := 7_64_0-amissl
 CKSUM_ROADSHOW := 5af092c2319f184d49f5eda72d160231b3f3551f9884f8136c531521059a4ad2
+# https://github.com/google/brotli
+VERSION_BROTLI := 1.1.0
+CKSUM_BROTLI := e720a6ca29428b803f4ad165371771f5398faba397edf6778837a18599ea13ff
 
 # Path
 path__ := $(GCCSDK_INSTALL_CROSSBIN):$(PATH)
@@ -148,16 +154,14 @@ LIBCURL_SSL := openssl
 LIBCURL_DISABLES := $(patsubst %,--disable-%,ftp file dict ldap ldaps mqtt rtsp telnet gopher tftp pop3 imap smb smtp manual)
 FREETYPE_ENV := LIBPNG_CFLAGS=$$($(GCCSDK_INSTALL_ENV)/bin/libpng-config --cflags) LIBPNG_LDFLAGS=$$($(GCCSDK_INSTALL_ENV)/bin/libpng-config --ldflags)
 
-# per target environments
-LIBJPEG_TURBO_BUILDDIR:=$(BUILDDIR)/libjpegturbo
-
 # Openssl target has to alter for mingw
 TARGET_OPENSSL:=$(TARGET)
 
 # Target Specific setup
 ifeq ($(TARGET),arm-riscos-gnueabi)
-  SDK_ITEMS := $(addprefix $(BUILDSTEPS)/, $(COMMON_SDK_ITEMS) libjpeg-turbo.d libwebp.d)
+  SDK_ITEMS := $(addprefix $(BUILDSTEPS)/, libbrotli.d $(COMMON_SDK_ITEMS) libjpeg-turbo.d libwebp.d)
   EXTRAARGS_LIBCARES := --disable-shared 'ac_cv_have_decl_getservbyport_r=no'
+  LIBCURL_ENV := LIBS="-lbrotlidec -lbrotlicommon"
   EXTRAARGS_LIBCURL := --enable-nonblocking --enable-ares --with-random="/dev/urandom" $(LIBCURL_DISABLES)
   EXTRAARGS_OPENSSL := no-asm
 endif
@@ -171,7 +175,7 @@ endif
 
 ifeq ($(TARGET),m68k-atari-mint)
   SDK_ITEMS := $(addprefix $(BUILDSTEPS)/, libiconv.d $(COMMON_SDK_ITEMS) libjpeg.d libcf.d ldg.d windom.d hermes.d freetype.d)
-  EXTRAARGS_LIBCARES := --disable-shared
+  EXTRAARGS_LIBCARES := --disable-shared 'ac_cv_have_decl_getservbyport_r=no'
   EXTRAARGS_LIBCURL := --enable-optimize --enable-nonblocking --enable-ares --with-random="/dev/urandom" --disable-manual --disable-curldebug --disable-thread --disable-threaded-resolver 
   EXTRAARGS_LIBICONV := --enable-extra-encodings
   LIBICONV_ENV := CFLAGS="-DPATH_MAX=1024"
@@ -179,7 +183,7 @@ endif
 
 ifeq ($(TARGET),m5475-atari-mint)
   SDK_ITEMS := $(addprefix $(BUILDSTEPS)/, libiconv.d $(COMMON_SDK_ITEMS) libjpeg.d libcf.d ldg.d windom.d hermes.d freetype.d)
-  EXTRAARGS_LIBCARES := --disable-shared
+  EXTRAARGS_LIBCARES := --disable-shared 'ac_cv_have_decl_getservbyport_r=no'
   EXTRAARGS_LIBCURL := --enable-optimize --enable-nonblocking --enable-ares --with-random="/dev/urandom" --disable-manual --disable-curldebug --disable-thread --disable-threaded-resolver
   EXTRAARGS_LIBICONV := --enable-extra-encodings
   LIBICONV_ENV := CFLAGS="-DPATH_MAX=1024"
@@ -249,52 +253,91 @@ distclean: clean
 	rm -fr $(SOURCEDIR)
 
 # Sourcedir
-$(BUILDSTEPS)/sourcedir.d: $(BUILDSTEPS)/builddir.d
-	mkdir -p $(SOURCEDIR)
+$(BUILDSTEPS)/sourcedir.d: $(BUILDSTEPS)/builddir.d | $(SOURCEDIR)
 	touch $@
+
+$(SOURCEDIR):
+	mkdir -p $(SOURCEDIR)
 
 # Builddir
-$(BUILDSTEPS)/builddir.d:
+$(BUILDSTEPS)/builddir.d: | $(BUILDSTEPS)
+	touch $@
+
+$(BUILDSTEPS):
 	mkdir -p $(BUILDSTEPS)
-	touch $@
 
+
+define uc
+$(shell echo $(1) | tr a-z A-Z)
+endef
+
+# Patch source code from sdk recipies
+#
+# 1: module name to patch
+# 2: path to source code
+define patch_source
+$(if $(realpath $(RECIPES)/patches/$(1)),for p in `ls $(RECIPES)/patches/$(1)/*.p` ; do $(PATCH) -d $(2) -p0 <$$p ; done)
+$(if $(realpath $(RECIPES)/patches/$(1)/$(TARGET)),for p in `ls $(RECIPES)/patches/$(1)/$(TARGET)/*.p` ; do $(PATCH) -d $(2) -p0 <$$p ; done)
+endef
+
+# rule to build patched sources from compressed tar
+# if tar base is not expicitly specified the
+# module name is used.
+#
+# 1: module name
+# 2: module version
+# 3: optional tar base
+define patched_source_rule
+
+# directory with patched source
+BUILDDIR_$(call uc,$(1)) := $$(BUILDDIR)/$(1)/$(if $(3),$(3),$(1))-$(2)
+# original source tar gz
+SOURCETGZ_$(call uc,$(1)) := $$(SOURCEDIR)/$(1)-$(2).tar.gz
+# patched source build step
+BUILDSTEP_SRC_$(call uc,$(1)) := $$(BUILDSTEPS)/$(1)-src-$(2).d
+
+$$(BUILDSTEPS)/$(1)-src-$(2).d: $$(SOURCEDIR)/$(1)-$(2).tar.gz
+	mkdir -p $$(BUILDDIR)/$(1)
+	$$(RM) -rf $$(BUILDDIR)/$(1)/$(if $(3),$(3),$(1))-$(2)
+	cd $$(BUILDDIR)/$(1) && tar xaf $$<
+	$$(call patch_source,$(1),$$(BUILDDIR)/$(1)/$(if $(3),$(3),$(1))-$(2))
+	touch $$@
+endef
+
+#######
 # zlib
-$(BUILDSTEPS)/zlib.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/zlib-src.d
-	cd $(BUILDDIR)/zlib/zlib-$(VERSION_ZLIB) && $(env) ./configure --prefix=$(GCCSDK_INSTALL_ENV) --static
-	cd $(BUILDDIR)/zlib/zlib-$(VERSION_ZLIB) && $(env) make install
+#######
+
+$(eval $(call patched_source_rule,zlib,$(VERSION_ZLIB)))
+
+$(BUILDSTEPS)/zlib.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEP_SRC_ZLIB)
+	cd $(BUILDDIR_ZLIB) && $(env) ./configure --prefix=$(GCCSDK_INSTALL_ENV) --static
+	cd $(BUILDDIR_ZLIB) && $(env) make install
 	touch $@
 
-$(BUILDSTEPS)/zlib-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/zlib-$(VERSION_ZLIB).tar.gz
-	mkdir -p $(BUILDDIR)/zlib
-	cd $(BUILDDIR)/zlib && tar xaf $(SOURCEDIR)/zlib-$(VERSION_ZLIB).tar.gz
-	for p in `ls $(RECIPES)/patches/zlib/*.p` ; do $(PATCH) -d $(BUILDDIR)/zlib/zlib-$(VERSION_ZLIB) -p0 <$$p ; done
-ifneq ($(realpath $(RECIPES)/patches/zlib/$(TARGET)),)
-	for p in `ls $(RECIPES)/patches/zlib/$(TARGET)/*.p` ; do $(PATCH) -d $(BUILDDIR)/zlib/zlib-$(VERSION_ZLIB) -p0 <$$p ; done
-endif
-	touch $@
-
-$(SOURCEDIR)/zlib-$(VERSION_ZLIB).tar.gz:
+$(SOURCETGZ_ZLIB): $(BUILDSTEPS)/sourcedir.d
 	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://zlib.net/fossils/$(subst $(SOURCEDIR)/,,$@)" $(CKSUM_ZLIB) $@
 
+
+###########
 # libiconv
-$(BUILDSTEPS)/libiconv.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/libiconv-src.d
-	mkdir -p $(BUILDDIR)/libiconv
-	cd $(BUILDDIR)/libiconv && tar xaf $(SOURCEDIR)/libiconv-$(VERSION_LIBICONV).tar.gz
-	for p in `ls $(RECIPES)/patches/libiconv/*.p` ; do $(PATCH) -d $(BUILDDIR)/libiconv/libiconv-$(VERSION_LIBICONV) -p0 <$$p ; done
-ifneq ($(realpath $(RECIPES)/patches/libiconv/$(TARGET)),)
-	for p in `ls $(RECIPES)/patches/libiconv/$(TARGET)/*.p` ; do $(PATCH) -d $(BUILDDIR)/libiconv/libiconv-$(VERSION_LIBICONV) -p0 <$$p ; done
-endif
-	cd $(BUILDDIR)/libiconv/libiconv-$(VERSION_LIBICONV) && $(env) $(LIBICONV_ENV) ./configure --prefix=$(GCCSDK_INSTALL_ENV) --target=$(TARGET) --host=$(TARGET) --disable-shared $(EXTRAARGS_LIBICONV)
-	cd $(BUILDDIR)/libiconv/libiconv-$(VERSION_LIBICONV) && $(env) make install
+###########
+
+$(eval $(call patched_source_rule,libiconv,$(VERSION_LIBICONV)))
+
+$(BUILDSTEPS)/libiconv.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS_SRC_LIBICONV)
+	cd $(BUILDDIR_LIBICONV) && $(env) $(LIBICONV_ENV) ./configure --prefix=$(GCCSDK_INSTALL_ENV) --target=$(TARGET) --host=$(TARGET) --disable-shared $(EXTRAARGS_LIBICONV)
+	cd $(BUILDDIR_LIBICONV) && $(env) make install
 	touch $@
 
-$(BUILDSTEPS)/libiconv-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/libiconv-$(VERSION_LIBICONV).tar.gz
-	touch $@
-
-$(SOURCEDIR)/libiconv-$(VERSION_LIBICONV).tar.gz:
+$(SOURCETGZ_LIBICONV): $(BUILDSTEPS)/sourcedir.d
 	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://ftp.gnu.org/pub/gnu/libiconv/$(subst $(SOURCEDIR)/,,$@)" $(CKSUM_LIBICONV) $@
 
+
+###########
 # libgnurx
+###########
+
 $(BUILDSTEPS)/libgnurx.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/libgnurx-src.d
 	cd $(BUILDDIR)/libgnurx/mingw-libgnurx-$(VERSION_LIBGNURX) && $(env) ./configure --prefix=$(GCCSDK_INSTALL_ENV) --target=$(TARGET) --host=$(TARGET) --enable-static --disable-shared
 	cd $(BUILDDIR)/libgnurx/mingw-libgnurx-$(VERSION_LIBGNURX) && $(env) make
@@ -314,7 +357,11 @@ $(BUILDSTEPS)/libgnurx-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/libgnurx-$(
 $(SOURCEDIR)/libgnurx-$(VERSION_LIBGNURX).tar.gz:
 	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://downloads.sourceforge.net/project/mingw/Other/UserContributed/regex/mingw-regex-$(VERSION_LIBGNURX)/mingw-libgnurx-$(VERSION_LIBGNURX)-src.tar.gz" $(CKSUM_LIBGNURX) $@
 
+
+###################
 # atari cf library
+###################
+
 $(BUILDSTEPS)/libcf.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/libcf-src.d
 	$(env) make -C $(BUILDDIR)/libcf/cflib-$(VERSION_LIBCF)/cflib CROSSPREFIX=${TARGET}- PREFIX=$(GCCSDK_INSTALL_ENV) CROSS=yes
 	mkdir -p $(GCCSDK_INSTALL_ENV)/lib/mshort
@@ -332,7 +379,11 @@ $(BUILDSTEPS)/libcf-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/libcf-$(VERSIO
 $(SOURCEDIR)/libcf-$(VERSION_LIBCF).tar.bz2:
 	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "http://vincent.riviere.free.fr/soft/m68k-atari-mint/archives/cflib-$(VERSION_LIBCF).tar.bz2" $(CKSUM_LIBCF) $@
 
+
+#######################
 # atari windom library
+#######################
+
 $(BUILDSTEPS)/windom.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/windom-src.d
 	mkdir -p $(BUILDDIR)/windom
 	cd $(BUILDDIR)/windom && unzip $(SOURCEDIR)/windom-$(VERSION_WINDOM).zip
@@ -350,7 +401,11 @@ $(BUILDSTEPS)/windom-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/windom-$(VERS
 $(SOURCEDIR)/windom-$(VERSION_WINDOM).zip:
 	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://downloads.sourceforge.net/project/windom/windom/$(VERSION_WINDOM)/windom-$(VERSION_WINDOM)-1.zip" $(CKSUM_WINDOM) $@
 
+
+####################
 # atari ldg library
+####################
+
 $(BUILDSTEPS)/ldg.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/ldg-src.d
 	mkdir -p $(BUILDDIR)/ldg
 	cd $(BUILDDIR)/ldg && tar xjf $(SOURCEDIR)/ldg-$(VERSION_LDG).tar.bz2
@@ -367,7 +422,11 @@ $(BUILDSTEPS)/ldg-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/ldg-$(VERSION_LD
 $(SOURCEDIR)/ldg-$(VERSION_LDG).tar.bz2:
 	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "http://vincent.riviere.free.fr/soft/m68k-atari-mint/archives/ldg-$(VERSION_LDG).tar.bz2" $(CKSUM_LDG) $@
 
+
+####################
 # hermes bitmap lib
+####################
+
 $(BUILDSTEPS)/hermes.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/hermes-src.d
 	cd $(BUILDDIR)/hermes/hermes-pixel-format-$(VERSION_HERMES)
 	for p in `ls $(RECIPES)/patches/hermes/*.p` ; do $(PATCH) -d $(BUILDDIR)/hermes/hermes-pixel-format-$(VERSION_HERMES) -p0 <$$p ; done
@@ -387,26 +446,27 @@ $(BUILDSTEPS)/hermes-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/hermes-$(VERS
 $(SOURCEDIR)/hermes-$(VERSION_HERMES).tar.gz:
 	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://github.com/berkus/hermes-pixel-format/archive/refs/tags/v$(VERSION_HERMES).tar.gz" $(CKSUM_HERMES) $@
 
+
+####################
 # freetype font lib
-$(BUILDSTEPS)/freetype.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/freetype-src.d
+####################
+
+$(eval $(call patched_source_rule,freetype,$(VERSION_FREETYPE)))
+
+$(BUILDSTEPS)/freetype.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/freetype-src-$(VERSION_FREETYPE).d
 	cd $(BUILDDIR)/freetype/freetype-$(VERSION_FREETYPE) && $(env) $(FREETYPE_ENV) ./configure --prefix=$(GCCSDK_INSTALL_ENV) --target=$(TARGET) --host=$(TARGET) --disable-shared
 	cd $(BUILDDIR)/freetype/freetype-$(VERSION_FREETYPE) && $(env) make
 	cd $(BUILDDIR)/freetype/freetype-$(VERSION_FREETYPE) && $(env) make install 
 	touch $@
 
-$(BUILDSTEPS)/freetype-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/freetype-$(VERSION_FREETYPE).tar.gz
-	$(RM) -rf $(BUILDDIR)/freetype
-	mkdir -p $(BUILDDIR)/freetype
-	cd $(BUILDDIR)/freetype && tar xaf $(SOURCEDIR)/freetype-$(VERSION_FREETYPE).tar.gz
-ifneq ($(realpath $(RECIPES)/files/freetype/$(TARGET)),)
-	cp -r $(RECIPES)/files/freetype/$(TARGET)/* $(BUILDDIR)/freetype/freetype-$(VERSION_FREETYPE)/
-endif
-	touch $@
-
-$(SOURCEDIR)/freetype-$(VERSION_FREETYPE).tar.gz:
+$(SOURCEDIR)/freetype-$(VERSION_FREETYPE).tar.gz: $(BUILDSTEPS)/sourcedir.d
 	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://download.savannah.gnu.org/releases/freetype/freetype-$(VERSION_FREETYPE).tar.gz" $(CKSUM_FREETYPE) $@
 
+
+#####################
 # amiga roadshow sdk
+#####################
+
 $(BUILDSTEPS)/roadshow.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/roadshow-src.d
 	mkdir -p $(BUILDDIR)/Roadshow-SDK
 	lha xw=$(BUILDDIR)/Roadshow-SDK $(SOURCEDIR)/Roadshow-SDK-NS-$(VERSION_ROADSHOW).lha
@@ -420,7 +480,11 @@ $(BUILDSTEPS)/roadshow-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/Roadshow-SD
 $(SOURCEDIR)/Roadshow-SDK-NS-$(VERSION_ROADSHOW).lha:
 	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://github.com/chris-y/curl/releases/download/curl-$(VERSION_ROADSHOW)/Roadshow-SDK-NS.lha" $(CKSUM_ROADSHOW) $@
 
+
+########
 # regex
+########
+
 $(BUILDSTEPS)/libtre.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/libtre-src.d
 	mkdir -p $(BUILDDIR)/libtre
 	cd $(BUILDDIR)/libtre && tar xaf $(SOURCEDIR)/tre-$(VERSION_LIBTRE).tar.bz2
@@ -435,24 +499,32 @@ $(BUILDSTEPS)/libtre-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/tre-$(VERSION
 $(SOURCEDIR)/tre-$(VERSION_LIBTRE).tar.bz2:
 	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://laurikari.net/tre/$(subst $(SOURCEDIR)/,,$@)" $(CKSUM_LIBTRE) $@
 
+
+########
 # libpbl
+########
+
 $(BUILDSTEPS)/libpbl.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/libpbl-src.d
+	cd $(BUILDDIR)/libpbl/pbl_$(VERSION_LIBPBL)_04 && $(env) make install PREFIX=$(GCCSDK_INSTALL_ENV)
+	touch $@
+
+$(BUILDSTEPS)/libpbl-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/pbl_$(VERSION_LIBPBL).tar.gz
 	mkdir -p $(BUILDDIR)/libpbl
 	cd $(BUILDDIR)/libpbl && tar xaf $(SOURCEDIR)/pbl_$(VERSION_LIBPBL).tar.gz
 	for p in `ls $(RECIPES)/patches/libpbl/*.p` ; do $(PATCH) -d $(BUILDDIR)/libpbl/pbl_$(VERSION_LIBPBL)_04 -p0 <$$p ; done
 ifneq ($(realpath $(RECIPES)/patches/libpbl/$(TARGET)),)
 	for p in `ls $(RECIPES)/patches/libpbl/$(TARGET)/*.p` ; do $(PATCH) -d $(BUILDDIR)/libpbl/pbl_$(VERSION_LIBPBL)_04 -p0 <$$p ; done
 endif
-	cd $(BUILDDIR)/libpbl/pbl_$(VERSION_LIBPBL)_04 && $(env) make install PREFIX=$(GCCSDK_INSTALL_ENV)
-	touch $@
-
-$(BUILDSTEPS)/libpbl-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/pbl_$(VERSION_LIBPBL).tar.gz
 	touch $@
 
 $(SOURCEDIR)/pbl_$(VERSION_LIBPBL).tar.gz:
 	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://www.mission-base.com/peter/source/$(subst $(SOURCEDIR)/,,$@)" $(CKSUM_LIBPBL) $@
 
+
+#########
 # OpenSSL
+#########
+
 $(BUILDSTEPS)/openssl.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/zlib.d $(BUILDSTEPS)/openssl-src.d
 ifeq ($(LIBCURL_SSL),openssl)
 	cd $(BUILDDIR)/openssl/openssl-$(VERSION_OPENSSL) && $(env) $(ENV_OPENSSL) ./Configure --prefix=$(GCCSDK_INSTALL_ENV) $(TARGET_OPENSSL) no-shared no-threads $(EXTRAARGS_OPENSSL)
@@ -462,13 +534,10 @@ endif
 
 # prepare the openssl source tree
 $(BUILDSTEPS)/openssl-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/openssl-$(VERSION_OPENSSL).tar.gz
-	$(RM) -rf $(BUILDDIR)/openssl
 	mkdir -p $(BUILDDIR)/openssl
+	$(RM) -rf $(BUILDDIR)/openssl/openssl-$(VERSION_OPENSSL)
 	cd $(BUILDDIR)/openssl && tar xaf $(SOURCEDIR)/openssl-$(VERSION_OPENSSL).tar.gz
-	for p in `ls $(RECIPES)/patches/openssl/*.p` ; do $(PATCH) -d $(BUILDDIR)/openssl/openssl-$(VERSION_OPENSSL) -p0 <$$p || exit $0 ; done
-ifneq ($(realpath $(RECIPES)/patches/openssl/$(TARGET)),)
-	for p in `ls $(RECIPES)/patches/openssl/$(TARGET)/*.p` ; do $(PATCH) -d $(BUILDDIR)/openssl/openssl-$(VERSION_OPENSSL) -p0 <$$p || exit $0 ; done
-endif
+	$(call patch_source,openssl,$(BUILDDIR)/openssl/openssl-$(VERSION_OPENSSL))
 ifneq ($(realpath $(RECIPES)/files/openssl/$(TARGET)),)
 	cp -r $(RECIPES)/files/openssl/$(TARGET)/* $(BUILDDIR)/openssl/openssl-$(VERSION_OPENSSL)
 endif
@@ -478,136 +547,129 @@ endif
 $(SOURCEDIR)/openssl-$(VERSION_OPENSSL).tar.gz:
 	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://www.openssl.org/source/$(subst $(SOURCEDIR)/,,$@)" $(CKSUM_OPENSSL) $@
 
+
+#########
 # libPNG
-$(BUILDSTEPS)/libpng.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/zlib.d $(BUILDSTEPS)/libpng-src.d
-	mkdir -p $(BUILDDIR)/libpng
-	cd $(BUILDDIR)/libpng && tar xaf $(SOURCEDIR)/libpng-$(VERSION_LIBPNG).tar.gz
-ifneq ($(realpath $(RECIPES)/patches/libpng/$(TARGET)),)
-	for p in `ls $(RECIPES)/patches/libpng/$(TARGET)/*.p` ; do $(PATCH) -d $(BUILDDIR)/libpng/libpng-$(VERSION_LIBPNG) -p0 <$$p ; done
-endif
-	cd $(BUILDDIR)/libpng/libpng-$(VERSION_LIBPNG) && $(env) ./configure --prefix=$(GCCSDK_INSTALL_ENV) --target=$(TARGET) --host=$(TARGET) --disable-shared
-	cd $(BUILDDIR)/libpng/libpng-$(VERSION_LIBPNG) && $(env) make install
+#########
+
+$(eval $(call patched_source_rule,libpng,$(VERSION_LIBPNG)))
+
+$(BUILDSTEPS)/libpng.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/zlib.d $(BUILDSTEP_SRC_LIBPNG)
+	cd $(BUILDDIR_LIBPNG) && $(env) ./configure --prefix=$(GCCSDK_INSTALL_ENV) --target=$(TARGET) --host=$(TARGET) --disable-shared
+	cd $(BUILDDIR_LIBPNG) && $(env) make install
 	touch $@
 
-$(BUILDSTEPS)/libpng-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/libpng-$(VERSION_LIBPNG).tar.gz
-	touch $@
-
-$(SOURCEDIR)/libpng-$(VERSION_LIBPNG).tar.gz:
+$(SOURCETGZ_LIBPNG): $(BUILDSTEPS)/sourcedir.d
 	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://downloads.sourceforge.net/libpng/$(subst $(SOURCEDIR)/,,$@)" $(CKSUM_LIBPNG) $@
 
 
+##########
 # libjpeg
-$(BUILDSTEPS)/libjpeg.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/libjpeg-src.d
-	mkdir -p $(BUILDDIR)/libjpeg
-	cd $(BUILDDIR)/libjpeg && tar xaf $(SOURCEDIR)/jpegsrc.v$(VERSION_LIBJPEG).tar.gz
-	for p in `ls $(RECIPES)/patches/libjpeg/*.p` ; do $(PATCH) -d $(BUILDDIR)/libjpeg/jpeg-$(VERSION_LIBJPEG) -p0 <$$p ; done
-ifneq ($(realpath $(RECIPES)/patches/libjpeg/$(TARGET)),)
-	for p in `ls $(RECIPES)/patches/libjpeg/$(TARGET)/*.p` ; do $(PATCH) -d $(BUILDDIR)/libjpeg/jpeg-$(VERSION_LIBJPEG) -p0 <$$p ; done
-endif
-	cd $(BUILDDIR)/libjpeg/jpeg-$(VERSION_LIBJPEG) && $(env) $(LIBJPEG_ENV) ./configure --prefix=$(GCCSDK_INSTALL_ENV) --target=$(TARGET) --host=$(TARGET) --disable-shared
-	cd $(BUILDDIR)/libjpeg/jpeg-$(VERSION_LIBJPEG) && $(env) make install
+##########
+
+$(eval $(call patched_source_rule,libjpeg,$(VERSION_LIBJPEG),jpeg))
+
+$(BUILDSTEPS)/libjpeg.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEP_SRC_LIBJPEG)
+	cd $(BUILDDIR_LIBJPEG) && $(env) $(LIBJPEG_ENV) ./configure --prefix=$(GCCSDK_INSTALL_ENV) --target=$(TARGET) --host=$(TARGET) --disable-shared
+	cd $(BUILDDIR_LIBJPEG) && $(env) make install
 	touch $@
 
-$(BUILDSTEPS)/libjpeg-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/jpegsrc.v$(VERSION_LIBJPEG).tar.gz
-	touch $@
+$(SOURCETGZ_LIBJPEG): $(BUILDSTEPS)/sourcedir.d
+	$(FETCHSRC) sdk jpegsrc.v$(VERSION_LIBJPEG).tar.gz "https://ijg.org/files/jpegsrc.v$(VERSION_LIBJPEG).tar.gz" $(CKSUM_LIBJPEG) $@
 
-$(SOURCEDIR)/jpegsrc.v$(VERSION_LIBJPEG).tar.gz:
-	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://ijg.org/files/$(subst $(SOURCEDIR)/,,$@)" $(CKSUM_LIBJPEG) $@
 
+###############
 # libjpegturbo
-$(BUILDSTEPS)/libjpeg-turbo.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/libjpeg-turbo-src.d
-	mkdir -p $(LIBJPEG_TURBO_BUILDDIR)
-	cd $(LIBJPEG_TURBO_BUILDDIR) && tar xaf $(SOURCEDIR)/libjpeg-turbo-src-$(VERSION_LIBJPEG_TURBO).tar.gz
-	for p in `ls $(RECIPES)/patches/libjpegturbo/*.p` ; do $(PATCH) -d $(LIBJPEG_TURBO_BUILDDIR)/libjpeg-turbo-$(VERSION_LIBJPEG_TURBO) -p0 <$$p ; done
-ifneq ($(realpath $(RECIPES)/patches/libjpegturbo/$(TARGET)),)
-	for p in `ls $(RECIPES)/patches/libjpegturbo/$(TARGET)/*.p` ; do $(PATCH) -d $(LIBJPEG_TURBO_BUILDDIR)/libjpeg-turbo-$(VERSION_LIBJPEG_TURBO) -p0 <$$p ; done
-endif
-	mkdir -p $(LIBJPEG_TURBO_BUILDDIR)/libjpeg-turbo-$(VERSION_LIBJPEG_TURBO)/ns-sdk-build
-	cd $(LIBJPEG_TURBO_BUILDDIR)/libjpeg-turbo-$(VERSION_LIBJPEG_TURBO)/ns-sdk-build && $(env) $(LIBJPEG_TURBO_ENV) $(NS_SDK_CMAKE_CMD) \
-			-DENABLE_STATIC=ON \
-			-DENABLE_SHARED=OFF \
-			..
-	cd $(LIBJPEG_TURBO_BUILDDIR)/libjpeg-turbo-$(VERSION_LIBJPEG_TURBO)/ns-sdk-build && $(env) make install VERBOSE=1
+###############
+
+$(eval $(call patched_source_rule,libjpegturbo,$(VERSION_LIBJPEG_TURBO),libjpeg-turbo))
+
+# build jpeg turbo library with cmake
+$(BUILDSTEPS)/libjpeg-turbo.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEP_SRC_LIBJPEGTURBO)
+	mkdir -p $(BUILDDIR_LIBJPEGTURBO)/ns-sdk-build
+	cd $(BUILDDIR_LIBJPEGTURBO)/ns-sdk-build && $(env) $(LIBJPEG_TURBO_ENV) $(NS_SDK_CMAKE_CMD) -DENABLE_STATIC=ON -DENABLE_SHARED=OFF ..
+	cd $(BUILDDIR_LIBJPEGTURBO)/ns-sdk-build && $(env) make install VERBOSE=1
 	touch $@
 
-$(BUILDSTEPS)/libjpeg-turbo-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/libjpeg-turbo-src-$(VERSION_LIBJPEG_TURBO).tar.gz
-	touch $@
-
-$(SOURCEDIR)/libjpeg-turbo-src-$(VERSION_LIBJPEG_TURBO).tar.gz:
+# jpeg turbo source tar
+$(SOURCETGZ_LIBJPEGTURBO): $(BUILDSTEPS)/sourcedir.d
 	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://github.com/libjpeg-turbo/libjpeg-turbo/releases/download/$(VERSION_LIBJPEG_TURBO)/libjpeg-turbo-$(VERSION_LIBJPEG_TURBO).tar.gz" $(CKSUM_LIBJPEG_TURBO) $@
 
 
+############
+# libbrotli
+############
+
+$(eval $(call patched_source_rule,brotli,$(VERSION_BROTLI)))
+
+# build brotli with cmake
+$(BUILDSTEPS)/libbrotli.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEP_SRC_BROTLI)
+	mkdir -p $(BUILDDIR_BROTLI)/ns-sdk-build
+	cd $(BUILDDIR_BROTLI)/ns-sdk-build && $(env) $(LIBBROTLI_ENV) $(NS_SDK_CMAKE_CMD) -DCMAKE_BUILD_TYPE=Release ..
+	cd $(BUILDDIR_BROTLI)/ns-sdk-build && $(env) make install VERBOSE=1
+	touch $@
+
+# libbrotli tar
+$(SOURCETGZ_BROTLI): $(BUILDSTEPS)/sourcedir.d
+	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://github.com/google/brotli/archive/refs/tags/v$(VERSION_BROTLI).tar.gz" $(CKSUM_BROTLI) $@
+
+
+##########
 # libwebp
-$(BUILDSTEPS)/libwebp.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/libwebp-src.d
-	mkdir -p $(BUILDDIR)/libwebp
-	cd $(BUILDDIR)/libwebp && tar xaf $(SOURCEDIR)/libwebp-$(VERSION_LIBWEBP).tar.gz
-	for p in `ls $(RECIPES)/patches/libwebp/*.p` ; do $(PATCH) -d $(BUILDDIR)/libwebp/libwebp-$(VERSION_LIBWEBP) -p0 <$$p ; done
-ifneq ($(realpath $(RECIPES)/patches/libwebp/$(TARGET)),)
-	for p in `ls $(RECIPES)/patches/libwebp/$(TARGET)/*.p` ; do $(PATCH) -d $(BUILDDIR)/libwebp/libwebp-$(VERSION_LIBWEBP) -p0 <$$p ; done
-endif
-	cd $(BUILDDIR)/libwebp/libwebp-$(VERSION_LIBWEBP) && $(env) $(LIBWEBP_ENV) ./configure --prefix=$(GCCSDK_INSTALL_ENV) --target=$(TARGET) --host=$(TARGET) --disable-shared $(EXTRAARGS_LIBWEBP)
-	cd $(BUILDDIR)/libwebp/libwebp-$(VERSION_LIBWEBP) && $(env) make install
+##########
+
+$(eval $(call patched_source_rule,libwebp,$(VERSION_LIBWEBP)))
+
+$(BUILDSTEPS)/libwebp.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEP_SRC_LIBWEBP)
+	cd $(BUILDDIR_LIBWEBP) && $(env) $(LIBWEBP_ENV) ./configure --prefix=$(GCCSDK_INSTALL_ENV) --target=$(TARGET) --host=$(TARGET) --disable-shared $(EXTRAARGS_LIBWEBP)
+	cd $(BUILDDIR_LIBWEBP) && $(env) make install
 	touch $@
 
-$(BUILDSTEPS)/libwebp-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/libwebp-$(VERSION_LIBWEBP).tar.gz
-	touch $@
-
-$(SOURCEDIR)/libwebp-$(VERSION_LIBWEBP).tar.gz:
+$(SOURCETGZ_LIBWEBP): $(BUILDSTEPS)/sourcedir.d
 	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-$(VERSION_LIBWEBP).tar.gz" $(CKSUM_LIBWEBP) $@
 
 
+###########
 # libcares
-$(BUILDSTEPS)/libcares.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/libcares-src.d
-	mkdir -p $(BUILDDIR)/libcares
-	cd $(BUILDDIR)/libcares && tar xaf $(SOURCEDIR)/c-ares-$(VERSION_LIBCARES).tar.gz
-	for p in `ls $(RECIPES)/patches/libcares/*.p` ; do $(PATCH) -d $(BUILDDIR)/libcares/c-ares-$(VERSION_LIBCARES) -p0 <$$p ; done
-ifneq ($(realpath $(RECIPES)/patches/libcares/$(TARGET)),)
-	for p in `ls $(RECIPES)/patches/libcares/$(TARGET)/*.p` ; do $(PATCH) -d $(BUILDDIR)/libcares/c-ares-$(VERSION_LIBCARES) -p0 <$$p ; done
-endif
-	cd $(BUILDDIR)/libcares/c-ares-$(VERSION_LIBCARES) && $(cleanenv) $(LIBCARES_ENV) ./configure --prefix=$(GCCSDK_INSTALL_ENV) --target=$(TARGET) --host=$(TARGET) $(EXTRAARGS_LIBCARES)
-	cd $(BUILDDIR)/libcares/c-ares-$(VERSION_LIBCARES) && $(cleanenv) make install
+###########
+
+$(eval $(call patched_source_rule,libcares,$(VERSION_LIBCARES),c-ares))
+
+$(BUILDSTEPS)/libcares.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEP_SRC_LIBCARES)
+	cd $(BUILDDIR_LIBCARES) && $(cleanenv) $(LIBCARES_ENV) ./configure --prefix=$(GCCSDK_INSTALL_ENV) --target=$(TARGET) --host=$(TARGET) $(EXTRAARGS_LIBCARES)
+	cd $(BUILDDIR_LIBCARES) && $(cleanenv) make install
 	touch $@
 
-$(BUILDSTEPS)/libcares-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/c-ares-$(VERSION_LIBCARES).tar.gz
-	touch $@
-
-$(SOURCEDIR)/c-ares-$(VERSION_LIBCARES).tar.gz:
-	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://github.com/c-ares/c-ares/releases/download/v$(VERSION_LIBCARES)/$(subst $(SOURCEDIR)/,,$@)" $(CKSUM_LIBCARES) $@
+$(SOURCETGZ_LIBCARES): $(BUILDSTEPS)/sourcedir.d
+	$(FETCHSRC) sdk c-ares-$(VERSION_LIBCARES).tar.gz "https://github.com/c-ares/c-ares/releases/download/v$(VERSION_LIBCARES)/c-ares-$(VERSION_LIBCARES).tar.gz" $(CKSUM_LIBCARES) $@
 
 
+##########
 # libcurl
-$(BUILDSTEPS)/libcurl.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/zlib.d $(BUILDSTEPS)/openssl.d $(BUILDSTEPS)/libcares.d $(BUILDSTEPS)/libcurl-src.d
-	cd $(BUILDDIR)/libcurl/curl-$(VERSION_LIBCURL) && $(env) CFLAGS="" $(LIBCURL_ENV) ./configure --prefix=$(GCCSDK_INSTALL_ENV) --target=$(TARGET) --host=$(TARGET) --disable-shared --with-$(LIBCURL_SSL) --without-libidn2 ${EXTRAARGS_LIBCURL}
-	cd $(BUILDDIR)/libcurl/curl-$(VERSION_LIBCURL) && $(env) make install
+##########
+
+$(eval $(call patched_source_rule,libcurl,$(VERSION_LIBCURL),curl))
+
+$(BUILDSTEPS)/libcurl.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/zlib.d $(BUILDSTEPS)/openssl.d $(BUILDSTEPS)/libcares.d $(BUILDSTEP_SRC_LIBCURL)
+	cd $(BUILDDIR_LIBCURL) && $(env) CFLAGS="" $(LIBCURL_ENV) ./configure --prefix=$(GCCSDK_INSTALL_ENV) --target=$(TARGET) --host=$(TARGET) --disable-shared --with-$(LIBCURL_SSL) --without-libidn2 --without-libpsl ${EXTRAARGS_LIBCURL}
+	cd $(BUILDDIR_LIBCURL) && $(env) make install
 	touch $@
 
-$(BUILDSTEPS)/libcurl-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/curl-$(VERSION_LIBCURL).tar.bz2
-	mkdir -p $(BUILDDIR)/libcurl
-	cd $(BUILDDIR)/libcurl && tar xaf $(SOURCEDIR)/curl-$(VERSION_LIBCURL).tar.bz2
-	for p in `ls $(RECIPES)/patches/libcurl/*.p` ; do $(PATCH) -d $(BUILDDIR)/libcurl/curl-$(VERSION_LIBCURL) -p0 <$$p ; done
-ifneq ($(realpath $(RECIPES)/patches/libcurl/$(TARGET)),)
-	for p in `ls $(RECIPES)/patches/libcurl/$(TARGET)/*.p` ; do $(PATCH) -d $(BUILDDIR)/libcurl/curl-$(VERSION_LIBCURL) -p0 <$$p ; done
-endif
-	touch $@
-
-$(SOURCEDIR)/curl-$(VERSION_LIBCURL).tar.bz2:
-	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://curl.se/download/$(subst $(SOURCEDIR)/,,$@)" $(CKSUM_LIBCURL) $@
+$(SOURCETGZ_LIBCURL): $(BUILDSTEPS)/sourcedir.d
+	$(FETCHSRC) sdk curl-$(VERSION_LIBCURL).tar.bz2 "https://curl.se/download/curl-$(VERSION_LIBCURL).tar.bz2" $(CKSUM_LIBCURL) $@
 
 
+###########
 # libexpat
-$(BUILDSTEPS)/libexpat.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/libexpat-src.d
-	cd $(BUILDDIR)/libexpat/expat-$(VERSION_LIBEXPAT) && $(env) $(LIBEXPAT_ENV) ./configure --prefix=$(GCCSDK_INSTALL_ENV) --target=$(TARGET) --host=$(TARGET) --disable-shared
-	cd $(BUILDDIR)/libexpat/expat-$(VERSION_LIBEXPAT) && $(env) $(LIBEXPAT_ENV) make install
+###########
+
+$(eval $(call patched_source_rule,libexpat,$(VERSION_LIBEXPAT),expat))
+
+$(BUILDSTEPS)/libexpat.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEP_SRC_LIBEXPAT)
+	cd $(BUILDDIR_LIBEXPAT) && $(env) $(LIBEXPAT_ENV) ./configure --prefix=$(GCCSDK_INSTALL_ENV) --target=$(TARGET) --host=$(TARGET) --disable-shared
+	cd $(BUILDDIR_LIBEXPAT) && $(env) $(LIBEXPAT_ENV) make install
 	touch $@
 
-$(BUILDSTEPS)/libexpat-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/expat-$(VERSION_LIBEXPAT).tar.bz2
-	mkdir -p $(BUILDDIR)/libexpat
-	cd $(BUILDDIR)/libexpat && tar xaf $(SOURCEDIR)/expat-$(VERSION_LIBEXPAT).tar.bz2
-ifneq ($(realpath $(RECIPES)/patches/libexpat/$(TARGET)),)
-	for p in `ls $(RECIPES)/patches/libexpat/$(TARGET)/*.p` ; do $(PATCH) -d $(BUILDDIR)/libexpat/expat-$(VERSION_LIBEXPAT) -p0 <$$p ; done
-endif
-	touch $@
-
-$(SOURCEDIR)/expat-$(VERSION_LIBEXPAT).tar.bz2:
-	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://github.com/libexpat/libexpat/releases/download/R_$(subst .,_,$(VERSION_LIBEXPAT))/expat-$(VERSION_LIBEXPAT).tar.bz2" $(CKSUM_LIBEXPAT) $@
+$(SOURCETGZ_LIBEXPAT): $(BUILDSTEPS)/sourcedir.d
+	$(FETCHSRC) sdk expat-$(VERSION_LIBEXPAT).tar.bz2 "https://github.com/libexpat/libexpat/releases/download/R_$(subst .,_,$(VERSION_LIBEXPAT))/expat-$(VERSION_LIBEXPAT).tar.bz2" $(CKSUM_LIBEXPAT) $@
 
