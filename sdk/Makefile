@@ -325,7 +325,7 @@ $(SOURCETGZ_ZLIB): $(BUILDSTEPS)/sourcedir.d
 
 $(eval $(call patched_source_rule,libiconv,$(VERSION_LIBICONV)))
 
-$(BUILDSTEPS)/libiconv.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS_SRC_LIBICONV)
+$(BUILDSTEPS)/libiconv.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEP_SRC_LIBICONV)
 	cd $(BUILDDIR_LIBICONV) && $(env) $(LIBICONV_ENV) ./configure --prefix=$(GCCSDK_INSTALL_ENV) --target=$(TARGET) --host=$(TARGET) --disable-shared $(EXTRAARGS_LIBICONV)
 	cd $(BUILDDIR_LIBICONV) && $(env) make install
 	touch $@
