@@ -1,7 +1,7 @@
-From c28e3674877c0aede0c36e9288a0287d157df936 Mon Sep 17 00:00:00 2001
+From e6ec2d752903863da6dcf190e18c73e346b6b253 Mon Sep 17 00:00:00 2001
 From: Sebastian Bauer <mail@sebastianbauer.info>
 Date: Wed, 2 Dec 2015 21:39:42 +0100
-Subject: [PATCH 05/30] Disable the usage of /dev/urandom when compiling for
+Subject: [PATCH 05/41] Disable the usage of /dev/urandom when compiling for
  AmigaOS.
 
 ---
@@ -10,10 +10,10 @@ Subject: [PATCH 05/30] Disable the usage of /dev/urandom when compiling for
  2 files changed, 5 insertions(+)
 
 diff --git a/gcc/gcc.c b/gcc/gcc.c
-index 71cd1e5045311dc4f61d359d2786ee1847558dea..2fe3d2eb7dcb2cb71e24a2fe2e01f637ea2ce727 100644
+index 7bc4e7047573d724e913679cf18fc7649534442f..cf92e18ecdacebad78a6aefc80f727c20c85b63d 100644
 --- gcc/gcc.c
 +++ gcc/gcc.c
-@@ -9665,22 +9665,25 @@ print_asm_header_spec_function (int arg ATTRIBUTE_UNUSED,
+@@ -10451,22 +10451,25 @@ print_asm_header_spec_function (int arg ATTRIBUTE_UNUSED,
  /* Get a random number for -frandom-seed */
  
  static unsigned HOST_WIDE_INT
@@ -40,10 +40,10 @@ index 71cd1e5045311dc4f61d359d2786ee1847558dea..2fe3d2eb7dcb2cb71e24a2fe2e01f637
      struct timeval tv;
  
 diff --git a/gcc/toplev.c b/gcc/toplev.c
-index bdf021e828a9e4c8737fe5e7fd243262f0a455a6..4eb1e1ee434e1388b08421090782e1531b64a209 100644
+index d8cc254adef2677798354697af5d7eb957c03c9a..9856a8009e42f37defb131ea38284dcfc44c6117 100644
 --- gcc/toplev.c
 +++ gcc/toplev.c
-@@ -271,20 +271,22 @@ init_local_tick (void)
+@@ -273,20 +273,22 @@ init_local_tick (void)
  
  HOST_WIDE_INT
  get_random_seed (bool noinit)

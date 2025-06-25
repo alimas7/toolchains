@@ -1,7 +1,7 @@
-From bff689218183c28e2e3aed872b9ad4f67c35496e Mon Sep 17 00:00:00 2001
+From a039416b68160132350da94bf42c6d68db584596 Mon Sep 17 00:00:00 2001
 From: rjd <3246251196ryan@gmail.com>
-Date: Wed, 20 Nov 2024 19:52:39 +0000
-Subject: [PATCH 30/30] Add strtold to the std namespace.
+Date: Wed, 20 Nov 2024 19:23:46 +0000
+Subject: [PATCH 41/41] Add strtold to the std namespace.
 
 strtold is provided by both NEWLIB and CLIB4. Previously,
 std::strtold was not available for C++.
@@ -10,7 +10,7 @@ std::strtold was not available for C++.
  1 file changed, 6 insertions(+), 4 deletions(-)
 
 diff --git a/libstdc++-v3/include/c_global/cstdlib b/libstdc++-v3/include/c_global/cstdlib
-index 4975c6070fbf120a0061dab496918566ef7b1d70..bea07912ad29240d64b47a9060b3238ec14db2fe 100644
+index deae1df7fd4657b48ee9ccd4f0d1781f2d09237e..0cc1964bb91e900cdbc3c63dd3472918837ffe67 100644
 --- libstdc++-v3/include/c_global/cstdlib
 +++ libstdc++-v3/include/c_global/cstdlib
 @@ -188,14 +188,14 @@ _GLIBCXX_END_NAMESPACE_VERSION

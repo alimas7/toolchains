@@ -1,7 +1,7 @@
-From 6c50d0f39edd65987c4bfb486e54e0f9498e3a3f Mon Sep 17 00:00:00 2001
+From 6c249f64bd2d0ebf30f51531484ea1742962ee12 Mon Sep 17 00:00:00 2001
 From: Sebastian Bauer <mail@sebastianbauer.info>
 Date: Thu, 21 Jan 2016 20:46:59 +0100
-Subject: [PATCH 07/30] Some AmigaOS 4.x compability changes for posix thread
+Subject: [PATCH 07/41] Some AmigaOS 4.x compability changes for posix thread
  support.
 
 ---
@@ -9,7 +9,7 @@ Subject: [PATCH 07/30] Some AmigaOS 4.x compability changes for posix thread
  1 file changed, 12 insertions(+)
 
 diff --git a/libgcc/gthr-posix.h b/libgcc/gthr-posix.h
-index e2f952f6c1cdf05237b1d6d6598b780b7f3c0cf4..9b15d7522e91061934693e1bce5bb2724e3d3362 100644
+index eb8af567cd525b163017d2aea9923744b4b53e86..8c979f07b0a84af4e0f4ea7214554ff4a8604293 100644
 --- libgcc/gthr-posix.h
 +++ libgcc/gthr-posix.h
 @@ -29,12 +29,16 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
@@ -29,7 +29,7 @@ index e2f952f6c1cdf05237b1d6d6598b780b7f3c0cf4..9b15d7522e91061934693e1bce5bb272
       || !defined(_GTHREAD_USE_MUTEX_TIMEDLOCK))
  # include <unistd.h>
  # if defined(_POSIX_TIMEOUTS) && _POSIX_TIMEOUTS >= 0
-@@ -107,13 +111,15 @@ __gthrw(pthread_join)
+@@ -108,13 +112,15 @@ __gthrw(pthread_join)
  __gthrw(pthread_equal)
  __gthrw(pthread_self)
  __gthrw(pthread_detach)
@@ -45,7 +45,7 @@ index e2f952f6c1cdf05237b1d6d6598b780b7f3c0cf4..9b15d7522e91061934693e1bce5bb272
  #if _GTHREAD_USE_MUTEX_TIMEDLOCK
  __gthrw(pthread_mutex_timedlock)
  #endif
-@@ -444,14 +450,16 @@ __gthread_objc_thread_get_priority (void)
+@@ -445,14 +451,16 @@ __gthread_objc_thread_get_priority (void)
  }
  
  /* Yield our process time to another thread.  */
@@ -62,7 +62,7 @@ index e2f952f6c1cdf05237b1d6d6598b780b7f3c0cf4..9b15d7522e91061934693e1bce5bb272
  static inline int
  __gthread_objc_thread_exit (void)
  {
-@@ -686,13 +694,17 @@ __gthread_self (void)
+@@ -687,13 +695,17 @@ __gthread_self (void)
    return __gthrw_(pthread_self) ();
  }
  

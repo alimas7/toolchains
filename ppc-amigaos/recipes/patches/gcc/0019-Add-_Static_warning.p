@@ -1,24 +1,24 @@
-From 910c7fb66f34cdecda82a751bfd4dba22bd3a880 Mon Sep 17 00:00:00 2001
+From 7e5ea9debe2babeb92ebd4e6d081599ea8441004 Mon Sep 17 00:00:00 2001
 From: Sebastian Bauer <mail@sebastianbauer.info>
 Date: Tue, 24 Apr 2018 22:46:21 +0200
-Subject: [PATCH 19/30] Add _Static_warning().
+Subject: [PATCH 19/41] Add _Static_warning().
 
 This acts very similar to _Static_assert() but produces a warning
 rather than an compiler error.
 ---
  gcc/c-family/c-common.c |  1 +
  gcc/c-family/c-common.h |  1 +
- gcc/c/c-parser.c        | 19 ++++++++++++++++---
+ gcc/c/c-parser.c        | 12 ++++++++++--
  gcc/cp/parser.c         |  3 ++-
- 4 files changed, 20 insertions(+), 4 deletions(-)
+ 4 files changed, 14 insertions(+), 3 deletions(-)
 
 diff --git a/gcc/c-family/c-common.c b/gcc/c-family/c-common.c
-index 655c3bf10a73a18162a4af89aaf8fb4ee410373f..03a090f8c673389ff9f87ef77305de35f083b8be 100644
+index 7b8f49d78dcfddb2c73efd1e8e81316572841b61..cc413b96ddb4cf996160dee07bae2a68187e09a4 100644
 --- gcc/c-family/c-common.c
 +++ gcc/c-family/c-common.c
-@@ -351,12 +351,13 @@ const struct c_common_resword c_common_reswords[] =
-   { "_Decimal64",       RID_DFLOAT64,  D_CONLY | D_EXT },
-   { "_Decimal128",      RID_DFLOAT128, D_CONLY | D_EXT },
+@@ -357,12 +357,13 @@ const struct c_common_resword c_common_reswords[] =
+   { "_Decimal64",       RID_DFLOAT64,  D_CONLY },
+   { "_Decimal128",      RID_DFLOAT128, D_CONLY },
    { "_Fract",           RID_FRACT,     D_CONLY | D_EXT },
    { "_Accum",           RID_ACCUM,     D_CONLY | D_EXT },
    { "_Sat",             RID_SAT,       D_CONLY | D_EXT },
@@ -31,15 +31,15 @@ index 655c3bf10a73a18162a4af89aaf8fb4ee410373f..03a090f8c673389ff9f87ef77305de35
    { "__PRETTY_FUNCTION__", RID_PRETTY_FUNCTION_NAME, 0 },
    { "__alignof",	RID_ALIGNOF,	0 },
 diff --git a/gcc/c-family/c-common.h b/gcc/c-family/c-common.h
-index f2c66628e53316ca12885cbd32cdec84e5ca162e..9105afe24499b9eb42a4927701181034192bfad2 100644
+index f30b6c6ac33474d27939372c4529e9513804b67e..606e84c0be881daaa3fe2eb55b5eceed9849959b 100644
 --- gcc/c-family/c-common.h
 +++ gcc/c-family/c-common.h
-@@ -101,12 +101,13 @@ enum rid
-   /* C extensions */
+@@ -107,12 +107,13 @@ enum rid
    RID_ASM,       RID_TYPEOF,   RID_ALIGNOF,  RID_ATTRIBUTE,  RID_VA_ARG,
    RID_EXTENSION, RID_IMAGPART, RID_REALPART, RID_LABEL,      RID_CHOOSE_EXPR,
    RID_TYPES_COMPATIBLE_P,      RID_BUILTIN_COMPLEX,	     RID_BUILTIN_SHUFFLE,
-   RID_BUILTIN_TGMATH,
+   RID_BUILTIN_CONVERTVECTOR,   RID_BUILTIN_TGMATH,
+   RID_BUILTIN_HAS_ATTRIBUTE,
    RID_DFLOAT32, RID_DFLOAT64, RID_DFLOAT128,
 +  RID_STATIC_WARNING,
  
@@ -49,12 +49,12 @@ index f2c66628e53316ca12885cbd32cdec84e5ca162e..9105afe24499b9eb42a4927701181034
    RID_FLOAT32,
    RID_FLOAT64,
 diff --git a/gcc/c/c-parser.c b/gcc/c/c-parser.c
-index 3e195cbb9a6c13740a21fc55d4889e7ebe994947..d018d115d902cdef9b93ad56a0eaaa83176ce811 100644
+index aa760c7f9410d67fcaa74e2a0c3d3d354867b0b3..7e644cf341991336d9a11369f9910c0acd8550ab 100644
 --- gcc/c/c-parser.c
 +++ gcc/c/c-parser.c
-@@ -765,13 +765,13 @@ c_token_starts_declspecs (c_token *token)
- /* Return true if TOKEN can start declaration specifiers or a static
-    assertion, false otherwise.  */
+@@ -840,13 +840,13 @@ c_token_starts_declspecs (c_token *token)
+    including standard attributes) or a static assertion, false
+    otherwise.  */
  static bool
  c_token_starts_declaration (c_token *token)
  {
@@ -67,7 +67,7 @@ index 3e195cbb9a6c13740a21fc55d4889e7ebe994947..d018d115d902cdef9b93ad56a0eaaa83
  }
  
  /* Return true if the next token from PARSER can start declaration
-@@ -1830,12 +1830,18 @@ c_parser_declaration_or_fndef (c_parser *parser, bool fndef_ok,
+@@ -1969,12 +1969,18 @@ c_parser_declaration_or_fndef (c_parser *parser, bool fndef_ok,
    if (static_assert_ok
        && c_parser_next_token_is_keyword (parser, RID_STATIC_ASSERT))
      {
@@ -82,16 +82,16 @@ index 3e195cbb9a6c13740a21fc55d4889e7ebe994947..d018d115d902cdef9b93ad56a0eaaa83
 +    }
    specs = build_null_declspecs ();
  
-   /* Try to detect an unknown type name when we have "A B" or "A *B".  */
-   if (c_parser_peek_token (parser)->type == CPP_NAME
-       && c_parser_peek_token (parser)->id_kind == C_ID_ID
-       && (c_parser_peek_2nd_token (parser)->type == CPP_NAME
-@@ -2473,13 +2479,15 @@ static void
+   /* Handle any standard attributes parsed in the caller.  */
+   if (have_attrs)
+     {
+       declspecs_add_attrs (here, specs, attrs);
+@@ -2673,13 +2679,15 @@ static void
  c_parser_static_assert_declaration_no_semi (c_parser *parser)
  {
    location_t assert_loc, value_loc;
    tree value;
-   tree string;
+   tree string = NULL_TREE;
  
 -  gcc_assert (c_parser_next_token_is_keyword (parser, RID_STATIC_ASSERT));
 +  bool warning = c_parser_next_token_is_keyword (parser, RID_STATIC_WARNING);
@@ -103,31 +103,11 @@ index 3e195cbb9a6c13740a21fc55d4889e7ebe994947..d018d115d902cdef9b93ad56a0eaaa83
  		 "ISO C99 does not support %<_Static_assert%>");
    else
      pedwarn_c99 (assert_loc, OPT_Wpedantic,
-@@ -2533,13 +2541,18 @@ c_parser_static_assert_declaration_no_semi (c_parser *parser)
-     {
-       error_at (value_loc, "expression in static assertion is not constant");
-       return;
-     }
-   constant_expression_warning (value);
-   if (integer_zerop (value))
--    error_at (assert_loc, "static assertion failed: %E", string);
-+    {
-+      if (warning)
-+        warning_at (assert_loc, OPT_Wall, "static warn-only assertion failed: %E", string);
-+      else
-+        error_at (assert_loc, "static assertion failed: %E", string);
-+    }
- }
- 
- /* Parse some declaration specifiers (possibly none) (C90 6.5, C99
-    6.7, C11 6.7), adding them to SPECS (which may already include some).
-    Storage class specifiers are accepted iff SCSPEC_OK; type
-    specifiers are accepted iff TYPESPEC_OK; alignment specifiers are
 diff --git a/gcc/cp/parser.c b/gcc/cp/parser.c
-index f2983b6102da7ebe34fb36b304d0620206df779a..70070b06214e314dd7447755350ab5fbd98693de 100644
+index 90d119eaa28025deabc21ef519f9f608a6317c4c..aa7099de9e8822a466f3f459ae10dcb17926a016 100644
 --- gcc/cp/parser.c
 +++ gcc/cp/parser.c
-@@ -155,12 +155,13 @@ enum required_token {
+@@ -152,12 +152,13 @@ enum required_token {
    RT_NEW, /* new */
    RT_DELETE, /* delete */
    RT_RETURN, /* return */
@@ -141,7 +121,7 @@ index f2983b6102da7ebe34fb36b304d0620206df779a..70070b06214e314dd7447755350ab5fb
    RT_TEMPLATE, /* template */
    RT_NAMESPACE, /* namespace */
    RT_USING, /* using */
-@@ -12910,13 +12911,13 @@ cp_parser_block_declaration (cp_parser *parser,
+@@ -14289,13 +14290,13 @@ cp_parser_block_declaration (cp_parser *parser,
        cp_parser_skip_to_end_of_statement (parser);
        /* If the next token is now a `;', consume it.  */
        if (cp_lexer_next_token_is (parser->lexer, CPP_SEMICOLON))

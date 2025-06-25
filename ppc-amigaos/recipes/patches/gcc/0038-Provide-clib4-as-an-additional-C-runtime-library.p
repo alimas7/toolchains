@@ -1,23 +1,24 @@
-From db6c0a5d97a77c30a28a30a12e58c3b1bd340fbc Mon Sep 17 00:00:00 2001
+From 874a7d09eb853fe6b5e959a0e60e28636b3f0269 Mon Sep 17 00:00:00 2001
 From: rjd <3246251196ryan@gmail.com>
-Date: Thu, 25 Jan 2024 20:40:13 +0000
-Subject: [PATCH 28/30] Provide clib4 as an additional C runtime library.
+Date: Thu, 23 Nov 2023 22:12:35 +0000
+Subject: [PATCH 38/41] Provide clib4 as an additional C runtime library.
 
 As well as the existing newlib and clib2 as C runtime library choices,
-clib4 is now introduced.
+clib4 is now introduced. Support for clib4 is currently restricted to
+GCC version 11.
 ---
  gcc/config/rs6000/amigaos.h           | 43 ++++++++++++++++++++-------
- gcc/config/rs6000/t-amigaos           |  2 ++
+ gcc/config/rs6000/t-amigaos           |  4 +--
  libstdc++-v3/configure                | 15 ++++++++++
  libstdc++-v3/crossconfig.m4           | 12 ++++++++
  libstdc++-v3/include/c_global/cstdlib |  4 +--
- 5 files changed, 64 insertions(+), 12 deletions(-)
+ 5 files changed, 64 insertions(+), 14 deletions(-)
 
 diff --git a/gcc/config/rs6000/amigaos.h b/gcc/config/rs6000/amigaos.h
-index a8724d3f3efdfe759565828190426c180fc3a1ec..85a2ed847e30fc01dac6dd94508cdce44c622e26 100644
+index 8a549ed05ca4358e30e2bdef6a2b6d2d177fdd14..f92526783393a0ac40d0ea9c08ab932c7f472744 100644
 --- gcc/config/rs6000/amigaos.h
 +++ gcc/config/rs6000/amigaos.h
-@@ -111,12 +111,17 @@
+@@ -122,12 +122,17 @@
        else if (IS_MCRT("clib2") || IS_MCRT("clib2-ts")) \
          {					\
            builtin_define_std ("CLIB2");		\
@@ -35,7 +36,7 @@ index a8724d3f3efdfe759565828190426c180fc3a1ec..85a2ed847e30fc01dac6dd94508cdce4
            builtin_define_std ("IXEMUL");	\
          }					\
        else if (IS_MCRT("libnix"))		\
-@@ -155,28 +160,18 @@
+@@ -166,28 +171,18 @@
  #undef REAL_LIBGCC_SPEC
  #define REAL_LIBGCC_SPEC "\
  %{static|static-libgcc: %{!use-dynld: -lgcc -lgcc_eh} %{use-dynld: -lgcc} }%{!static:%{!static-libgcc:%{!shared:%{!shared-libgcc: %{!use-dynld: -lgcc -lgcc_eh} %{use-dynld: -lgcc}}%{shared-libgcc:-lgcc}}%{shared:%{shared-libgcc:-lgcc}%{!shared-libgcc:-lgcc}}}}"
@@ -64,7 +65,7 @@ index a8724d3f3efdfe759565828190426c180fc3a1ec..85a2ed847e30fc01dac6dd94508cdce4
   * paths are added at the end of the gcc default include paths. This is required for
   * fixincludes and libstdc++ to work properly
   */
-@@ -201,12 +196,30 @@
+@@ -212,12 +207,30 @@
                   "%{!msoft-float:%(lib_subdir_type)}/crt0.o"
  
  #define ENDFILE_CLIB2_SPEC "\
@@ -95,7 +96,7 @@ index a8724d3f3efdfe759565828190426c180fc3a1ec..85a2ed847e30fc01dac6dd94508cdce4
  -idirafter %(base_sdk)ixemul/include -idirafter %(base_sdk)local/ixemul/include"
  
  #define LIB_SUBDIR_IXEMUL_SPEC "lib%(lib_subdir_type)"
-@@ -256,12 +269,13 @@
+@@ -267,12 +280,13 @@
  
  /* End clib specific */
  
@@ -109,7 +110,7 @@ index a8724d3f3efdfe759565828190426c180fc3a1ec..85a2ed847e30fc01dac6dd94508cdce4
  mcrt=default|!mcrt=*: %{mcrt=default|!nostdinc: %(cpp_amiga_default)}; \
  : %eInvalid C runtime library} \
  %{!nostdinc: -idirafter %(base_sdk)include/include_h -idirafter %(base_sdk)include/netinclude -idirafter %(base_sdk)local/common/include} \
-@@ -275,12 +289,13 @@ mcrt=default|!mcrt=*: %{mcrt=default|!nostdinc: %(cpp_amiga_default)}; \
+@@ -286,12 +300,13 @@ mcrt=default|!mcrt=*: %{mcrt=default|!nostdinc: %(cpp_amiga_default)}; \
  -q -d %{h*} %{v:-V} %{G*} \
  %{Wl,*:%*} %{YP,*} %{R*} \
  %{Qy:} %{!Qn:-Qy} \
@@ -123,7 +124,7 @@ index a8724d3f3efdfe759565828190426c180fc3a1ec..85a2ed847e30fc01dac6dd94508cdce4
  mcrt=default|!mcrt=*: %(link_amiga_default); \
  : %eInvalid C runtime library} \
  -L%(base_sdk)local/common/lib%(lib_subdir_type) \
-@@ -300,21 +315,23 @@ mcrt=default|!mcrt=*: %(link_amiga_default); \
+@@ -311,21 +326,23 @@ mcrt=default|!mcrt=*: %(link_amiga_default); \
  #define LINK_THREAD "\
  %s%{athread=native:gthr-amigaos-native.o;athread=single:gthr-amigaos-single.o;athread=pthread:gthr-amigaos-pthread.o}"
  
@@ -147,7 +148,7 @@ index a8724d3f3efdfe759565828190426c180fc3a1ec..85a2ed847e30fc01dac6dd94508cdce4
  mcrt=default|!mcrt=*: %(endfile_amiga_default); \
  : %eInvalid C runtime library}"
  
-@@ -339,12 +356,18 @@ mcrt=default|!mcrt=*: %(endfile_amiga_default); \
+@@ -350,12 +367,18 @@ mcrt=default|!mcrt=*: %(endfile_amiga_default); \
    /* clib2 */ \
    {"cpp_clib2", CPP_CLIB2_SPEC}, \
    {"lib_subdir_clib2", LIB_SUBDIR_CLIB2_SPEC}, \
@@ -167,24 +168,26 @@ index a8724d3f3efdfe759565828190426c180fc3a1ec..85a2ed847e30fc01dac6dd94508cdce4
    {"startfile_ixemul", STARTFILE_IXEMUL_SPEC}, \
    {"endfile_ixemul", ENDFILE_IXEMUL_SPEC}, \
 diff --git a/gcc/config/rs6000/t-amigaos b/gcc/config/rs6000/t-amigaos
-index 15d9d3fd5a5f0c8109cd158242745fa52b19257e..cc191ee3e23145800183d5ec14dea18cc45f19b2 100644
+index 15d9d3fd5a5f0c8109cd158242745fa52b19257e..0d8049f400ca7f0937330ffec4f01546d9d61cc2 100644
 --- gcc/config/rs6000/t-amigaos
 +++ gcc/config/rs6000/t-amigaos
-@@ -14,7 +14,9 @@ NATIVE_SYSTEM_HEADER_DIR=/gcc/include
+@@ -12,9 +12,9 @@ LIMITS_H_TEST = true
+ NATIVE_SYSTEM_HEADER_DIR=/gcc/include
+ #OTHER_FIXINCLUDES_DIRS=${gcc_tooldir}/include
  
  # Build the libraries for both newlib and clib2
  # We do not build soft float flavours as none of the
  # libs support soft floats
- MULTILIB_OPTIONS = mcrt=newlib/mcrt=clib2
- MULTILIB_DIRNAMES = newlib clib2
+-MULTILIB_OPTIONS = mcrt=newlib/mcrt=clib2
+-MULTILIB_DIRNAMES = newlib clib2
 +MULTILIB_OPTIONS = mcrt=newlib/mcrt=clib2/mcrt=clib4
 +MULTILIB_DIRNAMES = newlib clib2 clib4
  #MULTILIB_REUSE = =mcrt=newlib
 diff --git a/libstdc++-v3/configure b/libstdc++-v3/configure
-index 45dcf6730020ffae5ae76ae84a88d64530f61c27..78de77933209145dddaa8a918acf75c953dd1571 100755
+index 6f771d0b1bc3a62bb68bd0657bb295b11c005ba6..d566c6173da7da2084d6eed531967c5fead2d779 100755
 --- libstdc++-v3/configure
 +++ libstdc++-v3/configure
-@@ -78699,12 +78699,27 @@ $as_echo "$ac_ld_relro" >&6; }
+@@ -74119,12 +74119,27 @@ $as_echo "$ac_ld_relro" >&6; }
      OPT_LDFLAGS="-Wl,-O1 $OPT_LDFLAGS"
    fi
  
@@ -193,7 +196,7 @@ index 45dcf6730020ffae5ae76ae84a88d64530f61c27..78de77933209145dddaa8a918acf75c9
  
 +
 +
-+     for ac_func in acosf asinf atan2f atanf ceilf cosf coshf expf fabsf floorf fmodf frexpf sqrtf hypotf ldexpf log10f logf modff powf sinf sinhf tanf tanhf fabsl acosl asinl atanl atan2l ceill cosl coshl expl floorl fmodl frexpl sqrtl hypotl ldexpl logl log10l modfl powl sinl sinhl tanl tanhl
++    for ac_func in acosf asinf atan2f atanf ceilf cosf coshf expf fabsf floorf fmodf frexpf sqrtf hypotf ldexpf log10f logf modff powf sinf sinhf tanf tanhf fabsl acosl asinl atanl atan2l ceill cosl coshl expl floorl fmodl frexpl sqrtl hypotl ldexpl logl log10l modfl powl sinl sinhl tanl tanhl
 +do :
 +  as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 +ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
@@ -208,15 +211,15 @@ index 45dcf6730020ffae5ae76ae84a88d64530f61c27..78de77933209145dddaa8a918acf75c9
 +
      ;;
    *)
-     as_fn_error "No support for this host/target combination." "$LINENO" 5
+     as_fn_error $? "No support for this host/target combination." "$LINENO" 5
     ;;
  esac
  
 diff --git a/libstdc++-v3/crossconfig.m4 b/libstdc++-v3/crossconfig.m4
-index 6a6c0d6b16128ddb7cdb66799e0fbb64fe873d37..23608cae00f33cf6144d433c489e8d8cfa67a78b 100644
+index cbbfff770cb1356bf9352ad7e61ef5c77458f262..cb22f046dc2585323e457cde10a7d50a1683863b 100644
 --- libstdc++-v3/crossconfig.m4
 +++ libstdc++-v3/crossconfig.m4
-@@ -295,12 +295,24 @@ case "${host}" in
+@@ -316,12 +316,24 @@ dnl # the expansion of the present macro.
      AC_CHECK_HEADERS([nan.h ieeefp.h endian.h sys/isa_defs.h \
        machine/endian.h machine/param.h sys/machine.h sys/types.h \
        fp.h locale.h float.h inttypes.h])
@@ -242,7 +245,7 @@ index 6a6c0d6b16128ddb7cdb66799e0fbb64fe873d37..23608cae00f33cf6144d433c489e8d8c
  esac
  ])
 diff --git a/libstdc++-v3/include/c_global/cstdlib b/libstdc++-v3/include/c_global/cstdlib
-index fb5ae1889b288097f793396f35a9b65c2acf9fbb..4975c6070fbf120a0061dab496918566ef7b1d70 100644
+index 99325ad0682f2f88bc04ca38a50cc97a2bcea4d5..deae1df7fd4657b48ee9ccd4f0d1781f2d09237e 100644
 --- libstdc++-v3/include/c_global/cstdlib
 +++ libstdc++-v3/include/c_global/cstdlib
 @@ -188,14 +188,14 @@ _GLIBCXX_END_NAMESPACE_VERSION

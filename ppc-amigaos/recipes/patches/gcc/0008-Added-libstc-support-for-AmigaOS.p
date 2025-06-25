@@ -1,33 +1,33 @@
-From 04b87b3ca37f1a9de987637f5b223c27c5aaa579 Mon Sep 17 00:00:00 2001
+From b5b5a3209f4fc3c59198b392b728576612a85f78 Mon Sep 17 00:00:00 2001
 From: Sebastian Bauer <mail@sebastianbauer.info>
 Date: Fri, 22 Jan 2016 20:04:50 +0100
-Subject: [PATCH 08/30] Added libstc++ support for AmigaOS.
+Subject: [PATCH 08/41] Added libstc++ support for AmigaOS.
 
 ---
  .../os/{generic => amigaos}/ctype_base.h      |  2 +-
- .../{aix => amigaos}/ctype_configure_char.cc  | 24 +++++++++----------
- .../os/{generic => amigaos}/ctype_inline.h    | 16 ++++++-------
- .../os/{generic => amigaos}/error_constants.h |  6 ++---
- .../os/{vxworks => amigaos}/os_defines.h      | 13 +++++-----
- libstdc++-v3/configure.host                   |  3 +++
- 6 files changed, 34 insertions(+), 30 deletions(-)
+ .../ctype_configure_char.cc                   | 24 ++++++-------
+ .../os/{generic => amigaos}/ctype_inline.h    | 16 ++++-----
+ .../os/{generic => amigaos}/error_constants.h | 34 +++++++++----------
+ .../config/os/{djgpp => amigaos}/os_defines.h | 11 +++---
+ libstdc++-v3/configure.host                   |  3 ++
+ 6 files changed, 48 insertions(+), 42 deletions(-)
  copy libstdc++-v3/config/os/{generic => amigaos}/ctype_base.h (97%)
- copy libstdc++-v3/config/os/{aix => amigaos}/ctype_configure_char.cc (87%)
+ copy libstdc++-v3/config/os/{bsd/darwin => amigaos}/ctype_configure_char.cc (87%)
  copy libstdc++-v3/config/os/{generic => amigaos}/ctype_inline.h (96%)
- copy libstdc++-v3/config/os/{generic => amigaos}/error_constants.h (97%)
- copy libstdc++-v3/config/os/{vxworks => amigaos}/os_defines.h (86%)
+ copy libstdc++-v3/config/os/{generic => amigaos}/error_constants.h (89%)
+ copy libstdc++-v3/config/os/{djgpp => amigaos}/os_defines.h (85%)
 
 diff --git a/libstdc++-v3/config/os/generic/ctype_base.h b/libstdc++-v3/config/os/amigaos/ctype_base.h
 similarity index 97%
 copy from libstdc++-v3/config/os/generic/ctype_base.h
 copy to libstdc++-v3/config/os/amigaos/ctype_base.h
-index e73721e57a5a82c47b9375fd8f939d9a798f4c56..260b6142b6fc6a11a1e5f0bf7820b592d09f285e 100644
+index 62fce6080d16e87d4ad57074b550aaeccb6be62e..260b6142b6fc6a11a1e5f0bf7820b592d09f285e 100644
 --- libstdc++-v3/config/os/generic/ctype_base.h
 +++ libstdc++-v3/config/os/amigaos/ctype_base.h
 @@ -1,9 +1,9 @@
  // Locale support -*- C++ -*-
  
--// Copyright (C) 1997-2018 Free Software Foundation, Inc.
+-// Copyright (C) 1997-2021 Free Software Foundation, Inc.
 +// Copyright (C) 1997-2015 Free Software Foundation, Inc.
  //
  // This file is part of the GNU ISO C++ Library.  This library is free
@@ -35,17 +35,17 @@ index e73721e57a5a82c47b9375fd8f939d9a798f4c56..260b6142b6fc6a11a1e5f0bf7820b592
  // terms of the GNU General Public License as published by the
  // Free Software Foundation; either version 3, or (at your option)
  // any later version.
-diff --git a/libstdc++-v3/config/os/aix/ctype_configure_char.cc b/libstdc++-v3/config/os/amigaos/ctype_configure_char.cc
+diff --git a/libstdc++-v3/config/os/bsd/darwin/ctype_configure_char.cc b/libstdc++-v3/config/os/amigaos/ctype_configure_char.cc
 similarity index 87%
-copy from libstdc++-v3/config/os/aix/ctype_configure_char.cc
+copy from libstdc++-v3/config/os/bsd/darwin/ctype_configure_char.cc
 copy to libstdc++-v3/config/os/amigaos/ctype_configure_char.cc
-index cb80c496e7157c356212a489a99807272f5b6728..e6f4895aee78da54bc6b1e01df00816206361c41 100644
---- libstdc++-v3/config/os/aix/ctype_configure_char.cc
+index b12c0bd435ca013496f95c0ed9dad9c884b20001..e6f4895aee78da54bc6b1e01df00816206361c41 100644
+--- libstdc++-v3/config/os/bsd/darwin/ctype_configure_char.cc
 +++ libstdc++-v3/config/os/amigaos/ctype_configure_char.cc
 @@ -1,9 +1,9 @@
  // Locale support -*- C++ -*-
  
--// Copyright (C) 2011-2018 Free Software Foundation, Inc.
+-// Copyright (C) 2011-2021 Free Software Foundation, Inc.
 +// Copyright (C) 2011-2015 Free Software Foundation, Inc.
  //
  // This file is part of the GNU ISO C++ Library.  This library is free
@@ -112,13 +112,13 @@ diff --git a/libstdc++-v3/config/os/generic/ctype_inline.h b/libstdc++-v3/config
 similarity index 96%
 copy from libstdc++-v3/config/os/generic/ctype_inline.h
 copy to libstdc++-v3/config/os/amigaos/ctype_inline.h
-index 3a0ef4f9921c572f07dcfa56aae441fa2b15dba8..cfa0146ae6b70623c2fe63b864ceef7bce0d5fe0 100644
+index b6ad988d82edd8a0a12b262103d66d23c812b3f7..cfa0146ae6b70623c2fe63b864ceef7bce0d5fe0 100644
 --- libstdc++-v3/config/os/generic/ctype_inline.h
 +++ libstdc++-v3/config/os/amigaos/ctype_inline.h
 @@ -1,9 +1,9 @@
  // Locale support -*- C++ -*-
  
--// Copyright (C) 2000-2018 Free Software Foundation, Inc.
+-// Copyright (C) 2000-2021 Free Software Foundation, Inc.
 +// Copyright (C) 2000-2015 Free Software Foundation, Inc.
  //
  // This file is part of the GNU ISO C++ Library.  This library is free
@@ -201,16 +201,16 @@ index 3a0ef4f9921c572f07dcfa56aae441fa2b15dba8..cfa0146ae6b70623c2fe63b864ceef7b
  		  __m |= __bit;
  	      }
 diff --git a/libstdc++-v3/config/os/generic/error_constants.h b/libstdc++-v3/config/os/amigaos/error_constants.h
-similarity index 97%
+similarity index 89%
 copy from libstdc++-v3/config/os/generic/error_constants.h
 copy to libstdc++-v3/config/os/amigaos/error_constants.h
-index af77f46be55ebc597d37b0dfbc2fd28ca803e3ac..74492cf61c875eac28cb8a86d5bfdb3b8807aa16 100644
+index 9d01c16ee2711daa822df00a7e8683a7baf22b52..74492cf61c875eac28cb8a86d5bfdb3b8807aa16 100644
 --- libstdc++-v3/config/os/generic/error_constants.h
 +++ libstdc++-v3/config/os/amigaos/error_constants.h
 @@ -1,9 +1,9 @@
  // Specific definitions for generic platforms  -*- C++ -*-
  
--// Copyright (C) 2007-2018 Free Software Foundation, Inc.
+-// Copyright (C) 2007-2021 Free Software Foundation, Inc.
 +// Copyright (C) 2007-2015 Free Software Foundation, Inc.
  //
  // This file is part of the GNU ISO C++ Library.  This library is free
@@ -218,14 +218,53 @@ index af77f46be55ebc597d37b0dfbc2fd28ca803e3ac..74492cf61c875eac28cb8a86d5bfdb3b
  // terms of the GNU General Public License as published by the
  // Free Software Foundation; either version 3, or (at your option)
  // any later version.
-@@ -90,16 +90,16 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
+@@ -45,13 +45,13 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
+       already_connected = 			EISCONN,
+       argument_list_too_long = 			E2BIG,
+       argument_out_of_domain = 			EDOM,
+       bad_address = 				EFAULT,
+       bad_file_descriptor = 			EBADF,
+ 
+-#ifdef EBADMSG
++#ifdef _GLIBCXX_HAVE_EBADMSG
+       bad_message = 				EBADMSG,
+ #endif
+ 
+       broken_pipe = 				EPIPE,
+       connection_aborted = 			ECONNABORTED,
+       connection_already_in_progress = 		EALREADY,
+@@ -65,13 +65,13 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
+       file_exists = 	       			EEXIST,
+       file_too_large = 				EFBIG,
+       filename_too_long = 			ENAMETOOLONG,
+       function_not_supported = 			ENOSYS,
+       host_unreachable = 			EHOSTUNREACH,
+ 
+-#ifdef EIDRM
++#ifdef _GLIBCXX_HAVE_EIDRM
+       identifier_removed = 			EIDRM,
+ #endif
+ 
+       illegal_byte_sequence = 			EILSEQ,
+       inappropriate_io_control_operation = 	ENOTTY,
+       interrupted = 				EINTR,
+@@ -83,92 +83,92 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
+       network_down = 				ENETDOWN,
+       network_reset = 				ENETRESET,
+       network_unreachable = 			ENETUNREACH,
+       no_buffer_space = 			ENOBUFS,
+       no_child_process = 			ECHILD,
+ 
+-#ifdef ENOLINK
++#ifdef _GLIBCXX_HAVE_ENOLINK
        no_link = 				ENOLINK,
  #endif
  
        no_lock_available = 			ENOLCK,
  
- #ifdef _GLIBCXX_HAVE_ENODATA
+-#ifdef ENODATA
 -      no_message_available = 			ENODATA,
++#ifdef _GLIBCXX_HAVE_ENODATA
 +      no_message_available = 			ENODATA, 
  #endif
  
@@ -234,21 +273,100 @@ index af77f46be55ebc597d37b0dfbc2fd28ca803e3ac..74492cf61c875eac28cb8a86d5bfdb3b
        no_protocol_option = 			ENOPROTOOPT,
        no_space_on_device = 			ENOSPC,
  
- #ifdef _GLIBCXX_HAVE_ENOSR
+-#ifdef ENOSR
++#ifdef _GLIBCXX_HAVE_ENOSR
        no_stream_resources = 			ENOSR,
  #endif
-diff --git a/libstdc++-v3/config/os/vxworks/os_defines.h b/libstdc++-v3/config/os/amigaos/os_defines.h
-similarity index 86%
-copy from libstdc++-v3/config/os/vxworks/os_defines.h
+ 
+       no_such_device_or_address = 		ENXIO,
+       no_such_device = 				ENODEV,
+       no_such_file_or_directory = 		ENOENT,
+       no_such_process = 			ESRCH,
+       not_a_directory = 			ENOTDIR,
+       not_a_socket = 				ENOTSOCK,
+ 
+-#ifdef ENOSTR
++#ifdef _GLIBCXX_HAVE_ENOSTR
+       not_a_stream = 				ENOSTR,
+ #endif
+ 
+       not_connected = 				ENOTCONN,
+       not_enough_memory = 			ENOMEM,
+ 
+-#ifdef ENOTSUP
++#ifdef _GLIBCXX_HAVE_ENOTSUP
+       not_supported = 				ENOTSUP,
+ #endif
+ 
+-#ifdef ECANCELED
++#ifdef _GLIBCXX_HAVE_ECANCELED
+       operation_canceled = 			ECANCELED,
+ #endif
+ 
+       operation_in_progress = 			EINPROGRESS,
+       operation_not_permitted = 		EPERM,
+       operation_not_supported = 		EOPNOTSUPP,
+       operation_would_block = 			EWOULDBLOCK,
+ 
+-#ifdef EOWNERDEAD
++#ifdef _GLIBCXX_HAVE_EOWNERDEAD
+       owner_dead = 				EOWNERDEAD,
+ #endif
+ 
+       permission_denied = 			EACCES,
+ 
+-#ifdef EPROTO
++#ifdef _GLIBCXX_HAVE_EPROTO
+       protocol_error = 				EPROTO,
+ #endif
+ 
+       protocol_not_supported = 			EPROTONOSUPPORT,
+       read_only_file_system = 			EROFS,
+       resource_deadlock_would_occur = 		EDEADLK,
+       resource_unavailable_try_again = 		EAGAIN,
+       result_out_of_range = 			ERANGE,
+ 
+-#ifdef ENOTRECOVERABLE
++#ifdef _GLIBCXX_HAVE_ENOTRECOVERABLE
+       state_not_recoverable = 			ENOTRECOVERABLE,
+ #endif
+ 
+-#ifdef ETIME
++#ifdef _GLIBCXX_HAVE_ETIME
+       stream_timeout = 				ETIME,
+ #endif
+ 
+-#ifdef ETXTBSY
++#ifdef _GLIBCXX_HAVE_ETXTBSY
+       text_file_busy = 				ETXTBSY,
+ #endif
+ 
+       timed_out = 				ETIMEDOUT,
+       too_many_files_open_in_system = 		ENFILE,
+       too_many_files_open = 			EMFILE,
+       too_many_links = 				EMLINK,
+       too_many_symbolic_link_levels = 		ELOOP,
+ 
+-#ifdef EOVERFLOW
++#ifdef _GLIBCXX_HAVE_EOVERFLOW
+       value_too_large = 			EOVERFLOW,
+ #endif
+ 
+       wrong_protocol_type = 			EPROTOTYPE
+     };
+ 
+diff --git a/libstdc++-v3/config/os/djgpp/os_defines.h b/libstdc++-v3/config/os/amigaos/os_defines.h
+similarity index 85%
+copy from libstdc++-v3/config/os/djgpp/os_defines.h
 copy to libstdc++-v3/config/os/amigaos/os_defines.h
-index 9f43cc4b9d5a2c52215722fec4ac1d895265e869..346f063958cd7e80ebf97be4acee0bdf391cb811 100644
---- libstdc++-v3/config/os/vxworks/os_defines.h
+index 11c783871accd6e8f9bcbb076654e9c49e27b2cc..346f063958cd7e80ebf97be4acee0bdf391cb811 100644
+--- libstdc++-v3/config/os/djgpp/os_defines.h
 +++ libstdc++-v3/config/os/amigaos/os_defines.h
 @@ -1,9 +1,9 @@
--// Specific definitions for VxWorks  -*- C++ -*-
+-// Specific definitions for DJGPP  -*- C++ -*-
 +// Specific definitions for AmigaOS -*- C++ -*-
  
--// Copyright (C) 2000-2018 Free Software Foundation, Inc.
+-// Copyright (C) 2001-2021 Free Software Foundation, Inc.
 +// Copyright (C) 2000-2015 Free Software Foundation, Inc.
  //
  // This file is part of the GNU ISO C++ Library.  This library is free
@@ -256,31 +374,29 @@ index 9f43cc4b9d5a2c52215722fec4ac1d895265e869..346f063958cd7e80ebf97be4acee0bdf
  // terms of the GNU General Public License as published by the
  // Free Software Foundation; either version 3, or (at your option)
  // any later version.
-@@ -30,13 +30,14 @@
+@@ -30,11 +30,14 @@
  #ifndef _GLIBCXX_OS_DEFINES
  #define _GLIBCXX_OS_DEFINES 1
  
  // System-specific #define, typedefs, corrections, etc, go here.  This
  // file will come before all others.
  
--//Keep vxWorks from defining min()/max() as macros
--#ifdef NOMINMAX
--#undef NOMINMAX
+-// FIXME: should there be '#undef POSIX_SOURCE'?
 +// No ioctl() on AmigaOS
 +#define _GLIBCXX_NO_IOCTL 1
-+
+ 
 +#ifdef __NEWLIB__
 +#define _GLIBCXX_USE_C99_STDINT_TR1 1
  #endif
--#define NOMINMAX 1
  
- #endif
+-
++#endif
 diff --git a/libstdc++-v3/configure.host b/libstdc++-v3/configure.host
-index 155a3cdea1bad297b3cd4c21ecd3c7307b5e6ac9..9daab7c3c71169b10f5ff48c70e4d6d13228cf7f 100644
+index ec32980aa0db898623804980af65dad588e4d9f5..e9789a4981c6fc36c6b660ab768427bb42eb6509 100644
 --- libstdc++-v3/configure.host
 +++ libstdc++-v3/configure.host
-@@ -219,12 +219,15 @@ case "${host_os}" in
-     atomicity_dir="os/aix"
+@@ -213,12 +213,15 @@ case "${host_os}" in
+     tmake_file="os/aix/t-aix"
      ;;
    aix*)
      os_include_dir="os/generic"

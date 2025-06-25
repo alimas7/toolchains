@@ -1,7 +1,7 @@
-From a4c043211aec7a771350a521604b950a9a7deef7 Mon Sep 17 00:00:00 2001
+From c0a70959ea598b7004bb62e22b42443e090788b4 Mon Sep 17 00:00:00 2001
 From: Sebastian Bauer <mail@sebastianbauer.info>
 Date: Fri, 27 Apr 2018 22:48:18 +0200
-Subject: [PATCH 21/30] Rename lineartags to checktags.
+Subject: [PATCH 20/41] Rename lineartags to checktags.
 
 The name lineartags would imply linearvarargs but this is not implemented
 or necessary.
@@ -9,14 +9,14 @@ or necessary.
  gcc/c/c-typeck.c                   | 6 +++---
  gcc/config/rs6000/amigaos-protos.h | 2 +-
  gcc/config/rs6000/amigaos.c        | 4 ++--
- gcc/config/rs6000/amigaos.h        | 2 +-
- 4 files changed, 7 insertions(+), 7 deletions(-)
+ gcc/config/rs6000/amigaos.h        | 3 ++-
+ 4 files changed, 8 insertions(+), 7 deletions(-)
 
 diff --git a/gcc/c/c-typeck.c b/gcc/c/c-typeck.c
-index d7287925484fd9a7301b9c4f4152251c644a7b0b..2c2c081f0f71b8da1229d0988a271702f6106880 100644
+index 3b1418c7eb9c479df997f1e4ff758b55ad837075..10c7b0e02d3ed6d73ea89062740b60c6614f9a0f 100644
 --- gcc/c/c-typeck.c
 +++ gcc/c/c-typeck.c
-@@ -3235,14 +3235,14 @@ convert_arguments (location_t loc, vec<location_t> arg_loc, tree typelist,
+@@ -3506,14 +3506,14 @@ convert_arguments (location_t loc, vec<location_t> arg_loc, tree typelist,
    bool error_args = false;
    const bool type_generic = fundecl
      && lookup_attribute ("type generic", TYPE_ATTRIBUTES (TREE_TYPE (fundecl)));
@@ -33,7 +33,7 @@ index d7287925484fd9a7301b9c4f4152251c644a7b0b..2c2c081f0f71b8da1229d0988a271702
    if (TREE_CODE (function) == ADDR_EXPR
        && TREE_CODE (TREE_OPERAND (function, 0)) == FUNCTION_DECL)
      function = TREE_OPERAND (function, 0);
-@@ -3366,13 +3366,13 @@ convert_arguments (location_t loc, vec<location_t> arg_loc, tree typelist,
+@@ -3675,13 +3675,13 @@ convert_arguments (location_t loc, vec<location_t> arg_loc, tree typelist,
  
        /* If this is a function call with linear tags try to improve the expected
         * type on base of recorded tag <-> type mapping, but only if we don't know
@@ -49,7 +49,7 @@ index d7287925484fd9a7301b9c4f4152251c644a7b0b..2c2c081f0f71b8da1229d0988a271702
              {
                type = prev_tagtype;
 diff --git a/gcc/config/rs6000/amigaos-protos.h b/gcc/config/rs6000/amigaos-protos.h
-index df81cfa81701262bebfbad60b580ab75517aa276..ecd0495bc0850eb59400ca403e4832cb97e9b9e9 100644
+index 5a0b8006e2f6b6b8877e092994567233077594f1..70351c90a0189cf5032253cb413baf8dc9b9fe43 100644
 --- gcc/config/rs6000/amigaos-protos.h
 +++ gcc/config/rs6000/amigaos-protos.h
 @@ -27,13 +27,13 @@ extern void amigaos_function_arg_advance (CUMULATIVE_ARGS *, enum machine_mode,
@@ -64,11 +64,11 @@ index df81cfa81701262bebfbad60b580ab75517aa276..ecd0495bc0850eb59400ca403e4832cb
  extern tree amigaos_handle_baserel_restore_attribute (tree *, tree, tree, int, bool*);
  extern tree amigaos_handle_force_no_baserel_attribute (tree *, tree, tree, int, bool*);
  extern tree amigaos_handle_check68kfuncptr_attribute (tree *, tree, tree, int, bool*);
- extern tree amigaos_handle_tagtype_attribute (tree *, tree, tree, int, bool*);
  extern rtx amigaos_legitimize_baserel_address (rtx addr);
  extern int amigaos_baserel_operand(rtx x);
+ extern int amigaos_not_baserel_tree_p(tree decl);
 diff --git a/gcc/config/rs6000/amigaos.c b/gcc/config/rs6000/amigaos.c
-index db803847e90047b90c8c88e3aa9b50c8ccf73489..f4b0ba17553558e96091072790152a8c8a97844d 100644
+index a7cfaaa2ca4ac913d78e3240aa994a65c2e4b03f..ad9b4897dcb6df114c1a890bbbf6618a2fe72369 100644
 --- gcc/config/rs6000/amigaos.c
 +++ gcc/config/rs6000/amigaos.c
 @@ -346,15 +346,15 @@ amigaos_handle_linearvarargs_attribute (tree *node, tree name,
@@ -90,10 +90,10 @@ index db803847e90047b90c8c88e3aa9b50c8ccf73489..f4b0ba17553558e96091072790152a8c
  	       IDENTIFIER_POINTER (name));
        *no_add_attrs = true;
 diff --git a/gcc/config/rs6000/amigaos.h b/gcc/config/rs6000/amigaos.h
-index 0ed2a2b9ca1abe33f6534008f0c9592a02eacc09..d4812d8f618c2758bf95ec998f6aa53ee9bcb6fc 100644
+index f88bfe5f879cb4ca09f067d907ec36ef0b4c2da3..d4812d8f618c2758bf95ec998f6aa53ee9bcb6fc 100644
 --- gcc/config/rs6000/amigaos.h
 +++ gcc/config/rs6000/amigaos.h
-@@ -392,13 +392,13 @@ do                                   \
+@@ -392,13 +392,14 @@ do                                   \
  
  /* AmigaOS specific attribute */
  /* { name, min_len, max_len, decl_req, type_req, fn_type_req,
@@ -102,12 +102,13 @@ index 0ed2a2b9ca1abe33f6534008f0c9592a02eacc09..d4812d8f618c2758bf95ec998f6aa53e
    { "linearvarargs", 0, 0, false, true,  true, false, amigaos_handle_linearvarargs_attribute, NULL}, \
 -  { "lineartags", 0, 0, false, true, true, false, amigaos_handle_lineartags_attribute, NULL}, \
 +  { "checktags", 0, 0, false, true, true, false, amigaos_handle_checktags_attribute, NULL}, \
-   { "tagtype", 1, 1, false, false, false, false, amigaos_handle_tagtype_attribute, NULL}, \
++  { "tagtype", 1, 1, false, false, false, false, amigaos_handle_tagtype_attribute, NULL}, \
    { "baserel_restore", 0, 0, false, true, true, false, amigaos_handle_baserel_restore_attribute, NULL }, \
    { "force_no_baserel", 0, 0, true, false, false, false, amigaos_handle_force_no_baserel_attribute, NULL }, \
    { "check68kfuncptr", 0, 0, false, true, true, false, amigaos_handle_check68kfuncptr_attribute, NULL }
  
  /* Overrides */
+ 
 -- 
 2.34.1
 

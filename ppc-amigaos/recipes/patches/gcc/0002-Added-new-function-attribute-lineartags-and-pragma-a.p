@@ -1,7 +1,7 @@
-From c5f2a43b7ae028a95f5744d76583035fd0171cf1 Mon Sep 17 00:00:00 2001
+From 5901f8aec0e2f6a0f826903cd483cc1b10f63aeb Mon Sep 17 00:00:00 2001
 From: Sebastian Bauer <mail@sebastianbauer.info>
 Date: Fri, 14 Nov 2014 20:03:56 +0100
-Subject: [PATCH 02/30] Added new function attribute "lineartags" and pragma
+Subject: [PATCH 02/41] Added new function attribute "lineartags" and pragma
  "amigaos tagtype".
 
 Functions that have the lineartags attribute are assumed to be functions
@@ -29,20 +29,20 @@ functions.
 ---
  gcc/c-family/c-pragma.c            |  10 +++
  gcc/c/c-parser.c                   | 129 +++++++++++++++++++++++++++++
- gcc/c/c-typeck.c                   |  26 ++++++
+ gcc/c/c-typeck.c                   |  26 +++++-
  gcc/config/rs6000/amigaos-protos.h |   1 +
  gcc/config/rs6000/amigaos.c        |  33 ++++++++
- 5 files changed, 199 insertions(+)
+ 5 files changed, 198 insertions(+), 1 deletion(-)
 
 diff --git a/gcc/c-family/c-pragma.c b/gcc/c-family/c-pragma.c
-index 84e4341ee5f0594515ff564d39a9073ed9f42466..d22bf0ae4c2ae578274b52e71e1e5d942cc18179 100644
+index 4f8e8e0128c3ddb77450a0d4976d00ad03c6a4c6..71c6d0856f49fe90e2933ebc40e673d05b6b8217 100644
 --- gcc/c-family/c-pragma.c
 +++ gcc/c-family/c-pragma.c
-@@ -1138,12 +1138,21 @@ handle_pragma_message (cpp_reader *ARG_UNUSED(dummy))
-     warning (OPT_Wpragmas, "junk at end of %<#pragma message%>");
+@@ -1165,12 +1165,21 @@ handle_pragma_message (cpp_reader *ARG_UNUSED(dummy))
  
    if (TREE_STRING_LENGTH (message) > 1)
-     inform (input_location, "#pragma message: %s", TREE_STRING_POINTER (message));
+     inform (input_location, "%<#pragma message: %s%>",
+ 	    TREE_STRING_POINTER (message));
  }
  
 +/* This is queried by the invoker of the handler */
@@ -60,7 +60,7 @@ index 84e4341ee5f0594515ff564d39a9073ed9f42466..d22bf0ae4c2ae578274b52e71e1e5d94
  
  void
  mark_valid_location_for_stdc_pragma (bool flag)
-@@ -1551,12 +1560,13 @@ init_pragma (void)
+@@ -1584,12 +1593,13 @@ init_pragma (void)
  
    c_register_pragma_with_expansion (0, "redefine_extname",
  				    handle_pragma_redefine_extname);
@@ -75,10 +75,10 @@ index 84e4341ee5f0594515ff564d39a9073ed9f42466..d22bf0ae4c2ae578274b52e71e1e5d94
    global_sso = default_sso;
    c_register_pragma (0, "scalar_storage_order", 
 diff --git a/gcc/c/c-parser.c b/gcc/c/c-parser.c
-index 75ef0a437a71418b29b7903c1665ba6af04dad43..3e195cbb9a6c13740a21fc55d4889e7ebe994947 100644
+index 7690977f6b8590599e54bb0e3b49afe21c322092..aa760c7f9410d67fcaa74e2a0c3d3d354867b0b3 100644
 --- gcc/c/c-parser.c
 +++ gcc/c/c-parser.c
-@@ -94,12 +94,74 @@ set_c_expr_source_range (c_expr *expr,
+@@ -97,12 +97,74 @@ set_c_expr_source_range (c_expr *expr,
  {
    expr->src_range = src_range;
    if (expr->value)
@@ -153,7 +153,7 @@ index 75ef0a437a71418b29b7903c1665ba6af04dad43..3e195cbb9a6c13740a21fc55d4889e7e
  void
  c_parse_init (void)
  {
-@@ -2757,12 +2819,15 @@ c_parser_declspecs (c_parser *parser, struct c_declspecs *specs,
+@@ -2982,12 +3044,15 @@ c_parser_declspecs (c_parser *parser, struct c_declspecs *specs,
  	    goto out;
  	  attrs_ok = true;
  	  seen_type = true;
@@ -169,7 +169,7 @@ index 75ef0a437a71418b29b7903c1665ba6af04dad43..3e195cbb9a6c13740a21fc55d4889e7e
  	  if (!typespec_ok)
  	    goto out;
  	  attrs_ok = true;
-@@ -10978,12 +11043,32 @@ c_parser_pragma_unroll (c_parser *parser)
+@@ -12275,12 +12340,32 @@ c_parser_pragma_unroll (c_parser *parser)
      }
  
    c_parser_skip_to_pragma_eol (parser);
@@ -202,7 +202,7 @@ index 75ef0a437a71418b29b7903c1665ba6af04dad43..3e195cbb9a6c13740a21fc55d4889e7e
     true if we actually parsed such a pragma.  */
  
  static bool
-@@ -11199,12 +11284,56 @@ c_parser_pragma (c_parser *parser, enum pragma_context context, bool *if_p)
+@@ -12523,12 +12608,56 @@ c_parser_pragma (c_parser *parser, enum pragma_context context, bool *if_p)
        break;
      }
  
@@ -260,10 +260,10 @@ index 75ef0a437a71418b29b7903c1665ba6af04dad43..3e195cbb9a6c13740a21fc55d4889e7e
    c_parser_skip_to_pragma_eol (parser);
  
 diff --git a/gcc/c/c-typeck.c b/gcc/c/c-typeck.c
-index f2aa4d4e3a7284b84233bb8a79ab475ac3f8728c..d7287925484fd9a7301b9c4f4152251c644a7b0b 100644
+index 9a150b910f117a86cf29b5bbb6b3f1fe213c29cc..3b1418c7eb9c479df997f1e4ff758b55ad837075 100644
 --- gcc/c/c-typeck.c
 +++ gcc/c/c-typeck.c
-@@ -3235,12 +3235,14 @@ convert_arguments (location_t loc, vec<location_t> arg_loc, tree typelist,
+@@ -3506,12 +3506,14 @@ convert_arguments (location_t loc, vec<location_t> arg_loc, tree typelist,
    bool error_args = false;
    const bool type_generic = fundecl
      && lookup_attribute ("type generic", TYPE_ATTRIBUTES (TREE_TYPE (fundecl)));
@@ -278,22 +278,22 @@ index f2aa4d4e3a7284b84233bb8a79ab475ac3f8728c..d7287925484fd9a7301b9c4f4152251c
    if (TREE_CODE (function) == ADDR_EXPR
        && TREE_CODE (TREE_OPERAND (function, 0)) == FUNCTION_DECL)
      function = TREE_OPERAND (function, 0);
-@@ -3279,12 +3281,14 @@ convert_arguments (location_t loc, vec<location_t> arg_loc, tree typelist,
- 	}
+@@ -3567,13 +3569,13 @@ convert_arguments (location_t loc, vec<location_t> arg_loc, tree typelist,
+ 	  }
      }
  
-   /* Scan the given expressions and types, producing individual
-      converted arguments.  */
+   /* Scan the given expressions (VALUES) and types (TYPELIST), producing
+      individual converted arguments.  */
  
-+  tree prev_tagtype = NULL_TREE;
-+
-   for (typetail = typelist, parmnum = 0;
+-  tree typetail, builtin_typetail, val;
++  tree typetail, builtin_typetail, val, prev_tagtype = NULL_TREE;
+   for (typetail = typelist,
+ 	 builtin_typetail = builtin_typelist,
+ 	 parmnum = 0;
         values && values->iterate (parmnum, &val);
         ++parmnum)
      {
-       tree type = typetail ? TREE_VALUE (typetail) : 0;
-       tree valtype = TREE_TYPE (val);
-@@ -3357,12 +3361,34 @@ convert_arguments (location_t loc, vec<location_t> arg_loc, tree typelist,
+@@ -3668,12 +3670,34 @@ convert_arguments (location_t loc, vec<location_t> arg_loc, tree typelist,
  	      {
  		promote_float_arg = false;
  		break;
@@ -324,10 +324,10 @@ index f2aa4d4e3a7284b84233bb8a79ab475ac3f8728c..d7287925484fd9a7301b9c4f4152251c
 +
        if (type != NULL_TREE)
  	{
- 	  /* Formal parm type is specified by a function prototype.  */
- 
- 	  if (type == error_mark_node || !COMPLETE_TYPE_P (type))
- 	    {
+ 	  tree origtype = (!origtypes) ? NULL_TREE : (*origtypes)[parmnum];
+ 	  parmval = convert_argument (ploc, function, fundecl, type, origtype,
+ 				      val, valtype, npc, rname, parmnum, argnum,
+ 				      excess_precision, 0);
 diff --git a/gcc/config/rs6000/amigaos-protos.h b/gcc/config/rs6000/amigaos-protos.h
 index eb5f8fc5f3d546b8d8e1cdd8118a3085079df50e..3b8c994cdbd192eaf7112c780f0106a4d96cbb90 100644
 --- gcc/config/rs6000/amigaos-protos.h

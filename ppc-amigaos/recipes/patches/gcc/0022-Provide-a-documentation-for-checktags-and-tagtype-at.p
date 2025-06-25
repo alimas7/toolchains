@@ -1,7 +1,7 @@
-From 75b58899e792be1e0be50f87ee79726017b9f53a Mon Sep 17 00:00:00 2001
+From 4cb533514851a1840dea1ce9d8e20884b45f53e1 Mon Sep 17 00:00:00 2001
 From: Sebastian Bauer <mail@sebastianbauer.info>
 Date: Sun, 29 Apr 2018 00:08:22 +0200
-Subject: [PATCH 23/30] Provide a documentation for checktags and tagtype
+Subject: [PATCH 22/41] Provide a documentation for checktags and tagtype
  attributes.
 
 ---
@@ -9,10 +9,10 @@ Subject: [PATCH 23/30] Provide a documentation for checktags and tagtype
  1 file changed, 28 insertions(+)
 
 diff --git a/gcc/doc/extend.texi b/gcc/doc/extend.texi
-index 74e4196842260a7904a71279ad08f311660c4527..cb1b4aafd131f08f7ec4641ddfdb76871dccd99a 100644
+index 1cd6f26fd93e06e9c2ba4176c64daa6cdaf0048a..11b9555628735dccb8db88e5a4ee3c415cbf0ae4 100644
 --- gcc/doc/extend.texi
 +++ gcc/doc/extend.texi
-@@ -3680,12 +3680,24 @@ int VARARGS68K __amigaos4_check68k_trampoline(int num_args,
+@@ -4212,12 +4212,24 @@ int VARARGS68K __amigaos4_check68k_trampoline(int num_args,
      va_end(args);
  
      return(result);
@@ -33,11 +33,11 @@ index 74e4196842260a7904a71279ad08f311660c4527..cb1b4aafd131f08f7ec4641ddfdb7687
 +
  @item weak
  @cindex @code{weak} function attribute
- The @code{weak} attribute causes the declaration to be emitted as a weak
- symbol rather than a global.  This is primarily useful in defining
- library functions that can be overridden in user code, though it can
- also be used with non-function declarations.  Weak symbols are supported
-@@ -7933,12 +7945,28 @@ is used anywhere in the source file.  This is useful when identifying
+ The @code{weak} attribute causes a declaration of an external symbol
+ to be emitted as a weak symbol rather than a global.  This is primarily
+ useful in defining library functions that can be overridden in user code,
+ though it can also be used with non-function declarations.  The overriding
+@@ -9074,12 +9086,28 @@ is used anywhere in the source file.  This is useful when identifying
  enumerators that are expected to be removed in a future version of a
  program.  The warning also includes the location of the declaration
  of the deprecated enumerator, to enable users to easily find further

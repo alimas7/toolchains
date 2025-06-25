@@ -1,23 +1,23 @@
-From d76787f616ce352bcdda427ad5c2b7a27b7d3da0 Mon Sep 17 00:00:00 2001
+From 32df36c00d3b7244a206c14d8318d67065a75e26 Mon Sep 17 00:00:00 2001
 From: Sebastian Bauer <mail@sebastianbauer.info>
 Date: Sat, 27 Oct 2018 08:06:21 +0200
-Subject: [PATCH 26/30] Add aregparam attribute for functions for the m68k
+Subject: [PATCH 25/41] Add aregparam attribute for functions for the m68k
  backend.
 
 These can be used to pass arguments to directly named registers.
 This patch is based on changes that can be found in the mooli/gcc-amiga
 GitHub repository.
 ---
- gcc/config/m68k/m68k-protos.h |   7 ++
- gcc/config/m68k/m68k.c        | 126 ++++++++++++++++++++++++++++++++--
- gcc/config/m68k/m68k.h        |  27 +++++---
- 3 files changed, 144 insertions(+), 16 deletions(-)
+ gcc/config/m68k/m68k-protos.h |   7 +++
+ gcc/config/m68k/m68k.c        | 111 +++++++++++++++++++++++++++++++++-
+ gcc/config/m68k/m68k.h        |  27 ++++++---
+ 3 files changed, 134 insertions(+), 11 deletions(-)
 
 diff --git a/gcc/config/m68k/m68k-protos.h b/gcc/config/m68k/m68k-protos.h
-index 1f6a68f62b738de96133be4a702e6b05b67922fe..bbc3a960077a48350b861c83e5db2132d8af904b 100644
+index 17861665fd438bfbb1eb9f3276bfee2c46e785b2..9b1152e5592eb9043d6971b5dc3a6a06f5591e33 100644
 --- gcc/config/m68k/m68k-protos.h
 +++ gcc/config/m68k/m68k-protos.h
-@@ -97,6 +97,13 @@ extern const char *m68k_cpp_cpu_ident (const char *);
+@@ -111,6 +111,13 @@ extern const char *m68k_cpp_cpu_ident (const char *);
  extern const char *m68k_cpp_cpu_family (const char *);
  extern void init_68881_table (void);
  extern rtx m68k_legitimize_call_address (rtx);
@@ -32,11 +32,11 @@ index 1f6a68f62b738de96133be4a702e6b05b67922fe..bbc3a960077a48350b861c83e5db2132
 +#endif /* RTX_CODE inside TREE_CODE */
 +#endif /* TREE_CODE */
 diff --git a/gcc/config/m68k/m68k.c b/gcc/config/m68k/m68k.c
-index 495a80b759e3b76142f235e674c71ef5d67a7fc7..e1093581ad1e598879952e21e148ed005abfa047 100644
+index 40bdcb052f8fbb8e454a90dc9d66d2a7bf048d9a..d7498465b1ee7f89b39a993975b89737539c8e44 100644
 --- gcc/config/m68k/m68k.c
 +++ gcc/config/m68k/m68k.c
-@@ -353,12 +353,14 @@ static machine_mode m68k_promote_function_mode (const_tree, machine_mode,
- #define TARGET_PROMOTE_FUNCTION_MODE m68k_promote_function_mode
+@@ -361,12 +361,14 @@ static void m68k_asm_final_postscan_insn (FILE *, rtx_insn *insn, rtx [], int);
+ #define TARGET_ASM_FINAL_POSTSCAN_INSN m68k_asm_final_postscan_insn
  
  static const struct attribute_spec m68k_attribute_table[] =
  {
@@ -50,7 +50,7 @@ index 495a80b759e3b76142f235e674c71ef5d67a7fc7..e1093581ad1e598879952e21e148ed00
      m68k_handle_fndecl_attribute, NULL },
    { "interrupt_thread", 0, 0, true,  false, false, false,
      m68k_handle_fndecl_attribute, NULL },
-@@ -1404,18 +1406,102 @@ m68k_reg_present_p (const_rtx parallel, unsigned int regno)
+@@ -1382,18 +1384,102 @@ m68k_reg_present_p (const_rtx parallel, unsigned int regno)
  	return true;
      }
  
@@ -153,7 +153,7 @@ index 495a80b759e3b76142f235e674c71ef5d67a7fc7..e1093581ad1e598879952e21e148ed00
    if (CALL_EXPR_STATIC_CHAIN (exp))
      return false;
  
-@@ -1436,12 +1522,21 @@ m68k_ok_for_sibcall_p (tree decl, tree exp)
+@@ -1414,12 +1500,21 @@ m68k_ok_for_sibcall_p (tree decl, tree exp)
        if (!(rtx_equal_p (cfun_value, call_value)
  	    || (REG_P (cfun_value)
  		&& m68k_reg_present_p (call_value, REGNO (cfun_value)))))
@@ -175,7 +175,7 @@ index 495a80b759e3b76142f235e674c71ef5d67a7fc7..e1093581ad1e598879952e21e148ed00
         undefined if it is calling an interrupt function.  */
      return true;
  
-@@ -1450,32 +1545,51 @@ m68k_ok_for_sibcall_p (tree decl, tree exp)
+@@ -1428,24 +1523,38 @@ m68k_ok_for_sibcall_p (tree decl, tree exp)
    if (decl && m68k_get_function_kind (decl) == kind)
      return true;
    
@@ -196,45 +196,27 @@ index 495a80b759e3b76142f235e674c71ef5d67a7fc7..e1093581ad1e598879952e21e148ed00
 +}
  
  static rtx
--m68k_function_arg (cumulative_args_t cum ATTRIBUTE_UNUSED,
-+m68k_function_arg (cumulative_args_t cum_v,
- 		   machine_mode mode ATTRIBUTE_UNUSED,
--		   const_tree type ATTRIBUTE_UNUSED,
--		   bool named ATTRIBUTE_UNUSED)
-+		   const_tree type,
-+		   bool named)
+ m68k_function_arg (cumulative_args_t, const function_arg_info &)
  {
-+  CUMULATIVE_ARGS *cum = get_cumulative_args (cum_v);
-+  if(named && cum->regparams_count > cum->regparams_next)
-+    {
-+      int regno = cum->regparams[cum->regparams_next++];
-+      return gen_rtx_REG(mode, regno);
-+    }
++  // FIXME: 'Add aregparam attribute for functions for the m68k backend.'
++  // could not be applied.
    return NULL_RTX;
  }
  
  static void
- m68k_function_arg_advance (cumulative_args_t cum_v, machine_mode mode,
--			   const_tree type, bool named ATTRIBUTE_UNUSED)
-+			   const_tree type, bool named)
+ m68k_function_arg_advance (cumulative_args_t cum_v,
+ 			   const function_arg_info &arg)
  {
++  // FIXME: 'Add aregparam attribute for functions for the m68k backend.'
++  // could not be applied.
    CUMULATIVE_ARGS *cum = get_cumulative_args (cum_v);
  
--  *cum += (mode != BLKmode
-+  if (!named || cum->regparams_next > cum->regparams_count)
-+    {
-+      cum->bytes += (mode != BLKmode
- 	   ? (GET_MODE_SIZE (mode) + 3) & ~3
- 	   : (int_size_in_bytes (type) + 3) & ~3);
-+    }
+   *cum += (arg.promoted_size_in_bytes () + 3) & ~3;
  }
  
  /* Convert X to a legitimate function call memory reference and return the
-    result.  */
- 
- rtx
 diff --git a/gcc/config/m68k/m68k.h b/gcc/config/m68k/m68k.h
-index 506fa4e50e76f386d683e42351d38ca2c5e3d661..41baf9fc61c3a6784845ee27a3d5c700aeecc6a4 100644
+index 8dfa3a9bb4c8f9ba8eca411bdc46580f0f511ea1..863cc7e967f13256fd3fdeffbd1a9ebdf97c27ef 100644
 --- gcc/config/m68k/m68k.h
 +++ gcc/config/m68k/m68k.h
 @@ -484,22 +484,29 @@ extern enum reg_class regno_reg_class[];

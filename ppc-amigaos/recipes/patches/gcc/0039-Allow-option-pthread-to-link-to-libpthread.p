@@ -1,7 +1,7 @@
-From 1aa95d994f4de69667e276c8557365eaeb957d04 Mon Sep 17 00:00:00 2001
+From 77656b2f9fe825950b6c399466b0e80d7fa0c723 Mon Sep 17 00:00:00 2001
 From: rjd <3246251196ryan@gmail.com>
-Date: Wed, 15 May 2024 19:20:02 +0100
-Subject: [PATCH 29/30] Allow option -pthread to link to libpthread
+Date: Tue, 14 May 2024 17:54:10 +0100
+Subject: [PATCH 39/41] Allow option -pthread to link to libpthread
 
 ---
  gcc/config/rs6000/amigaos.h   | 2 +-
@@ -9,10 +9,10 @@ Subject: [PATCH 29/30] Allow option -pthread to link to libpthread
  2 files changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/gcc/config/rs6000/amigaos.h b/gcc/config/rs6000/amigaos.h
-index 85a2ed847e30fc01dac6dd94508cdce44c622e26..2c9eb4fbc48c6d1fe0c267a43305f3301814ebf4 100644
+index f92526783393a0ac40d0ea9c08ab932c7f472744..497a792ff41c8ecbaa2a5c02d8d5fd4ad3df7887 100644
 --- gcc/config/rs6000/amigaos.h
 +++ gcc/config/rs6000/amigaos.h
-@@ -334,13 +334,13 @@ mcrt=libnix: %(endfile_libnix); \
+@@ -345,13 +345,13 @@ mcrt=libnix: %(endfile_libnix); \
  mcrt=newlib: %(endfile_newlib); \
  mcrt=default|!mcrt=*: %(endfile_amiga_default); \
  : %eInvalid C runtime library}"
@@ -28,14 +28,14 @@ index 85a2ed847e30fc01dac6dd94508cdce44c622e26..2c9eb4fbc48c6d1fe0c267a43305f330
  #undef SUBTARGET_EXTRA_SPECS
  #define SUBTARGET_EXTRA_SPECS \
 diff --git a/gcc/config/rs6000/amigaos.opt b/gcc/config/rs6000/amigaos.opt
-index 1980ef231d7f849309ce24062d41992e01d77288..19c2b703c4ef69ddf7aec6f04502d1dda9e29ae7 100644
+index 73107b5ad79109bdb095f7ca0eaee5e725d2f8fc..771caa087fed837124cf2436b800df15d16735c3 100644
 --- gcc/config/rs6000/amigaos.opt
 +++ gcc/config/rs6000/amigaos.opt
-@@ -29,12 +29,15 @@ Target Report Mask(BASEREL)
+@@ -29,12 +29,15 @@ Target Mask(BASEREL)
  Generate base relative data access
  
  mcheck68kfuncptr
- Target Report Var(CHECK68KFUNCPTR)
+ Target Var(CHECK68KFUNCPTR)
  Generate target checking for function pointers
  
 +pthread

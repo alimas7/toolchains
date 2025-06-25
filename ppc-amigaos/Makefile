@@ -1,6 +1,6 @@
 # NetSurf build script for Amigaos 4 PPC cross compliation toolchain.
 
-UPSTREAM_GCC_VERSION := 8.4.0
+UPSTREAM_GCC_VERSION := 11.3.0
 UPSTREAM_GCC_TARBALL := gcc-$(UPSTREAM_GCC_VERSION).tar.xz
 UPSTREAM_GCC_URI := http://ftp.gnu.org/gnu/gcc/gcc-$(UPSTREAM_GCC_VERSION)/$(UPSTREAM_GCC_TARBALL)
 
@@ -57,10 +57,10 @@ UPSTREAM_CODESETS_TARBALL := codesets-$(UPSTREAM_CODESETS_VERSION).lha
 UPSTREAM_CODESETS_URI := https://github.com/jens-maus/libcodesets/releases/download/$(UPSTREAM_CODESETS_VERSION)/$(UPSTREAM_CODESETS_TARBALL)
 
 # need to force the auto* version in use
-GCC_AUTOCONF := autoconf2.64
-GCC_AUTOHEADER := autoheader2.64
-GCC_AUTORECONF := autoreconf2.64
-GCC_AUTOM4TE := autom4te2.64
+GCC_AUTOCONF := autoconf2.69
+GCC_AUTOHEADER := autoheader2.69
+GCC_AUTORECONF := autoreconf2.69
+GCC_AUTOM4TE := autom4te2.69
 
 TOP := $(CURDIR)
 RECIPES := $(TOP)/recipes
@@ -144,7 +144,7 @@ $(BUILDSTEPS)/ndk.d: $(BUILDSTEPS)/lhasa.d $(SOURCESDIR)/$(UPSTREAM_NDK_TARBALL)
 	cp -r $(BUILDDIR)/AmiSSL/AmiSSL/Developer/include/* $(PREFIX)/$(TARGET_NAME)/SDK/include/include_h/
 	cp -r $(BUILDDIR)/AmiSSL/AmiSSL/Developer/lib/AmigaOS4/newlib/* $(PREFIX)/$(TARGET_NAME)/SDK/newlib/lib/
 	cp -r $(BUILDDIR)/AmiSSL/AmiSSL/Developer/lib/AmigaOS4/libamisslstubs.a $(PREFIX)/$(TARGET_NAME)/SDK/newlib/lib/
-	lha xw=$(PREFIX)/$(TARGET_NAME)/SDK/ $(SOURCESDIR)/$(UPSTREAM_CLIB4_TARBALL)
+	lha xfw=$(PREFIX)/$(TARGET_NAME)/SDK/ $(SOURCESDIR)/$(UPSTREAM_CLIB4_TARBALL)
 	touch $@
 
 ###

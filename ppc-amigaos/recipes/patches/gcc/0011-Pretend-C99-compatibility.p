@@ -1,7 +1,7 @@
-From 1642447c593cb4cedf838c2ec9beb9ccc23ca4b1 Mon Sep 17 00:00:00 2001
+From 60505eb8b49c04957f3e1122484b5e2297f19c8e Mon Sep 17 00:00:00 2001
 From: Sebastian Bauer <mail@sebastianbauer.info>
 Date: Sat, 4 Mar 2017 07:39:21 +0100
-Subject: [PATCH 11/30] Pretend C99 compatibility.
+Subject: [PATCH 11/41] Pretend C99 compatibility.
 
 At least newlib is not fully C99 compatible because it doesn't expose
 various C99 function if __STRICT_ANSI__ is declared. Also it misses
@@ -30,10 +30,10 @@ index 346f063958cd7e80ebf97be4acee0bdf391cb811..6b67630b7be7102a9dfb7c104deac629
  
  #endif
 diff --git a/libstdc++-v3/include/bits/basic_string.h b/libstdc++-v3/include/bits/basic_string.h
-index 0f5d398fcf24c32bfc593e18b771a4f42eb85ae8..d01c86a175301024f8d1cb7e4384324b96e28b2e 100644
+index e6fa6eb23545f11308adb20fa67131d3d34ef77f..e93fc17d2965624c22e9d9c996c07e4af623b373 100644
 --- libstdc++-v3/include/bits/basic_string.h
 +++ libstdc++-v3/include/bits/basic_string.h
-@@ -6437,15 +6437,18 @@ _GLIBCXX_BEGIN_NAMESPACE_CXX11
+@@ -6646,15 +6646,18 @@ _GLIBCXX_BEGIN_NAMESPACE_CXX11
    { return __gnu_cxx::__stoa(&std::strtof, "stof", __str.c_str(), __idx); }
  
    inline double
@@ -48,12 +48,12 @@ index 0f5d398fcf24c32bfc593e18b771a4f42eb85ae8..d01c86a175301024f8d1cb7e4384324b
 +
  #endif // _GLIBCXX_USE_C99_STDLIB
  
- #if _GLIBCXX_USE_C99_STDIO
-   // NB: (v)snprintf vs sprintf.
+   // DR 1261. Insufficent overloads for to_string / to_wstring
  
-   // DR 1261.
+   inline string
+   to_string(int __val)
 diff --git a/libstdc++-v3/include/c_global/cstdlib b/libstdc++-v3/include/c_global/cstdlib
-index 10335017f0c4261c02b0b4d87c15b9a8572e6a61..fb5ae1889b288097f793396f35a9b65c2acf9fbb 100644
+index 47b954cf2faca25ffbac6d5b5e81857ad22cad90..99325ad0682f2f88bc04ca38a50cc97a2bcea4d5 100644
 --- libstdc++-v3/include/c_global/cstdlib
 +++ libstdc++-v3/include/c_global/cstdlib
 @@ -187,13 +187,17 @@ _GLIBCXX_END_NAMESPACE_VERSION

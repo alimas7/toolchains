@@ -1,18 +1,18 @@
-From e6011ca854253df1900ce2753f2545d5f1618be3 Mon Sep 17 00:00:00 2001
+From a5b8eb192677e48f84822bc15c20ba8975b5fad5 Mon Sep 17 00:00:00 2001
 From: Sebastian Bauer <mail@sebastianbauer.info>
 Date: Tue, 17 Apr 2018 22:02:09 +0200
-Subject: [PATCH 16/30] Fix r2 restoring in the epilog of baserel-restoring
+Subject: [PATCH 16/41] Fix r2 restoring in the epilog of baserel-restoring
  functions.
 
 ---
- gcc/config/rs6000/rs6000.c | 2 +-
+ gcc/config/rs6000/rs6000-logue.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/gcc/config/rs6000/rs6000.c b/gcc/config/rs6000/rs6000.c
-index fcdbc280a32a84a75def8dd490d913ebfe6f57d7..1839d93812ad89204402191e868a788b0ffdf1e8 100644
---- gcc/config/rs6000/rs6000.c
-+++ gcc/config/rs6000/rs6000.c
-@@ -29377,13 +29377,13 @@ rs6000_emit_epilogue (int sibcall)
+diff --git a/gcc/config/rs6000/rs6000-logue.c b/gcc/config/rs6000/rs6000-logue.c
+index e1097afdbeea232fb9746a4d872482b54fb412bf..3bfe4699728a6cc25726dc8a193e8b8e4469bcf9 100644
+--- gcc/config/rs6000/rs6000-logue.c
++++ gcc/config/rs6000/rs6000-logue.c
+@@ -4924,13 +4924,13 @@ rs6000_emit_epilogue (enum epilogue_type epilogue_type)
  #ifdef TARGET_BASEREL
    if (info->baserel_save_p && TARGET_BASEREL)
      {

@@ -1,7 +1,7 @@
-From 6b2502ad3148594cbc85b03cbf3d85ce82c70af7 Mon Sep 17 00:00:00 2001
+From c9fb3357d886c3e9561e008b9087c9b75caef37d Mon Sep 17 00:00:00 2001
 From: Sebastian Bauer <mail@sebastianbauer.info>
 Date: Fri, 3 Mar 2017 08:52:48 +0100
-Subject: [PATCH 09/30] Enable libatomic for ppc-amigaos.
+Subject: [PATCH 09/41] Enable libatomic for ppc-amigaos.
 
 It is not really finished yet.
 ---
@@ -16,11 +16,11 @@ diff --git a/libatomic/config/posix/host-config.h b/libatomic/config/amigaos/hos
 similarity index 96%
 copy from libatomic/config/posix/host-config.h
 copy to libatomic/config/amigaos/host-config.h
-index f141af17598ecb4e2c0ce2c97d4bc78101af4472..879758e4eb5594a79b8ee2d25564b19a6f51cd31 100644
+index 62be4cb0c52e489bef2a2cd71d1bc47d2980784c..879758e4eb5594a79b8ee2d25564b19a6f51cd31 100644
 --- libatomic/config/posix/host-config.h
 +++ libatomic/config/amigaos/host-config.h
 @@ -1,7 +1,7 @@
--/* Copyright (C) 2012-2018 Free Software Foundation, Inc.
+-/* Copyright (C) 2012-2021 Free Software Foundation, Inc.
 +/* Copyright (C) 2012-2015 Free Software Foundation, Inc.
     Contributed by Richard Henderson <rth@redhat.com>.
  
@@ -32,11 +32,11 @@ diff --git a/libatomic/config/posix/lock.c b/libatomic/config/amigaos/lock.c
 similarity index 68%
 copy from libatomic/config/posix/lock.c
 copy to libatomic/config/amigaos/lock.c
-index 13b2bdc930aa2dce47022df97c003eb548c51e21..ffd09f50095429f844bfe6bf7bec8741f56f1a28 100644
+index 54766dfd9911ee293f597275ff1d7189d8e55345..ffd09f50095429f844bfe6bf7bec8741f56f1a28 100644
 --- libatomic/config/posix/lock.c
 +++ libatomic/config/amigaos/lock.c
 @@ -1,7 +1,7 @@
--/* Copyright (C) 2012-2018 Free Software Foundation, Inc.
+-/* Copyright (C) 2012-2021 Free Software Foundation, Inc.
 +/* Copyright (C) 2012-2015 Free Software Foundation, Inc.
     Contributed by Richard Henderson <rth@redhat.com>.
  
@@ -158,10 +158,10 @@ index 13b2bdc930aa2dce47022df97c003eb548c51e21..ffd09f50095429f844bfe6bf7bec8741
 +
 +#endif
 diff --git a/libatomic/configure.tgt b/libatomic/configure.tgt
-index ea8c34f8c710cc40b5646b665c24cc0933a92c73..03e6e94311c5150894a802637eaa4781c9287d51 100644
+index 670b0d72cfec2027a02347eb5b62521054f264c4..f78d93afba8849adac23d24b152cf400bab400cd 100644
 --- libatomic/configure.tgt
 +++ libatomic/configure.tgt
-@@ -156,12 +156,16 @@ case "${target}" in
+@@ -170,12 +170,16 @@ case "${target}" in
  
    *-*-rtems*)
  	XCFLAGS="${configure_tgt_pre_target_cpu_XCFLAGS}"

@@ -1,17 +1,17 @@
-From 769a4d2d12464d18e5ba73edf60192b93f9109fe Mon Sep 17 00:00:00 2001
+From f5d04240570843fd4419cd0d9ce6f9aa50609145 Mon Sep 17 00:00:00 2001
 From: Sebastian Bauer <mail@sebastianbauer.info>
 Date: Wed, 4 Apr 2018 22:48:33 +0200
-Subject: [PATCH 13/30] Rerun make maint-deps in libiberty.
+Subject: [PATCH 13/41] Rerun make maint-deps in libiberty.
 
 ---
  libiberty/Makefile.in | 36 ++++++++++++++++++++++--------------
  1 file changed, 22 insertions(+), 14 deletions(-)
 
 diff --git a/libiberty/Makefile.in b/libiberty/Makefile.in
-index ae3a66d43cfb5be9e9ae4b2f46136bfc27d5070f..fa4f5f17cb5d9d6d78b3c071c738dec302193927 100644
+index 4bacf36d4eb8a597e44dc907591dd30854adebbe..8f7a5e14cb6e8b59a5a53ecde2f7593329c20fa4 100644
 --- libiberty/Makefile.in
 +++ libiberty/Makefile.in
-@@ -560,13 +560,14 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
+@@ -571,13 +571,14 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
  	if [ x"$(NOASANFLAG)" != x ]; then \
  	  $(COMPILE.c) $(PICFLAG) $(NOASANFLAG) $(srcdir)/atexit.c -o noasan/$@; \
  	else true; fi
@@ -27,11 +27,11 @@ index ae3a66d43cfb5be9e9ae4b2f46136bfc27d5070f..fa4f5f17cb5d9d6d78b3c071c738dec3
  	if [ x"$(NOASANFLAG)" != x ]; then \
  	  $(COMPILE.c) $(PICFLAG) $(NOASANFLAG) $(srcdir)/basename.c -o noasan/$@; \
  	else true; fi
-@@ -756,13 +757,13 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
- 	if [ x"$(NOASANFLAG)" != x ]; then \
- 	  $(COMPILE.c) $(PICFLAG) $(NOASANFLAG) $(srcdir)/fibheap.c -o noasan/$@; \
+@@ -787,13 +788,13 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
+ 	  $(COMPILE.c) $(PICFLAG) $(NOASANFLAG) $(srcdir)/filedescriptor.c -o noasan/$@; \
  	else true; fi
- 	$(COMPILE.c) $(srcdir)/fibheap.c $(OUTPUT_OPTION)
+ 	$(COMPILE.c) $(srcdir)/filedescriptor.c $(OUTPUT_OPTION)
+ 
  
  ./filename_cmp.$(objext): $(srcdir)/filename_cmp.c config.h $(INCDIR)/ansidecl.h \
 -	$(INCDIR)/filenames.h $(INCDIR)/hashtab.h \
@@ -42,7 +42,7 @@ index ae3a66d43cfb5be9e9ae4b2f46136bfc27d5070f..fa4f5f17cb5d9d6d78b3c071c738dec3
  	else true; fi
  	if [ x"$(NOASANFLAG)" != x ]; then \
  	  $(COMPILE.c) $(PICFLAG) $(NOASANFLAG) $(srcdir)/filename_cmp.c -o noasan/$@; \
-@@ -923,23 +924,25 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
+@@ -954,23 +955,25 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
  	if [ x"$(NOASANFLAG)" != x ]; then \
  	  $(COMPILE.c) $(PICFLAG) $(NOASANFLAG) $(srcdir)/lrealpath.c -o noasan/$@; \
  	else true; fi
@@ -70,7 +70,7 @@ index ae3a66d43cfb5be9e9ae4b2f46136bfc27d5070f..fa4f5f17cb5d9d6d78b3c071c738dec3
  	if [ x"$(NOASANFLAG)" != x ]; then \
  	  $(COMPILE.c) $(PICFLAG) $(NOASANFLAG) $(srcdir)/make-temp-file.c -o noasan/$@; \
  	else true; fi
-@@ -1061,12 +1064,22 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
+@@ -1092,12 +1095,22 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
  	else true; fi
  	if [ x"$(NOASANFLAG)" != x ]; then \
  	  $(COMPILE.c) $(PICFLAG) $(NOASANFLAG) $(srcdir)/partition.c -o noasan/$@; \
@@ -93,7 +93,7 @@ index ae3a66d43cfb5be9e9ae4b2f46136bfc27d5070f..fa4f5f17cb5d9d6d78b3c071c738dec3
  	  $(COMPILE.c) $(PICFLAG) $(srcdir)/pex-common.c -o pic/$@; \
  	else true; fi
  	if [ x"$(NOASANFLAG)" != x ]; then \
-@@ -1103,13 +1116,14 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
+@@ -1134,13 +1147,14 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
  	if [ x"$(NOASANFLAG)" != x ]; then \
  	  $(COMPILE.c) $(PICFLAG) $(NOASANFLAG) $(srcdir)/pex-one.c -o noasan/$@; \
  	else true; fi
@@ -109,7 +109,7 @@ index ae3a66d43cfb5be9e9ae4b2f46136bfc27d5070f..fa4f5f17cb5d9d6d78b3c071c738dec3
  	if [ x"$(NOASANFLAG)" != x ]; then \
  	  $(COMPILE.c) $(PICFLAG) $(NOASANFLAG) $(srcdir)/pex-unix.c -o noasan/$@; \
  	else true; fi
-@@ -1122,19 +1136,12 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
+@@ -1153,19 +1167,12 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
  	else true; fi
  	if [ x"$(NOASANFLAG)" != x ]; then \
  	  $(COMPILE.c) $(PICFLAG) $(NOASANFLAG) $(srcdir)/pex-win32.c -o noasan/$@; \
@@ -129,7 +129,7 @@ index ae3a66d43cfb5be9e9ae4b2f46136bfc27d5070f..fa4f5f17cb5d9d6d78b3c071c738dec3
  	  $(COMPILE.c) $(PICFLAG) $(srcdir)/pexecute.c -o pic/$@; \
  	else true; fi
  	if [ x"$(NOASANFLAG)" != x ]; then \
-@@ -1216,13 +1223,14 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
+@@ -1247,13 +1254,14 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
  	else true; fi
  	if [ x"$(NOASANFLAG)" != x ]; then \
  	  $(COMPILE.c) $(PICFLAG) $(NOASANFLAG) $(srcdir)/safe-ctype.c -o noasan/$@; \
@@ -145,7 +145,7 @@ index ae3a66d43cfb5be9e9ae4b2f46136bfc27d5070f..fa4f5f17cb5d9d6d78b3c071c738dec3
  	if [ x"$(NOASANFLAG)" != x ]; then \
  	  $(COMPILE.c) $(PICFLAG) $(NOASANFLAG) $(srcdir)/setenv.c -o noasan/$@; \
  	else true; fi
-@@ -1667,13 +1675,13 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
+@@ -1698,13 +1706,13 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
  	if [ x"$(NOASANFLAG)" != x ]; then \
  	  $(COMPILE.c) $(PICFLAG) $(NOASANFLAG) $(srcdir)/xexit.c -o noasan/$@; \
  	else true; fi

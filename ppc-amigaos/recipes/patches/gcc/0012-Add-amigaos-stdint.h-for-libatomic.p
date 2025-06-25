@@ -1,7 +1,7 @@
-From 19e51805acfc5d157291e6c06505f941468b71ab Mon Sep 17 00:00:00 2001
+From 75d527aeab41195aa6161eb90ab1c75fb39692ac Mon Sep 17 00:00:00 2001
 From: Sebastian Bauer <mail@sebastianbauer.info>
 Date: Tue, 3 Apr 2018 19:52:01 +0200
-Subject: [PATCH 12/30] Add amigaos-stdint.h for libatomic.
+Subject: [PATCH 12/41] Add amigaos-stdint.h for libatomic.
 
 ---
  gcc/config.gcc                                      | 2 +-
@@ -10,10 +10,10 @@ Subject: [PATCH 12/30] Add amigaos-stdint.h for libatomic.
  copy gcc/config/{dragonfly-stdint.h => amigaos-stdint.h} (90%)
 
 diff --git a/gcc/config.gcc b/gcc/config.gcc
-index 381e525612a825f6d44c2c714d0612da8f083bc6..b23250200cf85c0323ae733f19f7e7abc5cc59f2 100644
+index 7552579b8f0e206a3ebaca81e8247729911cc8b1..95ac3a2bf67b148b3d9dc332d566f6a6d1591e37 100644
 --- gcc/config.gcc
 +++ gcc/config.gcc
-@@ -2387,13 +2387,13 @@ nvptx-*)
+@@ -2886,13 +2886,13 @@ or1k*-*-*)
  	;;
  pdp11-*-*)
  	tm_file="${tm_file} newlib-stdint.h"
@@ -32,12 +32,12 @@ diff --git a/gcc/config/dragonfly-stdint.h b/gcc/config/amigaos-stdint.h
 similarity index 90%
 copy from gcc/config/dragonfly-stdint.h
 copy to gcc/config/amigaos-stdint.h
-index d29dd8c54530f003c20786c9261159de83276d8e..854009ca098f9dff59be936425a565dd842a3cd7 100644
+index cf771b4f614a98d09190c19fad90624c04e5c69d..854009ca098f9dff59be936425a565dd842a3cd7 100644
 --- gcc/config/dragonfly-stdint.h
 +++ gcc/config/amigaos-stdint.h
 @@ -1,9 +1,10 @@
 -/* Definitions for <stdint.h> types for DragonFly systems.
--   Copyright (C) 2014-2018 Free Software Foundation, Inc.
+-   Copyright (C) 2014-2021 Free Software Foundation, Inc.
 -   Contributed by John Marino <gnugcc@marino.st>
 +/* Definitions for <stdint.h> types for AmigaOS systems.
 +   Copyright (C) 2014-2016 Free Software Foundation, Inc.
