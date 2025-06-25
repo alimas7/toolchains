@@ -16,7 +16,7 @@ UPSTREAM_MPFR_VERSION := 3.1.6
 UPSTREAM_MPFR_TARBALL := mpfr-$(UPSTREAM_MPFR_VERSION).tar.bz2
 UPSTREAM_MPFR_URI := http://www.mpfr.org/mpfr-$(UPSTREAM_MPFR_VERSION)/$(UPSTREAM_MPFR_TARBALL)
 
-UPSTREAM_MPC_VERSION := 1.0.2
+UPSTREAM_MPC_VERSION := 1.0.3
 UPSTREAM_MPC_TARBALL := mpc-$(UPSTREAM_MPC_VERSION).tar.gz
 UPSTREAM_MPC_URI := http://ftp.gnu.org/gnu/mpc/$(UPSTREAM_MPC_TARBALL)
 
@@ -97,7 +97,7 @@ $(BUILDSTEPS)/stage2.d: $(BUILDSTEPS)/srcdir-step3.d $(BUILDSTEPS)/binutils.d $(
 			--enable-checking=no --enable-c99 --with-cross-host \
 			--without-x --enable-maintainer-mode --enable-haifa \
 			--enable-sjlj-exceptions --disable-libstdcxx-pch \
-			--disable-tls --disable-libssp
+			--disable-tls --disable-libssp --enable-lto
 	cd $(BUILDDIR) && $(GCC_ENV_PARAMS) make all
 	cd $(BUILDDIR) && $(GCC_ENV_PARAMS) make install
 	touch $@
