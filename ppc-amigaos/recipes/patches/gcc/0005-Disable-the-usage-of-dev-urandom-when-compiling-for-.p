@@ -1,19 +1,19 @@
-From 5e6d152e0100b004ae0400739db545dcfa5f9671 Mon Sep 17 00:00:00 2001
+From c28e3674877c0aede0c36e9288a0287d157df936 Mon Sep 17 00:00:00 2001
 From: Sebastian Bauer <mail@sebastianbauer.info>
 Date: Wed, 2 Dec 2015 21:39:42 +0100
-Subject: [PATCH 5/9] Disable the usage of /dev/urandom when compiling for
+Subject: [PATCH 05/30] Disable the usage of /dev/urandom when compiling for
  AmigaOS.
 
 ---
  gcc/gcc.c    | 3 +++
- gcc/toplev.c | 4 ++--
- 2 files changed, 5 insertions(+), 2 deletions(-)
+ gcc/toplev.c | 2 ++
+ 2 files changed, 5 insertions(+)
 
 diff --git a/gcc/gcc.c b/gcc/gcc.c
-index e88e6d3497c13a4e9a5d92d71de6128678ec546f..eb56ea7242ab51c941b88d72f8dee2a0381e2c8f 100644
+index 71cd1e5045311dc4f61d359d2786ee1847558dea..2fe3d2eb7dcb2cb71e24a2fe2e01f637ea2ce727 100644
 --- gcc/gcc.c
 +++ gcc/gcc.c
-@@ -9511,22 +9511,25 @@ print_asm_header_spec_function (int arg ATTRIBUTE_UNUSED,
+@@ -9665,22 +9665,25 @@ print_asm_header_spec_function (int arg ATTRIBUTE_UNUSED,
  /* Get a random number for -frandom-seed */
  
  static unsigned HOST_WIDE_INT
@@ -40,17 +40,16 @@ index e88e6d3497c13a4e9a5d92d71de6128678ec546f..eb56ea7242ab51c941b88d72f8dee2a0
      struct timeval tv;
  
 diff --git a/gcc/toplev.c b/gcc/toplev.c
-index 8979d2634260b1e5ad1183ed26da444c47cd3631..de6cdfc5dfdadbef3851fa842d6566648720ffa7 100644
+index bdf021e828a9e4c8737fe5e7fd243262f0a455a6..4eb1e1ee434e1388b08421090782e1531b64a209 100644
 --- gcc/toplev.c
 +++ gcc/toplev.c
-@@ -238,22 +238,22 @@ static void
- init_local_tick (void)
+@@ -271,20 +271,22 @@ init_local_tick (void)
+ 
+ HOST_WIDE_INT
+ get_random_seed (bool noinit)
  {
-   if (!flag_random_seed)
+   if (!random_seed && !noinit)
      {
-       /* Try urandom first. Time of day is too likely to collide. 
- 	 In case of any error we just use the local tick. */
--
 +#ifndef __amigaos4__
        int fd = open ("/dev/urandom", O_RDONLY);
        if (fd >= 0)
@@ -60,14 +59,13 @@ index 8979d2634260b1e5ad1183ed26da444c47cd3631..de6cdfc5dfdadbef3851fa842d656664
              random_seed = 0;
            close (fd);
          }
--
 +#endif
-       /* Now get the tick anyways  */
- #ifdef HAVE_GETTIMEOFDAY
-       {
- 	struct timeval tv;
+       if (!random_seed)
+ 	random_seed = local_tick ^ getpid ();
+     }
+   return random_seed;
+ }
  
- 	gettimeofday (&tv, NULL);
 -- 
-1.9.1
+2.34.1
 

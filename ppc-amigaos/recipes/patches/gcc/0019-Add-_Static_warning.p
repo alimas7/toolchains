@@ -1,0 +1,161 @@
+From 910c7fb66f34cdecda82a751bfd4dba22bd3a880 Mon Sep 17 00:00:00 2001
+From: Sebastian Bauer <mail@sebastianbauer.info>
+Date: Tue, 24 Apr 2018 22:46:21 +0200
+Subject: [PATCH 19/30] Add _Static_warning().
+
+This acts very similar to _Static_assert() but produces a warning
+rather than an compiler error.
+---
+ gcc/c-family/c-common.c |  1 +
+ gcc/c-family/c-common.h |  1 +
+ gcc/c/c-parser.c        | 19 ++++++++++++++++---
+ gcc/cp/parser.c         |  3 ++-
+ 4 files changed, 20 insertions(+), 4 deletions(-)
+
+diff --git a/gcc/c-family/c-common.c b/gcc/c-family/c-common.c
+index 655c3bf10a73a18162a4af89aaf8fb4ee410373f..03a090f8c673389ff9f87ef77305de35f083b8be 100644
+--- gcc/c-family/c-common.c
++++ gcc/c-family/c-common.c
+@@ -351,12 +351,13 @@ const struct c_common_resword c_common_reswords[] =
+   { "_Decimal64",       RID_DFLOAT64,  D_CONLY | D_EXT },
+   { "_Decimal128",      RID_DFLOAT128, D_CONLY | D_EXT },
+   { "_Fract",           RID_FRACT,     D_CONLY | D_EXT },
+   { "_Accum",           RID_ACCUM,     D_CONLY | D_EXT },
+   { "_Sat",             RID_SAT,       D_CONLY | D_EXT },
+   { "_Static_assert",   RID_STATIC_ASSERT, D_CONLY },
++  { "_Static_warning",  RID_STATIC_WARNING, D_CONLY | D_EXT},
+   { "_Noreturn",        RID_NORETURN,  D_CONLY },
+   { "_Generic",         RID_GENERIC,   D_CONLY },
+   { "_Thread_local",    RID_THREAD,    D_CONLY },
+   { "__FUNCTION__",	RID_FUNCTION_NAME, 0 },
+   { "__PRETTY_FUNCTION__", RID_PRETTY_FUNCTION_NAME, 0 },
+   { "__alignof",	RID_ALIGNOF,	0 },
+diff --git a/gcc/c-family/c-common.h b/gcc/c-family/c-common.h
+index f2c66628e53316ca12885cbd32cdec84e5ca162e..9105afe24499b9eb42a4927701181034192bfad2 100644
+--- gcc/c-family/c-common.h
++++ gcc/c-family/c-common.h
+@@ -101,12 +101,13 @@ enum rid
+   /* C extensions */
+   RID_ASM,       RID_TYPEOF,   RID_ALIGNOF,  RID_ATTRIBUTE,  RID_VA_ARG,
+   RID_EXTENSION, RID_IMAGPART, RID_REALPART, RID_LABEL,      RID_CHOOSE_EXPR,
+   RID_TYPES_COMPATIBLE_P,      RID_BUILTIN_COMPLEX,	     RID_BUILTIN_SHUFFLE,
+   RID_BUILTIN_TGMATH,
+   RID_DFLOAT32, RID_DFLOAT64, RID_DFLOAT128,
++  RID_STATIC_WARNING,
+ 
+   /* TS 18661-3 keywords, in the same sequence as the TI_* values.  */
+   RID_FLOAT16,
+   RID_FLOATN_NX_FIRST = RID_FLOAT16,
+   RID_FLOAT32,
+   RID_FLOAT64,
+diff --git a/gcc/c/c-parser.c b/gcc/c/c-parser.c
+index 3e195cbb9a6c13740a21fc55d4889e7ebe994947..d018d115d902cdef9b93ad56a0eaaa83176ce811 100644
+--- gcc/c/c-parser.c
++++ gcc/c/c-parser.c
+@@ -765,13 +765,13 @@ c_token_starts_declspecs (c_token *token)
+ /* Return true if TOKEN can start declaration specifiers or a static
+    assertion, false otherwise.  */
+ static bool
+ c_token_starts_declaration (c_token *token)
+ {
+   if (c_token_starts_declspecs (token)
+-      || token->keyword == RID_STATIC_ASSERT)
++      || token->keyword == RID_STATIC_ASSERT || token->keyword == RID_STATIC_WARNING)
+     return true;
+   else
+     return false;
+ }
+ 
+ /* Return true if the next token from PARSER can start declaration
+@@ -1830,12 +1830,18 @@ c_parser_declaration_or_fndef (c_parser *parser, bool fndef_ok,
+   if (static_assert_ok
+       && c_parser_next_token_is_keyword (parser, RID_STATIC_ASSERT))
+     {
+       c_parser_static_assert_declaration (parser);
+       return;
+     }
++  if (static_assert_ok
++      && c_parser_next_token_is_keyword (parser, RID_STATIC_WARNING))
++    {
++      c_parser_static_assert_declaration (parser);
++      return;
++    }
+   specs = build_null_declspecs ();
+ 
+   /* Try to detect an unknown type name when we have "A B" or "A *B".  */
+   if (c_parser_peek_token (parser)->type == CPP_NAME
+       && c_parser_peek_token (parser)->id_kind == C_ID_ID
+       && (c_parser_peek_2nd_token (parser)->type == CPP_NAME
+@@ -2473,13 +2479,15 @@ static void
+ c_parser_static_assert_declaration_no_semi (c_parser *parser)
+ {
+   location_t assert_loc, value_loc;
+   tree value;
+   tree string;
+ 
+-  gcc_assert (c_parser_next_token_is_keyword (parser, RID_STATIC_ASSERT));
++  bool warning = c_parser_next_token_is_keyword (parser, RID_STATIC_WARNING);
++
++  gcc_assert (c_parser_next_token_is_keyword (parser, RID_STATIC_ASSERT) || warning);
+   assert_loc = c_parser_peek_token (parser)->location;
+   if (flag_isoc99)
+     pedwarn_c99 (assert_loc, OPT_Wpedantic,
+ 		 "ISO C99 does not support %<_Static_assert%>");
+   else
+     pedwarn_c99 (assert_loc, OPT_Wpedantic,
+@@ -2533,13 +2541,18 @@ c_parser_static_assert_declaration_no_semi (c_parser *parser)
+     {
+       error_at (value_loc, "expression in static assertion is not constant");
+       return;
+     }
+   constant_expression_warning (value);
+   if (integer_zerop (value))
+-    error_at (assert_loc, "static assertion failed: %E", string);
++    {
++      if (warning)
++        warning_at (assert_loc, OPT_Wall, "static warn-only assertion failed: %E", string);
++      else
++        error_at (assert_loc, "static assertion failed: %E", string);
++    }
+ }
+ 
+ /* Parse some declaration specifiers (possibly none) (C90 6.5, C99
+    6.7, C11 6.7), adding them to SPECS (which may already include some).
+    Storage class specifiers are accepted iff SCSPEC_OK; type
+    specifiers are accepted iff TYPESPEC_OK; alignment specifiers are
+diff --git a/gcc/cp/parser.c b/gcc/cp/parser.c
+index f2983b6102da7ebe34fb36b304d0620206df779a..70070b06214e314dd7447755350ab5fbd98693de 100644
+--- gcc/cp/parser.c
++++ gcc/cp/parser.c
+@@ -155,12 +155,13 @@ enum required_token {
+   RT_NEW, /* new */
+   RT_DELETE, /* delete */
+   RT_RETURN, /* return */
+   RT_WHILE, /* while */
+   RT_EXTERN, /* extern */
+   RT_STATIC_ASSERT, /* static_assert */
++  RT_STATIC_WARNING, /* static_warning */
+   RT_DECLTYPE, /* decltype */
+   RT_OPERATOR, /* operator */
+   RT_CLASS, /* class */
+   RT_TEMPLATE, /* template */
+   RT_NAMESPACE, /* namespace */
+   RT_USING, /* using */
+@@ -12910,13 +12911,13 @@ cp_parser_block_declaration (cp_parser *parser,
+       cp_parser_skip_to_end_of_statement (parser);
+       /* If the next token is now a `;', consume it.  */
+       if (cp_lexer_next_token_is (parser->lexer, CPP_SEMICOLON))
+ 	cp_lexer_consume_token (parser->lexer);
+     }
+   /* If the next token is `static_assert' we have a static assertion.  */
+-  else if (token1->keyword == RID_STATIC_ASSERT)
++  else if (token1->keyword == RID_STATIC_ASSERT || token1->keyword == RID_STATIC_WARNING)
+     cp_parser_static_assert (parser, /*member_p=*/false);
+   /* Anything else must be a simple-declaration.  */
+   else
+     cp_parser_simple_declaration (parser, !statement_p,
+ 				  /*maybe_range_for_decl*/NULL);
+ }
+-- 
+2.34.1
+

@@ -1,0 +1,54 @@
+From 19e51805acfc5d157291e6c06505f941468b71ab Mon Sep 17 00:00:00 2001
+From: Sebastian Bauer <mail@sebastianbauer.info>
+Date: Tue, 3 Apr 2018 19:52:01 +0200
+Subject: [PATCH 12/30] Add amigaos-stdint.h for libatomic.
+
+---
+ gcc/config.gcc                                      | 2 +-
+ gcc/config/{dragonfly-stdint.h => amigaos-stdint.h} | 7 ++++---
+ 2 files changed, 5 insertions(+), 4 deletions(-)
+ copy gcc/config/{dragonfly-stdint.h => amigaos-stdint.h} (90%)
+
+diff --git a/gcc/config.gcc b/gcc/config.gcc
+index 381e525612a825f6d44c2c714d0612da8f083bc6..b23250200cf85c0323ae733f19f7e7abc5cc59f2 100644
+--- gcc/config.gcc
++++ gcc/config.gcc
+@@ -2387,13 +2387,13 @@ nvptx-*)
+ 	;;
+ pdp11-*-*)
+ 	tm_file="${tm_file} newlib-stdint.h"
+ 	use_gcc_stdint=wrap
+ 	;;
+ powerpc-*-amigaos*)
+-	tm_file="${tm_file} dbxelf.h elfos.h rs6000/sysv4.h rs6000/amigaos.h"
++	tm_file="${tm_file} dbxelf.h elfos.h amigaos-stdint.h rs6000/sysv4.h rs6000/amigaos.h"
+ 	tm_p_file="${tm_p_file} rs6000/amigaos-protos.h"
+ 	extra_options="${extra_options} rs6000/sysv4.opt rs6000/amigaos.opt"
+ 	tmake_file="rs6000/t-amigaos"
+ 	extra_objs="$extra_objs amigaos.o"
+ 	use_collect2=no
+ 	;;
+diff --git a/gcc/config/dragonfly-stdint.h b/gcc/config/amigaos-stdint.h
+similarity index 90%
+copy from gcc/config/dragonfly-stdint.h
+copy to gcc/config/amigaos-stdint.h
+index d29dd8c54530f003c20786c9261159de83276d8e..854009ca098f9dff59be936425a565dd842a3cd7 100644
+--- gcc/config/dragonfly-stdint.h
++++ gcc/config/amigaos-stdint.h
+@@ -1,9 +1,10 @@
+-/* Definitions for <stdint.h> types for DragonFly systems.
+-   Copyright (C) 2014-2018 Free Software Foundation, Inc.
+-   Contributed by John Marino <gnugcc@marino.st>
++/* Definitions for <stdint.h> types for AmigaOS systems.
++   Copyright (C) 2014-2016 Free Software Foundation, Inc.
++   Based on the types of the dragon fly bsd that was
++   contributed by John Marino <gnugcc@marino.st>
+ 
+ This file is part of GCC.
+ 
+ GCC is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 3, or (at your option)
+-- 
+2.34.1
+

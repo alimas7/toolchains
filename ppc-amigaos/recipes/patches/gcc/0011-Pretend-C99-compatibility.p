@@ -1,0 +1,111 @@
+From 1642447c593cb4cedf838c2ec9beb9ccc23ca4b1 Mon Sep 17 00:00:00 2001
+From: Sebastian Bauer <mail@sebastianbauer.info>
+Date: Sat, 4 Mar 2017 07:39:21 +0100
+Subject: [PATCH 11/30] Pretend C99 compatibility.
+
+At least newlib is not fully C99 compatible because it doesn't expose
+various C99 function if __STRICT_ANSI__ is declared. Also it misses
+strtold() (as clib2).
+---
+ libstdc++-v3/config/os/amigaos/os_defines.h | 3 +++
+ libstdc++-v3/include/bits/basic_string.h    | 3 +++
+ libstdc++-v3/include/c_global/cstdlib       | 8 ++++++++
+ 3 files changed, 14 insertions(+)
+
+diff --git a/libstdc++-v3/config/os/amigaos/os_defines.h b/libstdc++-v3/config/os/amigaos/os_defines.h
+index 346f063958cd7e80ebf97be4acee0bdf391cb811..6b67630b7be7102a9dfb7c104deac6293a13c017 100644
+--- libstdc++-v3/config/os/amigaos/os_defines.h
++++ libstdc++-v3/config/os/amigaos/os_defines.h
+@@ -35,9 +35,12 @@
+ 
+ // No ioctl() on AmigaOS
+ #define _GLIBCXX_NO_IOCTL 1
+ 
+ #ifdef __NEWLIB__
+ #define _GLIBCXX_USE_C99_STDINT_TR1 1
++#define _GLIBCXX_USE_C99 1
++/* Temporary until newlib behaves properly */
++#undef __STRICT_ANSI__
+ #endif
+ 
+ #endif
+diff --git a/libstdc++-v3/include/bits/basic_string.h b/libstdc++-v3/include/bits/basic_string.h
+index 0f5d398fcf24c32bfc593e18b771a4f42eb85ae8..d01c86a175301024f8d1cb7e4384324b96e28b2e 100644
+--- libstdc++-v3/include/bits/basic_string.h
++++ libstdc++-v3/include/bits/basic_string.h
+@@ -6437,15 +6437,18 @@ _GLIBCXX_BEGIN_NAMESPACE_CXX11
+   { return __gnu_cxx::__stoa(&std::strtof, "stof", __str.c_str(), __idx); }
+ 
+   inline double
+   stod(const string& __str, size_t* __idx = 0)
+   { return __gnu_cxx::__stoa(&std::strtod, "stod", __str.c_str(), __idx); }
+ 
++#ifndef __amigaos4__
+   inline long double
+   stold(const string& __str, size_t* __idx = 0)
+   { return __gnu_cxx::__stoa(&std::strtold, "stold", __str.c_str(), __idx); }
++#endif
++
+ #endif // _GLIBCXX_USE_C99_STDLIB
+ 
+ #if _GLIBCXX_USE_C99_STDIO
+   // NB: (v)snprintf vs sprintf.
+ 
+   // DR 1261.
+diff --git a/libstdc++-v3/include/c_global/cstdlib b/libstdc++-v3/include/c_global/cstdlib
+index 10335017f0c4261c02b0b4d87c15b9a8572e6a61..fb5ae1889b288097f793396f35a9b65c2acf9fbb 100644
+--- libstdc++-v3/include/c_global/cstdlib
++++ libstdc++-v3/include/c_global/cstdlib
+@@ -187,13 +187,17 @@ _GLIBCXX_END_NAMESPACE_VERSION
+ #undef llabs
+ #undef lldiv
+ #undef atoll
+ #undef strtoll
+ #undef strtoull
+ #undef strtof
++
++/* Neigther clib2 nor newlib offers strtoud() */
++#ifndef __amigaos4__
+ #undef strtold
++#endif
+ 
+ namespace __gnu_cxx _GLIBCXX_VISIBILITY(default)
+ {
+ _GLIBCXX_BEGIN_NAMESPACE_VERSION
+ 
+ #if !_GLIBCXX_USE_C99_LONG_LONG_DYNAMIC
+@@ -226,13 +230,15 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
+ #if !_GLIBCXX_USE_C99_LONG_LONG_DYNAMIC
+   using ::atoll;
+   using ::strtoll;
+   using ::strtoull;
+ #endif
+   using ::strtof;
++#ifndef __amigaos4__
+   using ::strtold;
++#endif
+ 
+ _GLIBCXX_END_NAMESPACE_VERSION
+ } // namespace __gnu_cxx
+ 
+ namespace std
+ {
+@@ -246,13 +252,15 @@ namespace std
+   using ::__gnu_cxx::lldiv;
+ #endif
+   using ::__gnu_cxx::atoll;
+   using ::__gnu_cxx::strtof;
+   using ::__gnu_cxx::strtoll;
+   using ::__gnu_cxx::strtoull;
++#ifndef __amigaos4__
+   using ::__gnu_cxx::strtold;
++#endif
+ } // namespace std
+ 
+ #endif // _GLIBCXX_USE_C99_STDLIB
+ 
+ } // extern "C++"
+ 
+-- 
+2.34.1
+

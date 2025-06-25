@@ -1,7 +1,7 @@
-From 213fc9c82cbd5935a67a991a753478994b9eb968 Mon Sep 17 00:00:00 2001
+From 6c50d0f39edd65987c4bfb486e54e0f9498e3a3f Mon Sep 17 00:00:00 2001
 From: Sebastian Bauer <mail@sebastianbauer.info>
 Date: Thu, 21 Jan 2016 20:46:59 +0100
-Subject: [PATCH 7/9] Some AmigaOS 4.x compability changes for posix thread
+Subject: [PATCH 07/30] Some AmigaOS 4.x compability changes for posix thread
  support.
 
 ---
@@ -9,7 +9,7 @@ Subject: [PATCH 7/9] Some AmigaOS 4.x compability changes for posix thread
  1 file changed, 12 insertions(+)
 
 diff --git a/libgcc/gthr-posix.h b/libgcc/gthr-posix.h
-index 555c0fe2458fa3e0e96d769d3f36ae35db47e1bb..daee24052b68cea2159d68abd6cf6817e0d7a81b 100644
+index e2f952f6c1cdf05237b1d6d6598b780b7f3c0cf4..9b15d7522e91061934693e1bce5bb2724e3d3362 100644
 --- libgcc/gthr-posix.h
 +++ libgcc/gthr-posix.h
 @@ -29,12 +29,16 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
@@ -81,5 +81,5 @@ index 555c0fe2458fa3e0e96d769d3f36ae35db47e1bb..daee24052b68cea2159d68abd6cf6817
  {
    if (__gthread_active_p ())
 -- 
-1.9.1
+2.34.1
 

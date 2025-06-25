@@ -1,0 +1,66 @@
+From bff689218183c28e2e3aed872b9ad4f67c35496e Mon Sep 17 00:00:00 2001
+From: rjd <3246251196ryan@gmail.com>
+Date: Wed, 20 Nov 2024 19:52:39 +0000
+Subject: [PATCH 30/30] Add strtold to the std namespace.
+
+strtold is provided by both NEWLIB and CLIB4. Previously,
+std::strtold was not available for C++.
+---
+ libstdc++-v3/include/c_global/cstdlib | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/libstdc++-v3/include/c_global/cstdlib b/libstdc++-v3/include/c_global/cstdlib
+index 4975c6070fbf120a0061dab496918566ef7b1d70..bea07912ad29240d64b47a9060b3238ec14db2fe 100644
+--- libstdc++-v3/include/c_global/cstdlib
++++ libstdc++-v3/include/c_global/cstdlib
+@@ -188,14 +188,14 @@ _GLIBCXX_END_NAMESPACE_VERSION
+ #undef lldiv
+ #undef atoll
+ #undef strtoll
+ #undef strtoull
+ #undef strtof
+
+-/* clib2 and newlib do not provide an implementation of strtold */
+-#if !defined (__amigaos4__) || defined(__CLIB4__)
++/* AmigaOS4: clib2 does not provide an implementation of strtold */
++#ifndef __CLIB2__
+ #undef strtold
+ #endif
+
+ namespace __gnu_cxx _GLIBCXX_VISIBILITY(default)
+ {
+ _GLIBCXX_BEGIN_NAMESPACE_VERSION
+@@ -230,13 +230,14 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
+ #if !_GLIBCXX_USE_C99_LONG_LONG_DYNAMIC
+   using ::atoll;
+   using ::strtoll;
+   using ::strtoull;
+ #endif
+   using ::strtof;
+-#ifndef __amigaos4__
++/* AmigaOS4: clib2 does not provide an implementation of strtold */
++#ifndef __CLIB2__
+   using ::strtold;
+ #endif
+
+ _GLIBCXX_END_NAMESPACE_VERSION
+ } // namespace __gnu_cxx
+
+@@ -252,13 +253,14 @@ namespace std
+   using ::__gnu_cxx::lldiv;
+ #endif
+   using ::__gnu_cxx::atoll;
+   using ::__gnu_cxx::strtof;
+   using ::__gnu_cxx::strtoll;
+   using ::__gnu_cxx::strtoull;
+-#ifndef __amigaos4__
++/* AmigaOS4: clib2 does not provide an implementation of strtold */
++#ifndef __CLIB2__
+   using ::__gnu_cxx::strtold;
+ #endif
+ } // namespace std
+
+ #endif // _GLIBCXX_USE_C99_STDLIB
+
+--
+2.34.1

@@ -1,7 +1,7 @@
-From 0f8e76ecc9220e1d4e1f311a52a5e80bd4ad8bb8 Mon Sep 17 00:00:00 2001
+From d801914b78606622e63d6ed0aedff816f9d67622 Mon Sep 17 00:00:00 2001
 From: Sebastian Bauer <mail@sebastianbauer.info>
 Date: Thu, 9 Jul 2015 06:54:37 +0200
-Subject: [PATCH 3/9] Disable .machine directive generation.
+Subject: [PATCH 03/30] Disable .machine directive generation.
 
 It breaks manual args to the assembler with different flavor,
 e.g., -Wa,-m440. This is probably not the right fix.
@@ -12,15 +12,15 @@ This reverts parts of a commit from 2015-03-03.
  1 file changed, 3 insertions(+)
 
 diff --git a/gcc/config/rs6000/rs6000.c b/gcc/config/rs6000/rs6000.c
-index cd79b2034b59168b07c84dd6bf32faaf4a648cd0..14b40fe386382a6b418176084c57ec8db73b4280 100644
+index 5c62d96fe8523818dacfdc49be4578596149fd4a..fcdbc280a32a84a75def8dd490d913ebfe6f57d7 100644
 --- gcc/config/rs6000/rs6000.c
 +++ gcc/config/rs6000/rs6000.c
-@@ -5689,12 +5689,14 @@ rs6000_file_start (void)
+@@ -6178,12 +6178,14 @@ rs6000_file_start (void)
      }
  
  #ifdef USING_ELFOS_H
-   if (rs6000_default_cpu == 0 || rs6000_default_cpu[0] == '\0'
-       || !global_options_set.x_rs6000_cpu_index)
+   if (!(rs6000_default_cpu && rs6000_default_cpu[0])
+       && !global_options_set.x_rs6000_cpu_index)
      {
 +      /* Temporarily disabled as it overrides e.g., -mcpu=440 */
 +#if 0
@@ -30,7 +30,7 @@ index cd79b2034b59168b07c84dd6bf32faaf4a648cd0..14b40fe386382a6b418176084c57ec8d
        else if ((rs6000_isa_flags & OPTION_MASK_DIRECT_MOVE) != 0)
  	fputs ("power8\n", asm_out_file);
        else if ((rs6000_isa_flags & OPTION_MASK_POPCNTD) != 0)
-@@ -5706,12 +5708,13 @@ rs6000_file_start (void)
+@@ -6195,12 +6197,13 @@ rs6000_file_start (void)
        else if ((rs6000_isa_flags & OPTION_MASK_MFCRF) != 0)
  	fputs ("power4\n", asm_out_file);
        else if ((rs6000_isa_flags & OPTION_MASK_POWERPC64) != 0)
@@ -45,5 +45,5 @@ index cd79b2034b59168b07c84dd6bf32faaf4a648cd0..14b40fe386382a6b418176084c57ec8d
      fprintf (file, "\t.abiversion 2\n");
  }
 -- 
-1.9.1
+2.34.1
 

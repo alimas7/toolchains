@@ -1,7 +1,7 @@
 # NetSurf build script for Amigaos 4 PPC cross compliation toolchain.
 
-UPSTREAM_GCC_VERSION := 6.1.0
-UPSTREAM_GCC_TARBALL := gcc-$(UPSTREAM_GCC_VERSION).tar.bz2
+UPSTREAM_GCC_VERSION := 8.4.0
+UPSTREAM_GCC_TARBALL := gcc-$(UPSTREAM_GCC_VERSION).tar.xz
 UPSTREAM_GCC_URI := http://ftp.gnu.org/gnu/gcc/gcc-$(UPSTREAM_GCC_VERSION)/$(UPSTREAM_GCC_TARBALL)
 
 UPSTREAM_BINUTILS_VERSION := 2.40
@@ -183,7 +183,7 @@ $(BUILDSTEPS)/srcdir-step2.d: $(BUILDSTEPS)/srcdir-step1.d $(SOURCESDIR)/$(UPSTR
 	touch $@
 
 $(BUILDSTEPS)/srcdir-step1.d: $(BUILDSTEPS)/$(UPSTREAM_GCC_TARBALL).d
-	tar xjf $(SOURCESDIR)/$(UPSTREAM_GCC_TARBALL)
+	tar xJf $(SOURCESDIR)/$(UPSTREAM_GCC_TARBALL)
 	mv gcc-$(UPSTREAM_GCC_VERSION) $(GCC_SRCDIR)
 	touch $@
 
