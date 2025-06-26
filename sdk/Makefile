@@ -117,6 +117,10 @@ ifeq ($(findstring -riscos,$(TARGET)),-riscos)
   endif
 endif
 
+ifeq ($(TARGET),m68k-unknown-amigaos)
+  cflags__ := $(cflags__) -fomit-frame-pointer -m68020-60 -msoft-float
+endif
+
 # Environment
 # Newer autotools objects to -I appearing in CFLAGS
 cleanenv := PATH="$(path__)" CC="$(cc__)" CXX="$(cxx__)" AR="$(ar__)" RANLIB="$(ranlib__)" CPPFLAGS="$(cppflags__)" LDFLAGS="$(ldflags__)" PKG_CONFIG_LIBDIR="$(pkg_config_libdir__)"
