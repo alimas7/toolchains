@@ -1,6 +1,6 @@
 --- srclib/unistd.in.h.orig	2017-03-27 23:12:52.149619622 +0100
 +++ srclib/unistd.in.h	2017-03-27 23:13:12.582243962 +0100
-@@ -1873,44 +1873,6 @@
+@@ -1997,44 +1997,6 @@
  #endif
  
  
@@ -16,8 +16,8 @@
 -#  endif
 -_GL_FUNCDECL_RPL (readlink, ssize_t,
 -                  (const char *restrict file,
--                   char *restrict buf, size_t bufsize)
--                  _GL_ARG_NONNULL ((1, 2)));
+-                   char *restrict buf, size_t bufsize),
+-                  _GL_ARG_NONNULL ((1, 2)) _GL_ATTRIBUTE_NODISCARD);
 -_GL_CXXALIAS_RPL (readlink, ssize_t,
 -                  (const char *restrict file,
 -                   char *restrict buf, size_t bufsize));
@@ -25,8 +25,8 @@
 -#  if !@HAVE_READLINK@
 -_GL_FUNCDECL_SYS (readlink, ssize_t,
 -                  (const char *restrict file,
--                   char *restrict buf, size_t bufsize)
--                  _GL_ARG_NONNULL ((1, 2)));
+-                   char *restrict buf, size_t bufsize),
+-                  _GL_ARG_NONNULL ((1, 2)) _GL_ATTRIBUTE_NODISCARD);
 -#  endif
 -_GL_CXXALIAS_SYS (readlink, ssize_t,
 -                  (const char *restrict file,
