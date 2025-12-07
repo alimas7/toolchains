@@ -221,6 +221,7 @@ ifeq ($(TARGET),m68k-atari-mint)
   EXTRAARGS_LIBCURL := --enable-optimize --enable-nonblocking --enable-ares --with-random="/dev/urandom" --disable-manual --disable-curldebug --disable-thread --disable-threaded-resolver 
   EXTRAARGS_LIBICONV := --enable-extra-encodings
   LIBICONV_ENV := CFLAGS="-DPATH_MAX=1024"
+  EXTRAARGS_OPENSSL := no-tests
   ENV_OPENSSL := CPPFLAGS="-DOPENSSL_NO_UNIX_SOCK"
 endif
 
