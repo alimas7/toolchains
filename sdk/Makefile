@@ -668,7 +668,7 @@ $(SOURCETGZ_BROTLI): $(BUILDSTEPS)/sourcedir.d
 $(eval $(call patched_source_rule,libwebp,$(VERSION_LIBWEBP)))
 
 $(BUILDSTEPS)/libwebp.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEP_SRC_LIBWEBP)
-	cd $(BUILDDIR_LIBWEBP) && $(env) $(LIBWEBP_ENV) ./configure --prefix=$(GCCSDK_INSTALL_ENV) --target=$(TARGET) --host=$(TARGET) --disable-shared $(EXTRAARGS_LIBWEBP)
+	cd $(BUILDDIR_LIBWEBP) && $(env) $(LIBWEBP_ENV) LIBPNG_CONFIG="$(GCCSDK_INSTALL_ENV)/bin/libpng-config --static" ./configure --prefix=$(GCCSDK_INSTALL_ENV) --target=$(TARGET) --host=$(TARGET) --disable-shared $(EXTRAARGS_LIBWEBP)
 	cd $(BUILDDIR_LIBWEBP) && $(env) make install
 	touch $@
 
