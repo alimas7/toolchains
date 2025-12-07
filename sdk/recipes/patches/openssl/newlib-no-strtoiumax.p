@@ -1,6 +1,6 @@
 --- apps/lib/opt.c.orig	2017-10-10 15:19:45.611896396 +0100
 +++ apps/lib/opt.c	2017-10-17 15:42:25.304921197 +0100
-@@ -562,7 +562,7 @@
+@@ -592,7 +592,7 @@
  
  #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L && \
      defined(INTMAX_MAX) && defined(UINTMAX_MAX) && \
