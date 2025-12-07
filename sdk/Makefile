@@ -209,6 +209,8 @@ ifeq ($(TARGET),arm-unknown-riscos)
   SDK_ITEMS := $(addprefix $(BUILDSTEPS)/, $(COMMON_SDK_ITEMS) libjpeg-turbo.d libwebp.d)
   EXTRAARGS_LIBCARES := --disable-shared 'ac_cv_have_decl_getservbyport_r=no'
   EXTRAARGS_LIBCURL := --enable-nonblocking --enable-ares --with-random="/dev/urandom" $(LIBCURL_DISABLES)
+  # Disable the expat testsuite as it requires C++11, which GCC4.7 does not support
+  EXTRAARGS_LIBEXPAT := --with-tests=no
   EXTRAARGS_OPENSSL := no-asm
   ENV_OPENSSL := CPPFLAGS="-DOPENSSL_NO_UNIX_SOCK"
 endif
@@ -711,7 +713,7 @@ $(SOURCETGZ_LIBCURL): $(BUILDSTEPS)/sourcedir.d
 $(eval $(call patched_source_rule,libexpat,$(VERSION_LIBEXPAT),expat))
 
 $(BUILDSTEPS)/libexpat.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEP_SRC_LIBEXPAT)
-	cd $(BUILDDIR_LIBEXPAT) && $(env) $(LIBEXPAT_ENV) ./configure --prefix=$(GCCSDK_INSTALL_ENV) --target=$(TARGET) --host=$(TARGET) --disable-shared
+	cd $(BUILDDIR_LIBEXPAT) && $(env) $(LIBEXPAT_ENV) ./configure --prefix=$(GCCSDK_INSTALL_ENV) --target=$(TARGET) --host=$(TARGET) --disable-shared $(EXTRAARGS_LIBEXPAT)
 	cd $(BUILDDIR_LIBEXPAT) && $(env) $(LIBEXPAT_ENV) make install
 	touch $@
 
