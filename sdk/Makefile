@@ -25,30 +25,48 @@ ifeq ($(GCCSDK_INSTALL_CROSSBIN),)
 endif
 
 # Upstream package versions
+
+
+# Components for most (if not all) platforms
+
+# Compression libraries
+
+# https://github.com/google/brotli
+VERSION_BROTLI := 1.1.0
+CKSUM_BROTLI := e720a6ca29428b803f4ad165371771f5398faba397edf6778837a18599ea13ff
 # https://zlib.net/
 VERSION_ZLIB := 1.3.1
 CKSUM_ZLIB := 9a93b2b7dfdac77ceba5a558a580e74667dd6fede4585b91eefb60f03b72df23
-# https://www.gnu.org/software/libiconv/
-VERSION_LIBICONV := 1.17
-CKSUM_LIBICONV := 8f74213b56238c85a50a5329f77e06198771e70dd9a739779f4c02f65d971313
-# https://laurikari.net/tre/
-VERSION_LIBTRE := 0.8.0
-CKSUM_LIBTRE := 8dc642c2cde02b2dac6802cdbe2cda201daf79c4ebcbb3ea133915edf1636658
+
+# Cryptography
+
 # https://www.openssl.org/
 VERSION_OPENSSL := 3.0.15
 CKSUM_OPENSSL := 23c666d0edf20f14249b3d8f0368acaee9ab585b09e1de82107c66e1f3ec9533
-# http://www.libpng.org/pub/png/libpng.html
-VERSION_LIBPNG := 1.6.44
-CKSUM_LIBPNG := 8c25a7792099a0089fa1cc76c94260d0bb3f1ec52b93671b572f8bb61577b732
-# http://libjpeg.sourceforge.net/
-VERSION_LIBJPEG := 8d
-CKSUM_LIBJPEG := 00029b1473f0f0ea72fbca3230e8cb25797fbb27e58ae2e46bb8bf5a806fe0b3
+
+# Document parsers
+
+# https://github.com/libexpat/libexpat
+VERSION_LIBEXPAT := 2.5.0
+CKSUM_LIBEXPAT := 6f0e6e01f7b30025fa05c85fdad1e5d0ec7fd35d9f61b22f34998de11969ff67
+# editions later than 2.5.0 require c++11 support and arm-unknown-riscos fails
+#VERSION_LIBEXPAT := 2.6.3
+#CKSUM_LIBEXPAT := b8baef92f328eebcf731f4d18103951c61fa8c8ec21d5ff4202fb6f2198aeb2d
+
+# Image formats
+
 # https://libjpeg-turbo.org/
 VERSION_LIBJPEG_TURBO := 3.0.4
 CKSUM_LIBJPEG_TURBO := 99130559e7d62e8d695f2c0eaeef912c5828d5b84a0537dcb24c9678c9d5b76b
+# http://www.libpng.org/pub/png/libpng.html
+VERSION_LIBPNG := 1.6.44
+CKSUM_LIBPNG := 8c25a7792099a0089fa1cc76c94260d0bb3f1ec52b93671b572f8bb61577b732
 # https://developers.google.com/speed/webp/
 VERSION_LIBWEBP := 1.3.2
 CKSUM_LIBWEBP := 2a499607df669e40258e53d0ade8035ba4ec0175244869d1025d460562aa09b4
+
+# Network transports and name resolution
+
 # https://c-ares.org/
 # https://github.com/c-ares/c-ares/releases/download/
 VERSION_LIBCARES := 1.34.2
@@ -56,40 +74,60 @@ CKSUM_LIBCARES := 35410aa625cc9ee95b66475f54aea7c81c673fb63d75fad5eee267711503b7
 # https://curl.se/
 VERSION_LIBCURL := 8.11.0
 CKSUM_LIBCURL := c95d5a1368803729345a632ce42cceeefd5f09c3b4d9582f858f6779f4b8b254
-#
-VERSION_LIBGNURX := 2.5.1
-CKSUM_LIBGNURX := 7147b7f806ec3d007843b38e19f42a5b7c65894a57ffc297a76b0dcd5f675d76
+
+############################################################################
+
+# Platforms with no native iconv (AmigaOS, Atari, Windows)
+
+# https://www.gnu.org/software/libiconv/
+VERSION_LIBICONV := 1.17
+CKSUM_LIBICONV := 8f74213b56238c85a50a5329f77e06198771e70dd9a739779f4c02f65d971313
+
+# Platforms that don't use libjpeg-turbo (AmigaOS 3, Atari, Windows)
+
+# http://libjpeg.sourceforge.net/
+VERSION_LIBJPEG := 8d
+CKSUM_LIBJPEG := 00029b1473f0f0ea72fbca3230e8cb25797fbb27e58ae2e46bb8bf5a806fe0b3
+
+# AmigaOS only components
+
 # http://mission-base.com/peter/source/
 # 1.7.0: https://github.com/peterGraf/pbl/releases
 VERSION_LIBPBL := 1_04
 CKSUM_LIBPBL := 20f0ab1af09a22a8f3cb3ce3832247a6b51d8db57211f6bb0794af9485229a67
-# Git-20170304
-VERSION_LIBCF := CVS-20130415
-CKSUM_LIBCF := 5d25c4faa2f5b7fc106bb47d093646f79d0fa72a34aaf8122110a2e4cf9eb6cc
-# https://github.com/libexpat/libexpat
-VERSION_LIBEXPAT := 2.5.0
-CKSUM_LIBEXPAT := 6f0e6e01f7b30025fa05c85fdad1e5d0ec7fd35d9f61b22f34998de11969ff67
-# editions later than 2.5.0 require c++11 support and arm-unknown-riscos fails
-#VERSION_LIBEXPAT := 2.6.3
-#CKSUM_LIBEXPAT := b8baef92f328eebcf731f4d18103951c61fa8c8ec21d5ff4202fb6f2198aeb2d
-#
-VERSION_LDG := SVN-20150827
-CKSUM_LDG := ca7959d31b46cb1e755005eddcc0daf6a91f7faad7d869d82e94d98d20650d94
-#
-VERSION_WINDOM := 2.0.1
-CKSUM_WINDOM := 2539c15c22f7b8ca48c015f0c3d33f3bd1666cc8aa56eef6f38de2cc98a3479e
-# https://github.com/berkus/hermes-pixel-format/archive/refs/tags/v1.3.3.tar.gz
-VERSION_HERMES := 1.3.3
-CKSUM_HERMES := e86374606105d2a251d4406e5f9fca8d09e2fd971ebb0dfd342e40953676c46e
-# https://www.freetype.org/
-VERSION_FREETYPE := 2.13.3
-CKSUM_FREETYPE := 5c3a8e78f7b24c20b25b54ee575d6daa40007a5f4eea2845861c3409b3021747
+# https://laurikari.net/tre/
+VERSION_LIBTRE := 0.8.0
+CKSUM_LIBTRE := 8dc642c2cde02b2dac6802cdbe2cda201daf79c4ebcbb3ea133915edf1636658
 #
 VERSION_ROADSHOW := 7_64_0-amissl
 CKSUM_ROADSHOW := 5af092c2319f184d49f5eda72d160231b3f3551f9884f8136c531521059a4ad2
-# https://github.com/google/brotli
-VERSION_BROTLI := 1.1.0
-CKSUM_BROTLI := e720a6ca29428b803f4ad165371771f5398faba397edf6778837a18599ea13ff
+
+# Atari only components
+
+# https://www.freetype.org/
+VERSION_FREETYPE := 2.13.3
+CKSUM_FREETYPE := 5c3a8e78f7b24c20b25b54ee575d6daa40007a5f4eea2845861c3409b3021747
+
+# https://github.com/berkus/hermes-pixel-format/archive/refs/tags/v1.3.3.tar.gz
+VERSION_HERMES := 1.3.3
+CKSUM_HERMES := e86374606105d2a251d4406e5f9fca8d09e2fd971ebb0dfd342e40953676c46e
+#
+VERSION_LDG := SVN-20150827
+CKSUM_LDG := ca7959d31b46cb1e755005eddcc0daf6a91f7faad7d869d82e94d98d20650d94
+# Git-20170304
+VERSION_LIBCF := CVS-20130415
+CKSUM_LIBCF := 5d25c4faa2f5b7fc106bb47d093646f79d0fa72a34aaf8122110a2e4cf9eb6cc
+#
+VERSION_WINDOM := 2.0.1
+CKSUM_WINDOM := 2539c15c22f7b8ca48c015f0c3d33f3bd1666cc8aa56eef6f38de2cc98a3479e
+
+# Windows only components
+
+#
+VERSION_LIBGNURX := 2.5.1
+CKSUM_LIBGNURX := 7147b7f806ec3d007843b38e19f42a5b7c65894a57ffc297a76b0dcd5f675d76
+
+############################################################################
 
 # Path
 path__ := $(GCCSDK_INSTALL_CROSSBIN):$(PATH)
