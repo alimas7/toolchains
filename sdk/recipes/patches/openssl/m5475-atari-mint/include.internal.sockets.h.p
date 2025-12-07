@@ -1,6 +1,6 @@
 --- include/internal/sockets.h.orig	2018-06-03 03:19:29.000000000 +0200
 +++ include/internal/sockets.h	2018-06-03 03:19:36.000000000 +0200
-@@ -124,6 +124,16 @@
+@@ -153,6 +153,16 @@
  #   define OPENSSL_USE_IPV6 0
  #  endif
  # endif
@@ -15,5 +15,5 @@
 +#   undef IPV6_V6ONLY
 +#  endif
  
- # define get_last_socket_error() errno
- # define clear_socket_error()    errno=0
+ /*
+  * Some platforms define AF_UNIX, but don't support it
