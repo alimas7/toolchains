@@ -701,7 +701,7 @@ $(BUILDSTEPS)/libcurl.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/zlib.d $(BUILDST
 	touch $@
 
 $(SOURCETGZ_LIBCURL): $(BUILDSTEPS)/sourcedir.d
-	$(FETCHSRC) sdk curl-$(VERSION_LIBCURL).tar.bz2 "https://curl.se/download/curl-$(VERSION_LIBCURL).tar.bz2" $(CKSUM_LIBCURL) $@
+	$(FETCHSRC) sdk curl-$(VERSION_LIBCURL).tar.gz "https://curl.se/download/curl-$(VERSION_LIBCURL).tar.gz" $(CKSUM_LIBCURL) $@
 
 
 ###########
@@ -716,5 +716,5 @@ $(BUILDSTEPS)/libexpat.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEP_SRC_LIBEXPAT)
 	touch $@
 
 $(SOURCETGZ_LIBEXPAT): $(BUILDSTEPS)/sourcedir.d
-	$(FETCHSRC) sdk expat-$(VERSION_LIBEXPAT).tar.bz2 "https://github.com/libexpat/libexpat/releases/download/R_$(subst .,_,$(VERSION_LIBEXPAT))/expat-$(VERSION_LIBEXPAT).tar.bz2" $(CKSUM_LIBEXPAT) $@
+	$(FETCHSRC) sdk expat-$(VERSION_LIBEXPAT).tar.gz "https://github.com/libexpat/libexpat/releases/download/R_$(subst .,_,$(VERSION_LIBEXPAT))/expat-$(VERSION_LIBEXPAT).tar.gz" $(CKSUM_LIBEXPAT) $@
 
