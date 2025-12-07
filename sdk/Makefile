@@ -502,7 +502,7 @@ $(SOURCEDIR)/hermes-$(VERSION_HERMES).tar.gz:
 $(eval $(call patched_source_rule,freetype,$(VERSION_FREETYPE)))
 
 $(BUILDSTEPS)/freetype.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/freetype-src-$(VERSION_FREETYPE).d
-	cd $(BUILDDIR)/freetype/freetype-$(VERSION_FREETYPE) && $(env) $(FREETYPE_ENV) ./configure --prefix=$(GCCSDK_INSTALL_ENV) --target=$(TARGET) --host=$(TARGET) --disable-shared
+	cd $(BUILDDIR)/freetype/freetype-$(VERSION_FREETYPE) && $(env) $(FREETYPE_ENV) ./configure --prefix=$(GCCSDK_INSTALL_ENV) --target=$(TARGET) --host=$(TARGET) --disable-shared --with-harfbuzz=no
 	cd $(BUILDDIR)/freetype/freetype-$(VERSION_FREETYPE) && $(env) make
 	cd $(BUILDDIR)/freetype/freetype-$(VERSION_FREETYPE) && $(env) make install 
 	touch $@
