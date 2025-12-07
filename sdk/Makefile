@@ -26,62 +26,58 @@ endif
 
 # Upstream package versions
 
-
 # Components for most (if not all) platforms
 
 # Compression libraries
 
 # https://github.com/google/brotli
-VERSION_BROTLI := 1.1.0
-CKSUM_BROTLI := e720a6ca29428b803f4ad165371771f5398faba397edf6778837a18599ea13ff
+VERSION_BROTLI := 1.2.0
+CKSUM_BROTLI := 816c96e8e8f193b40151dad7e8ff37b1221d019dbcb9c35cd3fadbfe6477dfec
 # https://zlib.net/
 VERSION_ZLIB := 1.3.1
 CKSUM_ZLIB := 9a93b2b7dfdac77ceba5a558a580e74667dd6fede4585b91eefb60f03b72df23
 
 # Cryptography
 
-# https://www.openssl.org/
-VERSION_OPENSSL := 3.0.15
-CKSUM_OPENSSL := 23c666d0edf20f14249b3d8f0368acaee9ab585b09e1de82107c66e1f3ec9533
+# https://openssl-library.org/
+VERSION_OPENSSL := 3.5.4
+CKSUM_OPENSSL := 967311f84955316969bdb1d8d4b983718ef42338639c621ec4c34fddef355e99
 
 # Document parsers
 
 # https://github.com/libexpat/libexpat
-VERSION_LIBEXPAT := 2.5.0
-CKSUM_LIBEXPAT := 6f0e6e01f7b30025fa05c85fdad1e5d0ec7fd35d9f61b22f34998de11969ff67
-# editions later than 2.5.0 require c++11 support and arm-unknown-riscos fails
-#VERSION_LIBEXPAT := 2.6.3
-#CKSUM_LIBEXPAT := b8baef92f328eebcf731f4d18103951c61fa8c8ec21d5ff4202fb6f2198aeb2d
+VERSION_LIBEXPAT := 2.7.3
+CKSUM_LIBEXPAT := 821ac9710d2c073eaf13e1b1895a9c9aa66c1157a99635c639fbff65cdbdd732
 
 # Image formats
 
 # https://libjpeg-turbo.org/
-VERSION_LIBJPEG_TURBO := 3.0.4
-CKSUM_LIBJPEG_TURBO := 99130559e7d62e8d695f2c0eaeef912c5828d5b84a0537dcb24c9678c9d5b76b
+VERSION_LIBJPEG_TURBO := 3.1.2
+CKSUM_LIBJPEG_TURBO := 8f0012234b464ce50890c490f18194f913a7b1f4e6a03d6644179fa0f867d0cf
 # http://www.libpng.org/pub/png/libpng.html
-VERSION_LIBPNG := 1.6.44
-CKSUM_LIBPNG := 8c25a7792099a0089fa1cc76c94260d0bb3f1ec52b93671b572f8bb61577b732
+VERSION_LIBPNG := 1.6.53
+CKSUM_LIBPNG := 1d3fb8ccc2932d04aa3663e22ef5ef490244370f4e568d7850165068778d98d4
 # https://developers.google.com/speed/webp/
-VERSION_LIBWEBP := 1.3.2
-CKSUM_LIBWEBP := 2a499607df669e40258e53d0ade8035ba4ec0175244869d1025d460562aa09b4
+VERSION_LIBWEBP := 1.6.0
+CKSUM_LIBWEBP := e4ab7009bf0629fd11982d4c2aa83964cf244cffba7347ecd39019a9e38c4564
 
 # Network transports and name resolution
 
 # https://c-ares.org/
 # https://github.com/c-ares/c-ares/releases/download/
-VERSION_LIBCARES := 1.34.2
-CKSUM_LIBCARES := 35410aa625cc9ee95b66475f54aea7c81c673fb63d75fad5eee267711503b72a
+VERSION_LIBCARES := 1.34.5
+CKSUM_LIBCARES := 7d935790e9af081c25c495fd13c2cfcda4792983418e96358ef6e7320ee06346
 # https://curl.se/
-VERSION_LIBCURL := 8.11.0
-CKSUM_LIBCURL := c95d5a1368803729345a632ce42cceeefd5f09c3b4d9582f858f6779f4b8b254
+VERSION_LIBCURL := 8.17.0
+CKSUM_LIBCURL := e8e74cdeefe5fb78b3ae6e90cd542babf788fa9480029cfcee6fd9ced42b7910
 
 ############################################################################
 
 # Platforms with no native iconv (AmigaOS, Atari, Windows)
 
 # https://www.gnu.org/software/libiconv/
-VERSION_LIBICONV := 1.17
-CKSUM_LIBICONV := 8f74213b56238c85a50a5329f77e06198771e70dd9a739779f4c02f65d971313
+VERSION_LIBICONV := 1.18
+CKSUM_LIBICONV := 3b08f5f4f9b4eb82f151a7040bfd6fe6c6fb922efe4b1659c66ea933276965e8
 
 # Platforms that don't use libjpeg-turbo (AmigaOS 3, Atari, Windows)
 
@@ -95,9 +91,9 @@ CKSUM_LIBJPEG := 00029b1473f0f0ea72fbca3230e8cb25797fbb27e58ae2e46bb8bf5a806fe0b
 # 1.7.0: https://github.com/peterGraf/pbl/releases
 VERSION_LIBPBL := 1_04
 CKSUM_LIBPBL := 20f0ab1af09a22a8f3cb3ce3832247a6b51d8db57211f6bb0794af9485229a67
-# https://laurikari.net/tre/
-VERSION_LIBTRE := 0.8.0
-CKSUM_LIBTRE := 8dc642c2cde02b2dac6802cdbe2cda201daf79c4ebcbb3ea133915edf1636658
+# https://github.com/laurikari/tre/
+VERSION_LIBTRE := 0.9.0
+CKSUM_LIBTRE := f57f5698cafdfe516d11fb0b71705916fe1162f14b08cf69d7cf86923b5a2477
 #
 VERSION_ROADSHOW := 7_64_0-amissl
 CKSUM_ROADSHOW := 5af092c2319f184d49f5eda72d160231b3f3551f9884f8136c531521059a4ad2
@@ -105,8 +101,8 @@ CKSUM_ROADSHOW := 5af092c2319f184d49f5eda72d160231b3f3551f9884f8136c531521059a4a
 # Atari only components
 
 # https://www.freetype.org/
-VERSION_FREETYPE := 2.13.3
-CKSUM_FREETYPE := 5c3a8e78f7b24c20b25b54ee575d6daa40007a5f4eea2845861c3409b3021747
+VERSION_FREETYPE := 2.14.1
+CKSUM_FREETYPE := 174d9e53402e1bf9ec7277e22ec199ba3e55a6be2c0740cb18c0ee9850fc8c34
 
 # https://github.com/berkus/hermes-pixel-format/archive/refs/tags/v1.3.3.tar.gz
 VERSION_HERMES := 1.3.3
@@ -529,17 +525,17 @@ $(SOURCEDIR)/Roadshow-SDK-NS-$(VERSION_ROADSHOW).lha:
 
 $(BUILDSTEPS)/libtre.d: $(BUILDSTEPS)/builddir.d $(BUILDSTEPS)/libtre-src.d
 	mkdir -p $(BUILDDIR)/libtre
-	cd $(BUILDDIR)/libtre && tar xaf $(SOURCEDIR)/tre-$(VERSION_LIBTRE).tar.bz2
+	cd $(BUILDDIR)/libtre && tar xaf $(SOURCEDIR)/tre-$(VERSION_LIBTRE).tar.gz
 	cd $(BUILDDIR)/libtre/tre-$(VERSION_LIBTRE) && $(env) ./configure --prefix=$(GCCSDK_INSTALL_ENV) --target=$(TARGET) --host=$(TARGET) --disable-shared
 	cd $(BUILDDIR)/libtre/tre-$(VERSION_LIBTRE) && $(env) make install
 	cp $(RECIPES)/files/libtre/regex.h $(GCCSDK_INSTALL_ENV)/include/regex.h
 	touch $@
 
-$(BUILDSTEPS)/libtre-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/tre-$(VERSION_LIBTRE).tar.bz2
+$(BUILDSTEPS)/libtre-src.d: $(BUILDSTEPS)/sourcedir.d $(SOURCEDIR)/tre-$(VERSION_LIBTRE).tar.gz
 	touch $@
 
-$(SOURCEDIR)/tre-$(VERSION_LIBTRE).tar.bz2:
-	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://laurikari.net/tre/$(subst $(SOURCEDIR)/,,$@)" $(CKSUM_LIBTRE) $@
+$(SOURCEDIR)/tre-$(VERSION_LIBTRE).tar.gz:
+	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://github.com/laurikari/tre/releases/download/v$(VERSION_LIBTRE)/$(subst $(SOURCEDIR)/,,$@)" $(CKSUM_LIBTRE) $@
 
 
 ########
@@ -587,7 +583,7 @@ endif
 
 # get the openssl source tar
 $(SOURCEDIR)/openssl-$(VERSION_OPENSSL).tar.gz:
-	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://www.openssl.org/source/$(subst $(SOURCEDIR)/,,$@)" $(CKSUM_OPENSSL) $@
+	$(FETCHSRC) sdk $(subst $(SOURCEDIR)/,,$@) "https://github.com/openssl/openssl/releases/download/openssl-$(VERSION_OPENSSL)/$(subst $(SOURCEDIR)/,,$@)" $(CKSUM_OPENSSL) $@
 
 
 #########
