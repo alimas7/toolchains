@@ -202,6 +202,7 @@ ifeq ($(TARGET),arm-riscos-gnueabi)
   LIBCURL_ENV := LIBS="-lbrotlidec -lbrotlicommon"
   EXTRAARGS_LIBCURL := --enable-nonblocking --enable-ares --with-random="/dev/urandom" $(LIBCURL_DISABLES)
   EXTRAARGS_OPENSSL := no-asm
+  ENV_OPENSSL := CPPFLAGS="-DOPENSSL_NO_UNIX_SOCK"
 endif
 
 ifeq ($(TARGET),arm-unknown-riscos)
@@ -209,6 +210,7 @@ ifeq ($(TARGET),arm-unknown-riscos)
   EXTRAARGS_LIBCARES := --disable-shared 'ac_cv_have_decl_getservbyport_r=no'
   EXTRAARGS_LIBCURL := --enable-nonblocking --enable-ares --with-random="/dev/urandom" $(LIBCURL_DISABLES)
   EXTRAARGS_OPENSSL := no-asm
+  ENV_OPENSSL := CPPFLAGS="-DOPENSSL_NO_UNIX_SOCK"
 endif
 
 ifeq ($(TARGET),m68k-atari-mint)
@@ -217,6 +219,7 @@ ifeq ($(TARGET),m68k-atari-mint)
   EXTRAARGS_LIBCURL := --enable-optimize --enable-nonblocking --enable-ares --with-random="/dev/urandom" --disable-manual --disable-curldebug --disable-thread --disable-threaded-resolver 
   EXTRAARGS_LIBICONV := --enable-extra-encodings
   LIBICONV_ENV := CFLAGS="-DPATH_MAX=1024"
+  ENV_OPENSSL := CPPFLAGS="-DOPENSSL_NO_UNIX_SOCK"
 endif
 
 ifeq ($(TARGET),m5475-atari-mint)
@@ -226,6 +229,7 @@ ifeq ($(TARGET),m5475-atari-mint)
   EXTRAARGS_LIBICONV := --enable-extra-encodings
   LIBICONV_ENV := CFLAGS="-DPATH_MAX=1024"
   EXTRAARGS_OPENSSL := no-asm
+  ENV_OPENSSL := CPPFLAGS="-DOPENSSL_NO_UNIX_SOCK"
 endif
 
 ifeq ($(TARGET),ppc-amigaos)
@@ -233,6 +237,7 @@ ifeq ($(TARGET),ppc-amigaos)
   LIBCURL_SSL := amissl
   EXTRAARGS_LIBCARES := --disable-shared
   EXTRAARGS_LIBCURL := --disable-ntlm-wb --without-random --enable-threaded-resolver --disable-ipv6 LIBS=-lpthread
+  ENV_OPENSSL := CPPFLAGS="-DOPENSSL_NO_UNIX_SOCK"
 endif
 
 ifeq ($(TARGET),m68k-unknown-amigaos)
@@ -246,6 +251,7 @@ ifeq ($(TARGET),m68k-unknown-amigaos)
   LIBJPEG_TURBO_ENV := LDFLAGS="-lm"
   # XXX: build openssl against bsdsocket.library?
   # ENV_OPENSSL := CFLAGS="-I$(GCCSDK_INSTALL_ENV)/netinclude" CPPFLAGS="-D__NO_NET_API"
+  ENV_OPENSSL := CPPFLAGS="-DOPENSSL_NO_UNIX_SOCK"
   ifeq ($(LIBCURL_SSL),openssl)
     LIBCURL_ENV := LIBS="-lm -lnet"
   else
@@ -263,7 +269,7 @@ ifeq ($(TARGET),i686-w64-mingw32)
   EXTRAARGS_LIBCURL := --enable-nonblocking --enable-ares --disable-ldap --without-random
   LIBCURL_ENV := CFLAGS="-DCARES_STATICLIB" LIBS="-lgdi32 -lcrypt32 -liphlpapi"
   TARGET_OPENSSL := mingw
-  ENV_OPENSSL := WINDRES="$(windres__)"
+  ENV_OPENSSL := CPPFLAGS="-DOPENSSL_NO_UNIX_SOCK" WINDRES="$(windres__)"
   EXTRAARGS_OPENSSL := no-asm enable-capieng
 endif
 
@@ -274,6 +280,7 @@ ifeq ($(TARGET),x86_64-w64-mingw32)
   LIBCURL_ENV := CFLAGS="-DCARES_STATICLIB" LIBS="-lgdi32 -lcrypt32 -liphlpapi"
   TARGET_OPENSSL := mingw64
   EXTRAARGS_OPENSSL := no-asm enable-capieng
+  ENV_OPENSSL := CPPFLAGS="-DOPENSSL_NO_UNIX_SOCK"
 endif
 
 

@@ -1,6 +1,6 @@
 --- apps/speed.c.orig	2017-11-21 22:49:00.185608040 +0000
 +++ apps/speed.c	2017-11-21 22:49:21.488219518 +0000
-@@ -62,6 +62,12 @@
+@@ -78,6 +78,12 @@
  #include "./testdsa.h"
  #include <openssl/modes.h>
  
@@ -13,7 +13,7 @@
  #ifndef HAVE_FORK
  # if defined(OPENSSL_SYS_VMS) || defined(OPENSSL_SYS_WINDOWS) || defined(OPENSSL_SYS_VXWORKS)
  #  define HAVE_FORK 0
-@@ -186,6 +192,18 @@
+@@ -209,6 +215,18 @@
  
      return ret;
  }
