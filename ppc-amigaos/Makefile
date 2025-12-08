@@ -91,7 +91,7 @@ distclean: clean
 GCC_ENV_PARAMS := AUTOCONF=$(GCC_AUTOCONF) AUTOHEADER=$(GCC_AUTOHEADER) AUTOM4TE=$(GCC_AUTOM4TE) PATH="$(PREFIX)/bin:$(PATH)" CXXFLAGS="-fpermissive"
 
 $(BUILDSTEPS)/stage2.d: $(BUILDSTEPS)/srcdir-step3.d $(BUILDSTEPS)/binutils.d $(BUILDSTEPS)/ndk.d
-	cd $(BUILDDIR) && $(GCC_ENV_PARAMS) $(GCC_SRCDIR)/configure \
+	cd $(BUILDDIR) && $(GCC_ENV_PARAMS) CFLAGS="-Wno-incompatible-pointer-types" $(GCC_SRCDIR)/configure \
 			--prefix=$(PREFIX) --target=$(TARGET_NAME) \
 			--disable-nls --disable-c-mbchar --enable-languages=c \
 			--enable-checking=no --enable-c99 --with-cross-host \
@@ -201,7 +201,7 @@ $(BUILDSTEPS)/$(UPSTREAM_GCC_TARBALL).d: $(BUILDSTEPS)/buildsteps.d $(SOURCESDIR
 
 $(BUILDSTEPS)/binutils.d: $(BUILDSTEPS)/binutils-srcdir.d
 	mkdir -p $(BUILDDIR)/binutils
-	cd $(BUILDDIR)/binutils && $(BINUTILS_SRCDIR)/configure --prefix=$(PREFIX) --target=$(TARGET_NAME) --disable-nls --enable-plugins --disable-werror
+	cd $(BUILDDIR)/binutils && CFLAGS="-Wno-implicit-function-declaration" $(BINUTILS_SRCDIR)/configure --prefix=$(PREFIX) --target=$(TARGET_NAME) --disable-nls --enable-plugins --disable-werror
 	cd $(BUILDDIR)/binutils && make
 	cd $(BUILDDIR)/binutils && make install
 	touch $@
