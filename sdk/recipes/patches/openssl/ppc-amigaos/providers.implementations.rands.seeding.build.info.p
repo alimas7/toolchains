@@ -7,6 +7,6 @@
 +IF[{- $config{target} =~ /amiga/i -}]
 +  $COMMON=$COMMON rand_amiga.c
 +ENDIF
-
- SOURCE[../../../libdefault.a]=$COMMON
- 
+ IF[{- !$disabled{asm} && $config{target} =~ '.*aarch64' -}]
+   $COMMON=$COMMON rand_cpu_arm64.c
+ ELSE

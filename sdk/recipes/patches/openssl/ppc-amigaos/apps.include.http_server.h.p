@@ -1,6 +1,6 @@
 --- apps/include/http_server.h.orig	2017-11-21 22:49:00.185608040 +0000
 +++ apps/include/http_server.h	2017-11-21 22:49:21.488219518 +0000
-@@ -27,7 +27,7 @@
+@@ -28,7 +28,7 @@
  # endif
  
  # if !defined(NO_FORK) && !defined(OPENSSL_NO_SOCK) \
