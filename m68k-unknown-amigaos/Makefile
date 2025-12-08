@@ -154,7 +154,7 @@ $(BUILDSTEPS)/ndk.d: $(SOURCESDIR)/$(UPSTREAM_NDK_TARBALL) $(SOURCESDIR)/$(UPSTR
 ###
 
 $(BUILDSTEPS)/bootstrap-compiler.d: $(BUILDSTEPS)/bison.d $(BUILDSTEPS)/srcdir-step3.d $(BUILDSTEPS)/binutils.d
-	cd $(BUILDDIR) && $(GCC_ENV_PARAMS) $(GCC_SRCDIR)/configure \
+	cd $(BUILDDIR) && $(GCC_ENV_PARAMS) CFLAGS="-Wno-implicit-int -Wno-implicit-function-declaration -Wno-incompatible-pointer-types" $(GCC_SRCDIR)/configure \
 				--prefix=$(PREFIX) \
 				--target=$(TARGET_NAME) \
 				--disable-threads \
@@ -223,7 +223,7 @@ $(BUILDSTEPS)/$(UPSTREAM_BISON_TARBALL).d: $(BUILDSTEPS)/buildsteps.d $(SOURCESD
 # Build a 32bit binary until this gets fixed
 $(BUILDSTEPS)/binutils.d: $(BUILDSTEPS)/binutils-srcdir.d
 	mkdir -p $(BUILDDIR)/binutils
-	cd $(BUILDDIR)/binutils && CFLAGS="-m32" LDFLAGS="-m32" $(BINUTILS_SRCDIR)/configure --prefix=$(PREFIX) --target=$(TARGET_NAME) --disable-nls --disable-werror
+	cd $(BUILDDIR)/binutils && CFLAGS="-m32 -Wno-implicit-int -Wno-implicit-function-declaration" LDFLAGS="-m32" $(BINUTILS_SRCDIR)/configure --prefix=$(PREFIX) --target=$(TARGET_NAME) --disable-nls --disable-werror
 	cd $(BUILDDIR)/binutils && make
 	cd $(BUILDDIR)/binutils && make install
 	touch $@
