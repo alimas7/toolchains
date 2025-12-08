@@ -283,7 +283,7 @@ ifeq ($(TARGET),x86_64-w64-mingw32)
   LIBCURL_ENV := CFLAGS="-DCARES_STATICLIB" LIBS="-lgdi32 -lcrypt32 -liphlpapi"
   TARGET_OPENSSL := mingw64
   EXTRAARGS_OPENSSL := no-asm enable-capieng
-  ENV_OPENSSL := CPPFLAGS="-DOPENSSL_NO_UNIX_SOCK"
+  ENV_OPENSSL := CPPFLAGS="-DOPENSSL_NO_UNIX_SOCK" WINDRES="$(windres__)"
 endif
 
 
