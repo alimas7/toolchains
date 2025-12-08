@@ -23,7 +23,7 @@
    unsigned short       sin6_port;
 --- src/lib/ares_sortaddrinfo.c.orig	2017-10-10 15:19:45.611896396 +0100
 +++ src/lib/ares_sortaddrinfo.c	2017-10-17 15:42:25.304921197 +0100
-@@ -73,6 +73,39 @@
+@@ -70,6 +70,39 @@
  #define ARES_IN_LOOPBACK(a) \
    ((((long unsigned int)(a)) & 0xff000000) == 0x7f000000)
  
@@ -63,7 +63,7 @@
  /* RFC 4193. */
  #define ARES_IN6_IS_ADDR_ULA(a) (((a)->s6_addr[0] & 0xfe) == 0xfc)
  
-@@ -205,8 +238,13 @@
+@@ -202,8 +235,13 @@
  /*
   * Find number of matching initial bits between the two addresses a1 and a2.
   */

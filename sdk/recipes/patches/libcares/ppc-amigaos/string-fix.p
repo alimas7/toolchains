@@ -1,11 +1,12 @@
 --- src/lib/ares_private.h.orig
 +++ src/lib/ares_private.h
-@@ -40,6 +40,10 @@
+@@ -40,6 +40,11 @@
  #  include <netinet/in.h>
  #endif
  
 +extern int strcasecmp(const char *s1, const char *s2);
 +extern int strncasecmp(const char *s1, const char *s2, size_t n);
++extern size_t strnlen(const char *s, size_t maxlen);
 +extern int snprintf(char *str, size_t size, const char *format, ...);
 +
  #include "ares_mem.h"
