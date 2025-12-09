@@ -126,7 +126,6 @@ $(BUILDSTEPS)/gcc.d: $(BUILDSTEPS)/gccsdk-srcdir.d
 $(BUILDSTEPS)/gccsdk-srcdir.d: $(BUILDSTEPS)/buildsteps.d $(SOURCESDIR)/$(UPSTREAM_GCCSDK_TARBALL)
 	tar -C $(BUILDDIR) -xaf $(SOURCESDIR)/$(UPSTREAM_GCCSDK_TARBALL)
 	cp -p $(RECIPES)/files/gcc4/gccsdk-params $(BUILDDIR)/gcc4/gcc4/gccsdk-params
-	cp -p $(RECIPES)/files/gcc4/*.p $(BUILDDIR)/gcc4/gcc4/recipe/patches/gcc/
 	sed -i 's#{PREFIX}#$(PREFIX)#' $(BUILDDIR)/gcc4/gcc4/gccsdk-params
 	for p in `ls $(RECIPES)/patches/gcc4/*.p` ; do patch -d $(BUILDDIR)/gcc4 -p0 <$$p ; done
 	touch $@
