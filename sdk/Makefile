@@ -206,8 +206,10 @@ ifeq ($(TARGET),arm-riscos-gnueabi)
 endif
 
 ifeq ($(TARGET),arm-unknown-riscos)
-  SDK_ITEMS := $(addprefix $(BUILDSTEPS)/, $(COMMON_SDK_ITEMS) libjpeg-turbo.d libwebp.d)
+  SDK_ITEMS := $(addprefix $(BUILDSTEPS)/, libbrotli.d $(COMMON_SDK_ITEMS) libjpeg-turbo.d libwebp.d)
+  LIBBROTLI_ENV := CFLAGS="-std=c99"
   EXTRAARGS_LIBCARES := --disable-shared 'ac_cv_have_decl_getservbyport_r=no'
+  LIBCURL_ENV := LIBS="-lbrotlidec -lbrotlicommon"
   EXTRAARGS_LIBCURL := --enable-nonblocking --enable-ares --with-random="/dev/urandom" $(LIBCURL_DISABLES)
   # Disable the expat testsuite as it requires C++11, which GCC4.7 does not support
   EXTRAARGS_LIBEXPAT := --with-tests=no
