@@ -1,0 +1,273 @@
+#!/usr/bin/env python3
+
+import argparse
+import os
+import pathlib
+import shutil
+import subprocess
+import sys
+import tempfile
+
+
+class ImportTool:
+    def __init__(self, args):
+        self._source_dir = pathlib.Path(__file__).parent.parent
+        self._archive_path = pathlib.Path(args.archive).resolve()
+        self._package_version = args.package_version
+        self._package_name = args.package_name
+        self._package_ext = None
+
+    def _detect_package_details(self):
+        # Compute filetype
+        suffixes = self._archive_path.suffixes
+        if not suffixes:
+            print("ERROR: failed to compute file type", file=sys.stderr)
+            return
+        if suffixes[-1] not in (".tar", ".tgz", ".gz", ".bz2", ".xz"):
+            print("ERROR: unsupported file type", file=sys.stderr)
+            return
+        self._package_ext = suffixes[-1]  # .t{ar,gz}
+        if suffixes[-1] in (".gz", ".bz2", ".xz"):
+            if len(suffixes) < 2:
+                print("ERROR: failed to compute file type", file=sys.stderr)
+                return
+            if suffixes[-2] not in (".tar",):
+                print("ERROR: unsupported file type", file=sys.stderr)
+                return
+            self._package_ext = "".join(suffixes[-2:])  # .tar.{gz,bz2,xz}
+
+        if not self._package_name:
+            # Detect package name
+            parts = self._archive_path.name.rsplit("_", 1)
+            if len(parts) == 1:
+                parts = self._archive_path.name.rsplit("-", 1)
+            if len(parts) == 1:
+                print("ERROR: failed to detect package name", file=sys.stderr)
+                return
+            self._package_name = parts[0]
+
+        if not self._package_version:
+            # Detect package version
+            parts = self._archive_path.name.rsplit("_", 1)
+            if len(parts) == 1:
+                parts = self._archive_path.name.rsplit("-", 1)
+            if len(parts) == 1:
+                print("ERROR: failed to detect package version", file=sys.stderr)
+                return
+            self._package_version = parts[1].removesuffix(self._package_ext)
+
+    @staticmethod
+    def _ensure_branch(worktree, branch_name):
+        if subprocess.call(
+            [
+                "/usr/bin/git",
+                "switch",
+                "--force",
+                "--quiet",
+                branch_name,
+            ],
+            cwd=worktree,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        ):
+            # Branch doesn't exist: create it
+            subprocess.check_call(
+                ["/usr/bin/git", "switch", "--orphan", branch_name],
+                cwd=worktree,
+            )
+            return None
+        output = subprocess.check_output(
+            ["/usr/bin/git", "show-ref", "--branches", branch_name],
+            cwd=worktree,
+        )
+        return output.splitlines()[0].split(None, 1)[0]
+
+    def _import_source(self, branch_name):
+        previous_head = None
+        with tempfile.TemporaryDirectory(dir=str(self._source_dir)) as worktree:
+            wt_path = pathlib.Path(worktree)
+
+            subprocess.check_call(
+                ["/usr/bin/git", "worktree", "add", "--orphan", worktree]
+            )
+
+            previous_head = self._ensure_branch(worktree, branch_name)
+
+            # Clear out working tree
+            victims = [
+                p for p in wt_path.iterdir() if p.name != ".git"
+            ]
+            for victim in victims:
+                if victim.is_file():
+                    victim.unlink()
+                else:
+                    shutil.rmtree(str(victim))
+
+            # Unpack tarball
+            subprocess.check_call(
+                [
+                    "/usr/bin/tar",
+                    # XXX: this assumes there's only a top-level dir
+                    # XXX: we should check first (and deal if not)
+                    "--strip-components=1",
+                    "--exclude-vcs",
+                    "-xaf",
+                    self._archive_path
+                ],
+                cwd=worktree,
+            )
+
+            # Update index
+            subprocess.check_call(
+                [
+                    "/usr/bin/git",
+                    "add",
+                    "--all",
+                    "--force",
+                    "."
+                ],
+                cwd=worktree,
+            )
+
+            subprocess.call(
+                ["/usr/bin/git", "status"], cwd=worktree
+            )
+
+            # Create commit
+            subprocess.check_call(
+                [
+                    "/usr/bin/git",
+                    "commit",
+                    "-m",
+                    f"Upstream {self._package_name} {self._package_version}"
+                ],
+                cwd=worktree,
+            )
+
+            try:
+                subprocess.check_call(
+                    ["/usr/bin/git", "worktree", "remove", worktree]
+                )
+            except:
+                subprocess.call(
+                    [
+                        "/usr/bin/git",
+                        "worktree",
+                        "remove",
+                        "--force",
+                        worktree
+                    ],
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                )
+                raise
+
+        return previous_head
+
+    def _make_pristine_tar(self, branch_name):
+        normalized_archive_name = (
+            f"{self._package_name}_{self._package_version}{self._package_ext}"
+        )
+
+        previous_head = None
+        with tempfile.TemporaryDirectory(dir=str(self._source_dir)) as tmpdir:
+            td_path = pathlib.Path(tmpdir)
+
+            subprocess.check_call(
+                ["/usr/bin/git", "worktree", "add", "--orphan", tmpdir]
+            )
+
+            previous_head = self._ensure_branch(tmpdir, "pristine-tar")
+
+            try:
+                (td_path / normalized_archive_name).symlink_to(
+                    self._archive_path
+                )
+                subprocess.check_call(
+                    [
+                        str(self._source_dir / "tools" / "pristine-tar"),
+                        "-d", "-v",
+                        "commit",
+                        normalized_archive_name,
+                        branch_name,
+                    ],
+                    cwd=tmpdir,
+                )
+                (td_path / normalized_archive_name).unlink()
+            finally:
+                subprocess.call(
+                    ["/usr/bin/git", "worktree", "remove", "--force", tmpdir]
+                )
+
+        return previous_head
+
+    def run(self):
+        if not self._archive_path.exists():
+            print("ERROR: non-existent source", file=sys.stderr)
+            return
+
+        self._detect_package_details()
+
+        print(
+            f"INFO: processing {self._package_name} ({self._package_version})",
+            file=sys.stderr,
+        )
+
+        branch_name = f"upstream/{self._package_name}"
+        tag_name = f"{branch_name}/{self._package_version}"
+
+        previous_head = self._import_source(branch_name)
+
+        try:
+            previous_pt = self._make_pristine_tar(branch_name)
+            try:
+                subprocess.check_call(
+                    [
+                        "/usr/bin/git",
+                        "tag",
+                        "-a",
+                        "-m",
+                        f"{self._package_name} {self._package_version}",
+                        tag_name,
+                        branch_name,
+                    ]
+                )
+            except:
+                if previous_pt is not None:
+                    subprocess.check_call(
+                        [
+                            "/usr/bin/git",
+                            "branch",
+                            "-f",
+                            "pristine-tar",
+                            previous_pt
+                        ],
+                    )
+        except:
+            if previous_head is not None:
+                subprocess.check_call(
+                    [
+                        "/usr/bin/git",
+                        "branch",
+                        "-f",
+                        branch_name,
+                        previous_head,
+                    ],
+                )
+
+def main():
+    parser = argparse.ArgumentParser(description="Import pristine sources.")
+    parser.add_argument(
+        "--package-name", help="Package name (default: autodetect)"
+    )
+    parser.add_argument(
+        "--package-version", help="Package version (default: autodetect)"
+    )
+    parser.add_argument("archive", help="Path to source tarball")
+    args = parser.parse_args()
+
+    ImportTool(args).run()
+
+
+if __name__ == "__main__":
+    main()
