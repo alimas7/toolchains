@@ -4,57 +4,60 @@
 # sources
 
 UPSTREAM_GCC_VERSION := 3.4.6
-UPSTREAM_GCC_TARBALL := gcc-$(UPSTREAM_GCC_VERSION).tar.bz2
-UPSTREAM_GCC_URI := http://ftp.gnu.org/gnu/gcc/gcc-$(UPSTREAM_GCC_VERSION)/$(UPSTREAM_GCC_TARBALL)
+UPSTREAM_GCC_TARBALL := gcc_$(UPSTREAM_GCC_VERSION).tar.bz2
 
-UPSTREAM_BINUTILS_REVISION := 630
 UPSTREAM_BINUTILS_VERSION := 2.14
-# Not a tarball; so sue me
-UPSTREAM_BINUTILS_TARBALL := binutils-$(UPSTREAM_BINUTILS_VERSION)
-UPSTREAM_BINUTILS_URI := http://svn.code.sf.net/p/adtools/code/branches/binutils/$(UPSTREAM_BINUTILS_VERSION)/@$(UPSTREAM_BINUTILS_REVISION)
+UPSTREAM_BINUTILS_REVISION := 630
+UPSTREAM_BINUTILS_PATCH := +adtools$(UPSTREAM_BINUTILS_REVISION)
+UPSTREAM_BINUTILS_TARBALL := binutils_$(UPSTREAM_BINUTILS_VERSION)$(UPSTREAM_BINUTILS_PATCH).tar.bz2
 
 UPSTREAM_GMP_VERSION := 4.3.2
-UPSTREAM_GMP_TARBALL := gmp-$(UPSTREAM_GMP_VERSION).tar.bz2
-UPSTREAM_GMP_URI := http://ftp.gnu.org/gnu/gmp/$(UPSTREAM_GMP_TARBALL)
+UPSTREAM_GMP_TARBALL := gmp_$(UPSTREAM_GMP_VERSION).tar.bz2
 
 # Would use 3.0.0, but that dislikes in-tree gmp sources
 UPSTREAM_MPFR_VERSION := 2.4.2
-UPSTREAM_MPFR_TARBALL := mpfr-$(UPSTREAM_MPFR_VERSION).tar.bz2
-UPSTREAM_MPFR_URI := http://www.mpfr.org/mpfr-$(UPSTREAM_MPFR_VERSION)/$(UPSTREAM_MPFR_TARBALL)
+UPSTREAM_MPFR_TARBALL := mpfr_$(UPSTREAM_MPFR_VERSION).tar.bz2
 
 UPSTREAM_MPC_VERSION := 0.8.2
-UPSTREAM_MPC_TARBALL := mpc-$(UPSTREAM_MPC_VERSION).tar.gz
-UPSTREAM_MPC_URI := http://www.multiprecision.org/downloads/$(UPSTREAM_MPC_TARBALL)
+UPSTREAM_MPC_TARBALL := mpc_$(UPSTREAM_MPC_VERSION).tar.gz
 
 UPSTREAM_CLIB2_VERSION := 1_214
-UPSTREAM_CLIB2_TARBALL := V$(UPSTREAM_CLIB2_VERSION).tar.gz
-UPSTREAM_CLIB2_URI := https://github.com/adtools/clib2/archive/$(UPSTREAM_CLIB2_TARBALL)
+UPSTREAM_CLIB2_TARBALL := clib2_$(UPSTREAM_CLIB2_VERSION).tar.gz
 
-UPSTREAM_NDK_TARBALL := ndk-3.9-includes.tar.bz2
-UPSTREAM_NDK_URI := http://kas1e.mikendezign.com/zerohero_crosscompilers_backup/files/m68k-amigaos/ndk-3.9-includes.tar.bz2
+UPSTREAM_NDK_TARBALL := ndk-includes_3.9.tar.bz2
 
 UPSTREAM_OPENURL_VERSION := 7.16
-UPSTREAM_OPENURL_TARBALL := openurl-$(UPSTREAM_OPENURL_VERSION)
-UPSTREAM_OPENURL_URI := https://github.com/jens-maus/libopenurl/archive/$(UPSTREAM_OPENURL_VERSION).tar.gz
+UPSTREAM_OPENURL_TARBALL := openurl_$(UPSTREAM_OPENURL_VERSION).tar.gz
 
 UPSTREAM_AMISSL_VERSION := 5.17
-UPSTREAM_AMISSL_TARBALL := AmiSSL-$(UPSTREAM_AMISSL_VERSION)-SDK.lha
-UPSTREAM_AMISSL_URI := https://github.com/jens-maus/amissl/releases/download/$(UPSTREAM_AMISSL_VERSION)/$(UPSTREAM_AMISSL_TARBALL)
+UPSTREAM_AMISSL_TARBALL := amissl_$(UPSTREAM_AMISSL_VERSION).tar.xz
 
-UPSTREAM_GUIGFX_TARBALL := guigfxlib.lha
-UPSTREAM_GUIGFX_URI := http://neoscientists.org/~bifat/binarydistillery/$(UPSTREAM_GUIGFX_TARBALL)
+UPSTREAM_GUIGFX_VERSION := 20.0
+UPSTREAM_GUIGFX_TARBALL := guigfxlib_$(UPSTREAM_GUIGFX_VERSION).tar.xz
 
-UPSTREAM_RENDER_TARBALL := renderlib.lha
-UPSTREAM_RENDER_URI := http://neoscientists.org/~bifat/binarydistillery/$(UPSTREAM_RENDER_TARBALL)
+UPSTREAM_RENDER_VERSION := 40.8
+UPSTREAM_RENDER_TARBALL := renderlib_$(UPSTREAM_RENDER_VERSION).tar.xz
 
 UPSTREAM_CODESETS_VERSION := 6.20
-UPSTREAM_CODESETS_TARBALL := codesets-$(UPSTREAM_CODESETS_VERSION).lha
-UPSTREAM_CODESETS_URI := https://github.com/jens-maus/libcodesets/releases/download/$(UPSTREAM_CODESETS_VERSION)/$(UPSTREAM_CODESETS_TARBALL)
+UPSTREAM_CODESETS_TARBALL := codesets_$(UPSTREAM_CODESETS_VERSION).tar.xz
 
 # need to build a suitable version of bison or compiler build fails
 UPSTREAM_BISON_VERSION := 2.7.1
-UPSTREAM_BISON_TARBALL := bison-$(UPSTREAM_BISON_VERSION).tar.gz
-UPSTREAM_BISON_URI := https://ftp.gnu.org/gnu/bison/$(UPSTREAM_BISON_TARBALL)
+UPSTREAM_BISON_TARBALL := bison_$(UPSTREAM_BISON_VERSION).tar.gz
+
+#UPSTREAM_GCC_URI := http://ftp.gnu.org/gnu/gcc/gcc-$(UPSTREAM_GCC_VERSION)/$(subst _,-,$(UPSTREAM_GCC_TARBALL))
+#UPSTREAM_BINUTILS_URI := http://svn.code.sf.net/p/adtools/code/branches/binutils/$(UPSTREAM_BINUTILS_VERSION)/@$(UPSTREAM_BINUTILS_REVISION)
+#UPSTREAM_GMP_URI := http://ftp.gnu.org/gnu/gmp/$(subst _,-,$(UPSTREAM_GMP_TARBALL))
+#UPSTREAM_MPFR_URI := http://www.mpfr.org/mpfr-$(UPSTREAM_MPFR_VERSION)/$(subst _,-,$(UPSTREAM_MPFR_TARBALL))
+#UPSTREAM_MPC_URI := http://www.multiprecision.org/downloads/$(subst _,-,$(UPSTREAM_MPC_TARBALL))
+#UPSTREAM_CLIB2_URI := https://github.com/adtools/clib2/archive/V$(UPSTREAM_CLIB2_VERSION).tar.gz
+#UPSTREAM_NDK_URI := http://kas1e.mikendezign.com/zerohero_crosscompilers_backup/files/m68k-amigaos/ndk-3.9-includes.tar.bz2
+#UPSTREAM_OPENURL_URI := https://github.com/jens-maus/libopenurl/archive/$(UPSTREAM_OPENURL_VERSION).tar.gz
+#UPSTREAM_AMISSL_URI := https://github.com/jens-maus/amissl/releases/download/$(UPSTREAM_AMISSL_VERSION)/AmiSSL-$(UPSTREAM_AMISSL_VERSION)-SDK.lha
+#UPSTREAM_GUIGFX_URI := http://neoscientists.org/~bifat/binarydistillery/guigfxlib.lha
+#UPSTREAM_RENDER_URI := http://neoscientists.org/~bifat/binarydistillery/renderlib.lha
+#UPSTREAM_CODESETS_URI := https://github.com/jens-maus/libcodesets/releases/download/$(UPSTREAM_CODESETS_VERSION)/codesets-$(UPSTREAM_CODESETS_VERSION).lha
+#UPSTREAM_BISON_URI := https://ftp.gnu.org/gnu/bison/$(subst _,-,$(UPSTREAM_BISON_TARBALL)):
 
 # need to force the auto* version in use
 GCC_AUTOCONF := autoconf2.64
@@ -76,6 +79,8 @@ BISON_SRCDIR := $(SRCDIR)/bison
 TARGET_NAME := m68k-unknown-amigaos
 
 PREFIX ?= /opt/netsurf/$(TARGET_NAME)/cross
+
+PRISTINE_TAR := $(TOP)/../tools/pristine-tar
 
 GCC_ENV_PARAMS := AUTOCONF=$(GCC_AUTOCONF) AUTOHEADER=$(GCC_AUTOHEADER) AUTOM4TE=$(GCC_AUTOM4TE) PATH="$(PREFIX)/bin:$(PATH)"
 
@@ -132,21 +137,21 @@ $(BUILDSTEPS)/ndk.d: $(SOURCESDIR)/$(UPSTREAM_NDK_TARBALL) $(SOURCESDIR)/$(UPSTR
 	for dir in `find $(RECIPES)/files/ndk/ -type d | grep -v '\.svn' | sed 's#$(RECIPES)/files/ndk##'` ; do mkdir -p $(PREFIX)/$(TARGET_NAME)$$dir ; done
 	for file in `find $(RECIPES)/files/ndk/ -type f | grep -v '\.svn' | sed 's#$(RECIPES)/files/ndk##'` ; do cp -p $(RECIPES)/files/ndk$$file $(PREFIX)/$(TARGET_NAME)$$file ; done
 	mkdir -p $(BUILDDIR)/openurl
-	cd $(BUILDDIR)/openurl && tar xaf $(SOURCESDIR)/$(UPSTREAM_OPENURL_TARBALL)
+	tar -C $(BUILDDIR)/openurl -xaf $(SOURCESDIR)/$(UPSTREAM_OPENURL_TARBALL)
 	cp -r $(BUILDDIR)/openurl/libopenurl-$(UPSTREAM_OPENURL_VERSION)/include/* $(PREFIX)/$(TARGET_NAME)/sys-include/
 	mkdir -p $(BUILDDIR)/guigfxlib
-	lha xw=$(BUILDDIR)/guigfxlib $(SOURCESDIR)/$(UPSTREAM_GUIGFX_TARBALL)
-	cp -r $(BUILDDIR)/guigfxlib/include/* $(PREFIX)/$(TARGET_NAME)/sys-include/
+	tar -C $(BUILDDIR)/guigfxlib -xaf $(SOURCESDIR)/$(UPSTREAM_GUIGFX_TARBALL)
+	cp -r $(BUILDDIR)/guigfxlib/guigfxlib-$(UPSTREAM_GUIGFX_VERSION)/include/* $(PREFIX)/$(TARGET_NAME)/sys-include/
 	mkdir -p $(BUILDDIR)/renderlib
-	lha xw=$(BUILDDIR)/renderlib $(SOURCESDIR)/$(UPSTREAM_RENDER_TARBALL)
-	cp -r $(BUILDDIR)/renderlib/renderlib/include/* $(PREFIX)/$(TARGET_NAME)/sys-include/
+	tar -C $(BUILDDIR)/renderlib -xaf $(SOURCESDIR)/$(UPSTREAM_RENDER_TARBALL)
+	cp -r $(BUILDDIR)/renderlib/renderlib-$(UPSTREAM_RENDER_VERSION)/include/* $(PREFIX)/$(TARGET_NAME)/sys-include/
 	mkdir -p $(BUILDDIR)/codesets
-	lha xw=$(BUILDDIR)/codesets $(SOURCESDIR)/$(UPSTREAM_CODESETS_TARBALL)
-	cp -r $(BUILDDIR)/codesets/codesets/Developer/include/* $(PREFIX)/$(TARGET_NAME)/sys-include/
+	tar -C $(BUILDDIR)/codesets -xaf $(SOURCESDIR)/$(UPSTREAM_CODESETS_TARBALL)
+	cp -r $(BUILDDIR)/codesets/codesets-$(UPSTREAM_CODESETS_VERSION)/codesets/Developer/include/* $(PREFIX)/$(TARGET_NAME)/sys-include/
 	mkdir -p $(BUILDDIR)/AmiSSL
-	lha xw=$(BUILDDIR)/AmiSSL $(SOURCESDIR)/$(UPSTREAM_AMISSL_TARBALL)
-	cp -r $(BUILDDIR)/AmiSSL/AmiSSL/Developer/include/* $(PREFIX)/$(TARGET_NAME)/sys-include/
-	cp -r $(BUILDDIR)/AmiSSL/AmiSSL/Developer/lib/AmigaOS3/* $(PREFIX)/$(TARGET_NAME)/lib/
+	tar -C $(BUILDDIR)/AmiSSL -xaf $(SOURCESDIR)/$(UPSTREAM_AMISSL_TARBALL)
+	cp -r $(BUILDDIR)/AmiSSL/amissl-$(UPSTREAM_AMISSL_VERSION)/AmiSSL/Developer/include/* $(PREFIX)/$(TARGET_NAME)/sys-include/
+	cp -r $(BUILDDIR)/AmiSSL/amissl-$(UPSTREAM_AMISSL_VERSION)/AmiSSL/Developer/lib/AmigaOS3/* $(PREFIX)/$(TARGET_NAME)/lib/
 	touch $@
 
 ###
@@ -228,8 +233,9 @@ $(BUILDSTEPS)/binutils.d: $(BUILDSTEPS)/binutils-srcdir.d
 	cd $(BUILDDIR)/binutils && make install
 	touch $@
 
-$(BUILDSTEPS)/binutils-srcdir.d: $(SOURCESDIR)/$(UPSTREAM_BINUTILS_TARBALL)
-	cp -r $(SOURCESDIR)/$(UPSTREAM_BINUTILS_TARBALL) $(BINUTILS_SRCDIR)
+$(BUILDSTEPS)/binutils-srcdir.d: $(BUILDSTEPS)/buildsteps.d $(SOURCESDIR)/$(UPSTREAM_BINUTILS_TARBALL)
+	tar xaf $(SOURCESDIR)/$(UPSTREAM_BINUTILS_TARBALL)
+	mv binutils-$(UPSTREAM_BINUTILS_VERSION) $(BINUTILS_SRCDIR)
 	for p in `ls $(RECIPES)/patches/binutils/*.p` ; do patch -d $(BINUTILS_SRCDIR) -p0 <$$p ; done
 	touch $@
 
@@ -238,43 +244,43 @@ $(BUILDSTEPS)/binutils-srcdir.d: $(SOURCESDIR)/$(UPSTREAM_BINUTILS_TARBALL)
 ###
 
 $(SOURCESDIR)/$(UPSTREAM_GCC_TARBALL):
-	wget -q -O $@ $(UPSTREAM_GCC_URI)
+	cd $(TOP)/.. && $(PRISTINE_TAR) checkout $(subst $(SOURCESDIR)/,,$@) && mv $(TOP)/../$(subst $(SOURCESDIR)/,,$@) $@
 
 $(SOURCESDIR)/$(UPSTREAM_GMP_TARBALL):
-	wget -q -O $@ $(UPSTREAM_GMP_URI)
+	cd $(TOP)/.. && $(PRISTINE_TAR) checkout $(subst $(SOURCESDIR)/,,$@) && mv $(TOP)/../$(subst $(SOURCESDIR)/,,$@) $@
 
 $(SOURCESDIR)/$(UPSTREAM_MPFR_TARBALL):
-	wget -q -O $@ $(UPSTREAM_MPFR_URI)
+	cd $(TOP)/.. && $(PRISTINE_TAR) checkout $(subst $(SOURCESDIR)/,,$@) && mv $(TOP)/../$(subst $(SOURCESDIR)/,,$@) $@
 
 $(SOURCESDIR)/$(UPSTREAM_MPC_TARBALL):
-	wget -q -O $@ $(UPSTREAM_MPC_URI)
+	cd $(TOP)/.. && $(PRISTINE_TAR) checkout $(subst $(SOURCESDIR)/,,$@) && mv $(TOP)/../$(subst $(SOURCESDIR)/,,$@) $@
 
 $(SOURCESDIR)/$(UPSTREAM_BINUTILS_TARBALL):
-	svn co $(UPSTREAM_BINUTILS_URI) $@
+	cd $(TOP)/.. && $(PRISTINE_TAR) checkout $(subst $(SOURCESDIR)/,,$@) && mv $(TOP)/../$(subst $(SOURCESDIR)/,,$@) $@
 
 $(SOURCESDIR)/$(UPSTREAM_CLIB2_TARBALL):
-	wget -q -O $@ $(UPSTREAM_CLIB2_URI)
+	cd $(TOP)/.. && $(PRISTINE_TAR) checkout $(subst $(SOURCESDIR)/,,$@) && mv $(TOP)/../$(subst $(SOURCESDIR)/,,$@) $@
 
 $(SOURCESDIR)/$(UPSTREAM_NDK_TARBALL):
-	wget -q -O $@ $(UPSTREAM_NDK_URI)
+	cd $(TOP)/.. && $(PRISTINE_TAR) checkout $(subst $(SOURCESDIR)/,,$@) && mv $(TOP)/../$(subst $(SOURCESDIR)/,,$@) $@
 
 $(SOURCESDIR)/$(UPSTREAM_OPENURL_TARBALL):
-	wget -q -O $@ $(UPSTREAM_OPENURL_URI)
+	cd $(TOP)/.. && $(PRISTINE_TAR) checkout $(subst $(SOURCESDIR)/,,$@) && mv $(TOP)/../$(subst $(SOURCESDIR)/,,$@) $@
 
 $(SOURCESDIR)/$(UPSTREAM_GUIGFX_TARBALL):
-	wget -q -O $@ $(UPSTREAM_GUIGFX_URI)
+	cd $(TOP)/.. && $(PRISTINE_TAR) checkout $(subst $(SOURCESDIR)/,,$@) && mv $(TOP)/../$(subst $(SOURCESDIR)/,,$@) $@
 
 $(SOURCESDIR)/$(UPSTREAM_RENDER_TARBALL):
-	wget -q -O $@ $(UPSTREAM_RENDER_URI)
+	cd $(TOP)/.. && $(PRISTINE_TAR) checkout $(subst $(SOURCESDIR)/,,$@) && mv $(TOP)/../$(subst $(SOURCESDIR)/,,$@) $@
 
 $(SOURCESDIR)/$(UPSTREAM_BISON_TARBALL):
-	wget -q -O $@ $(UPSTREAM_BISON_URI)
+	cd $(TOP)/.. && $(PRISTINE_TAR) checkout $(subst $(SOURCESDIR)/,,$@) && mv $(TOP)/../$(subst $(SOURCESDIR)/,,$@) $@
 
 $(SOURCESDIR)/$(UPSTREAM_CODESETS_TARBALL):
-	wget -q -O $@ $(UPSTREAM_CODESETS_URI)
+	cd $(TOP)/.. && $(PRISTINE_TAR) checkout $(subst $(SOURCESDIR)/,,$@) && mv $(TOP)/../$(subst $(SOURCESDIR)/,,$@) $@
 
 $(SOURCESDIR)/$(UPSTREAM_AMISSL_TARBALL):
-	wget -q -O $@ $(UPSTREAM_AMISSL_URI)
+	cd $(TOP)/.. && $(PRISTINE_TAR) checkout $(subst $(SOURCESDIR)/,,$@) && mv $(TOP)/../$(subst $(SOURCESDIR)/,,$@) $@
 
 
 ###
