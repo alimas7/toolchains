@@ -24,11 +24,13 @@ UPSTREAM_LHASA_VERSION := 887d68ebca0cbad392af3709203745d202a2020b
 UPSTREAM_LHASA_TARBALL := lhasa-$(UPSTREAM_LHASA_VERSION).zip
 UPSTREAM_LHASA_URI := https://github.com/fragglet/lhasa/archive/$(UPSTREAM_LHASA_VERSION).zip
 
-UPSTREAM_NDK_TARBALL := SDK_54.16.lha
+UPSTREAM_NDK_VERSION := 54.16
+UPSTREAM_NDK_TARBALL := SDK_$(UPSTREAM_NDK_VERSION).lha
 UPSTREAM_NDK_URI := "http://hyperion-entertainment.biz/index.php/downloads?view=download&format=raw&file=127"
 
-UPSTREAM_NDK_UPDATE_TARBALL := SDK_addon_final_edition_update2.zip
-UPSTREAM_NDK_UPDATE_URI := http://kas1e.mikendezign.com/aos4/SDK_addon_final_edition_update2.zip
+UPSTREAM_NDK_UPDATE_VERSION := update2
+UPSTREAM_NDK_UPDATE_TARBALL := SDK_addon_final_edition_$(UPSTREAM_NDK_UPDATE_VERSION).zip
+UPSTREAM_NDK_UPDATE_URI := http://kas1e.mikendezign.com/aos4/SDK_addon_final_edition_$(UPSTREAM_NDK_UPDATE_VERSION).zip
 
 UPSTREAM_CLIB4_VERSION := 1.6.0
 UPSTREAM_CLIB4_TARBALL := clib4-v$(UPSTREAM_CLIB4_VERSION).lha
@@ -106,45 +108,51 @@ $(BUILDSTEPS)/stage2.d: $(BUILDSTEPS)/srcdir-step3.d $(BUILDSTEPS)/binutils.d $(
 # Rules to install the NDK
 ###
 
-$(BUILDSTEPS)/ndk.d: $(BUILDSTEPS)/lhasa.d $(SOURCESDIR)/$(UPSTREAM_NDK_TARBALL) $(SOURCESDIR)/$(UPSTREAM_NDK_UPDATE_TARBALL) $(SOURCESDIR)/$(UPSTREAM_OPENURL_TARBALL) $(SOURCESDIR)/$(UPSTREAM_ONCHIPMEM_TARBALL) $(SOURCESDIR)/$(UPSTREAM_GUIGFX_TARBALL) $(SOURCESDIR)/$(UPSTREAM_RENDER_TARBALL) $(SOURCESDIR)/$(UPSTREAM_CODESETS_TARBALL) $(SOURCESDIR)/$(UPSTREAM_AMISSL_TARBALL) $(SOURCESDIR)/$(UPSTREAM_CLIB4_TARBALL)
-	mkdir -p $(BUILDDIR)/ndk/tmp/
-	$(BUILDDIR)/prefix/bin/lha xw=$(BUILDDIR)/ndk $(SOURCESDIR)/$(UPSTREAM_NDK_TARBALL)
-	$(BUILDDIR)/prefix/bin/lha xw=$(BUILDDIR)/ndk/tmp $(BUILDDIR)/ndk/SDK_Install/base.lha
-	$(BUILDDIR)/prefix/bin/lha xw=$(BUILDDIR)/ndk/tmp $(BUILDDIR)/ndk/SDK_Install/execsg_sdk-54.31.lha
-	$(BUILDDIR)/prefix/bin/lha xw=$(BUILDDIR)/ndk/tmp $(BUILDDIR)/ndk/SDK_Install/newlib-53.80.lha
-	$(BUILDDIR)/prefix/bin/lha xw=$(BUILDDIR)/ndk/tmp $(BUILDDIR)/ndk/SDK_Install/clib2.lha
-	$(BUILDDIR)/prefix/bin/lha xw=$(BUILDDIR)/ndk/tmp $(BUILDDIR)/ndk/SDK_Install/pthreads-53.12.lha
-	$(BUILDDIR)/prefix/bin/lha xw=$(BUILDDIR)/ndk/tmp $(SOURCESDIR)/$(UPSTREAM_ONCHIPMEM_TARBALL)
-	mkdir -p $(PREFIX)/$(TARGET_NAME)/SDK
-	unzip -o $(SOURCESDIR)/$(UPSTREAM_NDK_UPDATE_TARBALL) -d $(BUILDDIR)/ndk/tmp
-	cp -r $(BUILDDIR)/ndk/tmp/Include $(PREFIX)/$(TARGET_NAME)/SDK/include
-	cp -r $(BUILDDIR)/ndk/tmp/newlib $(PREFIX)/$(TARGET_NAME)/SDK/newlib
-	cp -r $(BUILDDIR)/ndk/tmp/clib2 $(PREFIX)/$(TARGET_NAME)/SDK/clib2
-	cp -r $(BUILDDIR)/ndk/tmp/Local/common/include/* $(PREFIX)/$(TARGET_NAME)/SDK/newlib/include/
-	cp -r $(BUILDDIR)/ndk/tmp/Local/newlib/lib/* $(PREFIX)/$(TARGET_NAME)/SDK/newlib/lib/
-	cp -r $(BUILDDIR)/ndk/tmp/SDK/Include/* $(PREFIX)/$(TARGET_NAME)/SDK/include
-	cp -r $(BUILDDIR)/ndk/tmp/SDK/newlib $(PREFIX)/$(TARGET_NAME)/SDK/newlib
-	cp -r $(BUILDDIR)/ndk/tmp/SDK/local/newlib/lib/* $(PREFIX)/$(TARGET_NAME)/SDK/newlib/lib/
-	cp -r $(BUILDDIR)/ndk/tmp/SDK/local/common/include/* $(PREFIX)/$(TARGET_NAME)/SDK/newlib/include/
-	unzip -o $(SOURCESDIR)/$(UPSTREAM_NDK_UPDATE_TARBALL) -d $(BUILDDIR)/ndk/tmp
+$(BUILDSTEPS)/ndk.d: $(BUILDSTEPS)/ndk-src.d $(SOURCESDIR)/$(UPSTREAM_OPENURL_TARBALL) $(SOURCESDIR)/$(UPSTREAM_ONCHIPMEM_TARBALL) $(SOURCESDIR)/$(UPSTREAM_GUIGFX_TARBALL) $(SOURCESDIR)/$(UPSTREAM_RENDER_TARBALL) $(SOURCESDIR)/$(UPSTREAM_CODESETS_TARBALL) $(SOURCESDIR)/$(UPSTREAM_AMISSL_TARBALL) $(SOURCESDIR)/$(UPSTREAM_CLIB4_TARBALL)
+	mkdir -p $(BUILDDIR)/ndk
+	tar -C $(BUILDDIR)/ndk -xaf $(BUILDDIR)/aos4-ndk-$(UPSTREAM_NDK_VERSION)+$(UPSTREAM_NDK_UPDATE_VERSION).tar.xz --strip-components=1
 	mkdir -p $(BUILDDIR)/openurl
 	cd $(BUILDDIR)/openurl && tar xaf $(SOURCESDIR)/$(UPSTREAM_OPENURL_TARBALL)
-	cp -r $(BUILDDIR)/openurl/libopenurl-$(UPSTREAM_OPENURL_VERSION)/include/* $(PREFIX)/$(TARGET_NAME)/SDK/include/include_h/
+	cp -r $(BUILDDIR)/openurl/libopenurl-$(UPSTREAM_OPENURL_VERSION)/include/* $(BUILDDIR)/ndk/include/include_h/
 	mkdir -p $(BUILDDIR)/guigfxlib
 	$(BUILDDIR)/prefix/bin/lha xw=$(BUILDDIR)/guigfxlib $(SOURCESDIR)/$(UPSTREAM_GUIGFX_TARBALL)
-	cp -r $(BUILDDIR)/guigfxlib/include_os4/* $(PREFIX)/$(TARGET_NAME)/SDK/include/include_h/
+	cp -r $(BUILDDIR)/guigfxlib/include_os4/* $(BUILDDIR)/ndk/include/include_h/
 	mkdir -p $(BUILDDIR)/renderlib
 	$(BUILDDIR)/prefix/bin/lha xw=$(BUILDDIR)/renderlib $(SOURCESDIR)/$(UPSTREAM_RENDER_TARBALL)
-	cp -r $(BUILDDIR)/renderlib/renderlib/include_os4/* $(PREFIX)/$(TARGET_NAME)/SDK/include/include_h/
+	cp -r $(BUILDDIR)/renderlib/renderlib/include_os4/* $(BUILDDIR)/ndk/include/include_h/
 	mkdir -p $(BUILDDIR)/codesets
 	$(BUILDDIR)/prefix/bin/lha xw=$(BUILDDIR)/codesets $(SOURCESDIR)/$(UPSTREAM_CODESETS_TARBALL)
-	cp -r $(BUILDDIR)/codesets/codesets/Developer/include/* $(PREFIX)/$(TARGET_NAME)/SDK/include/include_h/
+	cp -r $(BUILDDIR)/codesets/codesets/Developer/include/* $(BUILDDIR)/ndk/include/include_h/
 	mkdir -p $(BUILDDIR)/AmiSSL
 	lha xw=$(BUILDDIR)/AmiSSL $(SOURCESDIR)/$(UPSTREAM_AMISSL_TARBALL)
-	cp -r $(BUILDDIR)/AmiSSL/AmiSSL/Developer/include/* $(PREFIX)/$(TARGET_NAME)/SDK/include/include_h/
-	cp -r $(BUILDDIR)/AmiSSL/AmiSSL/Developer/lib/AmigaOS4/newlib/* $(PREFIX)/$(TARGET_NAME)/SDK/newlib/lib/
-	cp -r $(BUILDDIR)/AmiSSL/AmiSSL/Developer/lib/AmigaOS4/libamisslstubs.a $(PREFIX)/$(TARGET_NAME)/SDK/newlib/lib/
-	lha xfw=$(PREFIX)/$(TARGET_NAME)/SDK/ $(SOURCESDIR)/$(UPSTREAM_CLIB4_TARBALL)
+	cp -r $(BUILDDIR)/AmiSSL/AmiSSL/Developer/include/* $(BUILDDIR)/ndk/include/include_h/
+	cp -r $(BUILDDIR)/AmiSSL/AmiSSL/Developer/lib/AmigaOS4/newlib/* $(BUILDDIR)/ndk/newlib/lib/
+	cp -r $(BUILDDIR)/AmiSSL/AmiSSL/Developer/lib/AmigaOS4/libamisslstubs.a $(BUILDDIR)/ndk/newlib/lib/
+	lha xfw=$(BUILDDIR)/ndk $(SOURCESDIR)/$(UPSTREAM_CLIB4_TARBALL)
+	rm -rf $(PREFIX)/$(TARGET_NAME)/SDK
+	mkdir -p $(PREFIX)/$(TARGET_NAME)/SDK
+	cp -r $(BUILDDIR)/ndk/* $(PREFIX)/$(TARGET_NAME)/SDK
+	touch $@
+
+$(BUILDSTEPS)/ndk-src.d: $(BUILDSTEPS)/lhasa.d $(SOURCESDIR)/$(UPSTREAM_NDK_TARBALL) $(SOURCESDIR)/$(UPSTREAM_NDK_UPDATE_TARBALL)
+	mkdir -p $(BUILDDIR)/ndk-src/tmp/
+	$(BUILDDIR)/prefix/bin/lha xw=$(BUILDDIR)/ndk-src $(SOURCESDIR)/$(UPSTREAM_NDK_TARBALL)
+	$(BUILDDIR)/prefix/bin/lha xw=$(BUILDDIR)/ndk-src/tmp $(BUILDDIR)/ndk-src/SDK_Install/base.lha
+	$(BUILDDIR)/prefix/bin/lha xw=$(BUILDDIR)/ndk-src/tmp $(BUILDDIR)/ndk-src/SDK_Install/execsg_sdk-54.31.lha
+	$(BUILDDIR)/prefix/bin/lha xw=$(BUILDDIR)/ndk-src/tmp $(BUILDDIR)/ndk-src/SDK_Install/newlib-53.80.lha
+	$(BUILDDIR)/prefix/bin/lha xw=$(BUILDDIR)/ndk-src/tmp $(BUILDDIR)/ndk-src/SDK_Install/clib2.lha
+	$(BUILDDIR)/prefix/bin/lha xw=$(BUILDDIR)/ndk-src/tmp $(BUILDDIR)/ndk-src/SDK_Install/pthreads-53.12.lha
+	unzip -o $(SOURCESDIR)/$(UPSTREAM_NDK_UPDATE_TARBALL) -d $(BUILDDIR)/ndk-src/tmp
+	mkdir -p $(BUILDDIR)/ndk-src/aos4-ndk-$(UPSTREAM_NDK_VERSION)+$(UPSTREAM_NDK_UPDATE_VERSION)
+	cp -r $(BUILDDIR)/ndk-src/tmp/Include $(BUILDDIR)/ndk-src/aos4-ndk-$(UPSTREAM_NDK_VERSION)+$(UPSTREAM_NDK_UPDATE_VERSION)/include
+	cp -r $(BUILDDIR)/ndk-src/tmp/newlib $(BUILDDIR)/ndk-src/aos4-ndk-$(UPSTREAM_NDK_VERSION)+$(UPSTREAM_NDK_UPDATE_VERSION)/newlib
+	cp -r $(BUILDDIR)/ndk-src/tmp/clib2 $(BUILDDIR)/ndk-src/aos4-ndk-$(UPSTREAM_NDK_VERSION)+$(UPSTREAM_NDK_UPDATE_VERSION)/clib2
+	cp -r $(BUILDDIR)/ndk-src/tmp/Local/common/include/* $(BUILDDIR)/ndk-src/aos4-ndk-$(UPSTREAM_NDK_VERSION)+$(UPSTREAM_NDK_UPDATE_VERSION)/newlib/include/
+	cp -r $(BUILDDIR)/ndk-src/tmp/Local/newlib/lib/* $(BUILDDIR)/ndk-src/aos4-ndk-$(UPSTREAM_NDK_VERSION)+$(UPSTREAM_NDK_UPDATE_VERSION)/newlib/lib/
+	cp -r $(BUILDDIR)/ndk-src/tmp/SDK/Include/* $(BUILDDIR)/ndk-src/aos4-ndk-$(UPSTREAM_NDK_VERSION)+$(UPSTREAM_NDK_UPDATE_VERSION)/include
+	cp -r $(BUILDDIR)/ndk-src/tmp/SDK/local/newlib/lib/* $(BUILDDIR)/ndk-src/aos4-ndk-$(UPSTREAM_NDK_VERSION)+$(UPSTREAM_NDK_UPDATE_VERSION)/newlib/lib/
+	cp -r $(BUILDDIR)/ndk-src/tmp/SDK/local/common/include/* $(BUILDDIR)/ndk-src/aos4-ndk-$(UPSTREAM_NDK_VERSION)+$(UPSTREAM_NDK_UPDATE_VERSION)/newlib/include/
+	tar -C $(BUILDDIR)/ndk-src -caf $(BUILDDIR)/aos4-ndk-$(UPSTREAM_NDK_VERSION)+$(UPSTREAM_NDK_UPDATE_VERSION).tar.xz aos4-ndk-$(UPSTREAM_NDK_VERSION)+$(UPSTREAM_NDK_UPDATE_VERSION)
 	touch $@
 
 ###
@@ -159,7 +167,7 @@ $(BUILDSTEPS)/lhasa.d: $(BUILDSTEPS)/lhasa-srcdir.d
 	cd $(BUILDDIR)/lhasa && make install
 	touch $@
 
-$(BUILDSTEPS)/lhasa-srcdir.d: $(SOURCESDIR)/$(UPSTREAM_LHASA_TARBALL)
+$(BUILDSTEPS)/lhasa-srcdir.d: $(BUILDSTEPS)/buildsteps.d $(SOURCESDIR)/$(UPSTREAM_LHASA_TARBALL)
 	unzip $(SOURCESDIR)/$(UPSTREAM_LHASA_TARBALL)
 	mv lhasa-$(UPSTREAM_LHASA_VERSION) $(SRCDIR)/lhasa
 	cd $(SRCDIR)/lhasa && autoreconf -i
@@ -206,7 +214,7 @@ $(BUILDSTEPS)/binutils.d: $(BUILDSTEPS)/binutils-srcdir.d
 	cd $(BUILDDIR)/binutils && make install
 	touch $@
 
-$(BUILDSTEPS)/binutils-srcdir.d: $(SOURCESDIR)/$(UPSTREAM_BINUTILS_TARBALL)
+$(BUILDSTEPS)/binutils-srcdir.d: $(BUILDSTEPS)/buildsteps.d $(SOURCESDIR)/$(UPSTREAM_BINUTILS_TARBALL)
 	tar xjf $(SOURCESDIR)/$(UPSTREAM_BINUTILS_TARBALL)
 	mv binutils-$(UPSTREAM_BINUTILS_VERSION) $(BINUTILS_SRCDIR)
 	for p in `ls $(RECIPES)/patches/binutils/*.p` ; do patch -d $(BINUTILS_SRCDIR) -p0 <$$p ; done
