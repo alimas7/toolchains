@@ -1,0 +1,91 @@
+#!/usr/bin/env python3
+
+import argparse
+import pathlib
+import subprocess
+import sys
+import tempfile
+
+
+class Repack:
+    def __init__(self, args):
+        self._input = pathlib.Path(args.input).resolve()
+        self._output = pathlib.Path(args.output).resolve()
+
+    def run(self):
+        if not self._input.exists():
+            print("ERROR: non-existent input", file=sys.stderr)
+            return
+        if self._input.suffix not in (".lha", ".zip"):
+            print("ERROR: unsupported input format", file=sys.stderr)
+            return
+        if (len(self._output.suffixes) < 2
+            or self._output.suffixes[-2] != ".tar"
+        ):
+            print("ERROR: unsupported output format", file=sys.stderr)
+            return
+
+        basename = self._output.with_suffix("").with_suffix("").name
+        parts = basename.rsplit("_", 1)
+        if len(parts) == 1:
+            parts = basename.rsplit("-", 1)
+        if len(parts) == 1:
+            print("Error: failed to detect package version", file=sys.stderr)
+            return
+        packagename, version = parts
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            td_path = pathlib.Path(tmpdir)
+            unpack_path = td_path / "unpack"
+            unpack_path.mkdir()
+            pkg_path = td_path / f"{packagename}-{version}"
+
+            if self._input.suffix == ".lha":
+                cmd = [
+                    "/usr/bin/lha",
+                    f"xqw={unpack_path}",
+                    str(self._input),
+                ]
+            else:
+                cmd = [
+                    "/usr/bin/unzip",
+                    "-q",
+                    "-d",
+                    str(unpack_path),
+                    str(self._input),
+                ]
+            subprocess.check_call(cmd)
+
+            items = list(unpack_path.iterdir())
+            if len(items) == 1 and items[0].is_dir():
+                # archive contains a single top-level directory
+                items[0].rename(pkg_path)
+            else:
+                # top-level directory needed
+                pkg_path.mkdir()
+                for item in items:
+                    item.rename(pkg_path / item.name)
+
+            subprocess.check_call(
+                [
+                    "/usr/bin/tar",
+                    "-C",
+                    tmpdir,
+                    "-caf",
+                    str(self._output),
+                    pkg_path.name,
+                ]
+            )
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Repack non-tar artefact")
+    parser.add_argument("input", help="Artefact to repack")
+    parser.add_argument("output", help="Output path")
+    args = parser.parse_args()
+
+    Repack(args).run()
+
+
+if __name__ == "__main__":
+    main()
