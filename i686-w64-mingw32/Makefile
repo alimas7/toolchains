@@ -3,28 +3,29 @@
 # Build cross toolchain for i686 processor with a win32 (mingw) ABI
 
 UPSTREAM_GCC_VERSION := 12.2.0
-UPSTREAM_GCC_TARBALL := gcc-$(UPSTREAM_GCC_VERSION).tar.xz
-UPSTREAM_GCC_URI := http://ftpmirror.gnu.org/gcc/gcc-$(UPSTREAM_GCC_VERSION)/$(UPSTREAM_GCC_TARBALL)
+UPSTREAM_GCC_TARBALL := gcc_$(UPSTREAM_GCC_VERSION).tar.xz
 
 UPSTREAM_BINUTILS_VERSION := 2.39
-UPSTREAM_BINUTILS_TARBALL := binutils-$(UPSTREAM_BINUTILS_VERSION).tar.bz2
-UPSTREAM_BINUTILS_URI := http://ftpmirror.gnu.org/binutils/$(UPSTREAM_BINUTILS_TARBALL)
+UPSTREAM_BINUTILS_TARBALL := binutils_$(UPSTREAM_BINUTILS_VERSION).tar.bz2
 
 UPSTREAM_GMP_VERSION := 6.2.1
-UPSTREAM_GMP_TARBALL := gmp-$(UPSTREAM_GMP_VERSION).tar.bz2
-UPSTREAM_GMP_URI := http://ftp.gnu.org/gnu/gmp/$(UPSTREAM_GMP_TARBALL)
+UPSTREAM_GMP_TARBALL := gmp_$(UPSTREAM_GMP_VERSION).tar.bz2
 
 UPSTREAM_MPFR_VERSION := 4.2.0
-UPSTREAM_MPFR_TARBALL := mpfr-$(UPSTREAM_MPFR_VERSION).tar.xz
-UPSTREAM_MPFR_URI := http://www.mpfr.org/mpfr-$(UPSTREAM_MPFR_VERSION)/$(UPSTREAM_MPFR_TARBALL)
+UPSTREAM_MPFR_TARBALL := mpfr_$(UPSTREAM_MPFR_VERSION).tar.xz
 
 UPSTREAM_MPC_VERSION := 1.3.0
-UPSTREAM_MPC_TARBALL := mpc-$(UPSTREAM_MPC_VERSION).tar.gz
-UPSTREAM_MPC_URI := http://www.multiprecision.org/downloads/$(UPSTREAM_MPC_TARBALL)
+UPSTREAM_MPC_TARBALL := mpc_$(UPSTREAM_MPC_VERSION).tar.gz
 
-UPSTREAM_MINGW_VERSION := 10.0.0
-UPSTREAM_MINGW_TARBALL := mingw-w64-v$(UPSTREAM_MINGW_VERSION).tar.bz2
-UPSTREAM_MINGW_URI := "http://downloads.sourceforge.net/project/mingw-w64/mingw-w64/mingw-w64-release/$(UPSTREAM_MINGW_TARBALL)?r=http%3A%2F%2Fmingw-w64.sourceforge.net%2Fdownload.php&ts=1426088797&use_mirror=cznic"
+UPSTREAM_MINGW_VERSION := v10.0.0
+UPSTREAM_MINGW_TARBALL := mingw-w64_$(UPSTREAM_MINGW_VERSION).tar.bz2
+
+#UPSTREAM_GCC_URI := http://ftpmirror.gnu.org/gcc/gcc-$(UPSTREAM_GCC_VERSION)/$(subst _,-,$(UPSTREAM_GCC_TARBALL))
+#UPSTREAM_BINUTILS_URI := http://ftpmirror.gnu.org/binutils/$(subst _,-,$(UPSTREAM_BINUTILS_TARBALL))
+#UPSTREAM_GMP_URI := http://ftp.gnu.org/gnu/gmp/$(subst _,-,$(UPSTREAM_GMP_TARBALL))
+#UPSTREAM_MPFR_URI := http://www.mpfr.org/mpfr-$(UPSTREAM_MPFR_VERSION)/$(subst _,-,$(UPSTREAM_MPFR_TARBALL))
+#UPSTREAM_MPC_URI := http://www.multiprecision.org/downloads/$(subst _,-,$(UPSTREAM_MPC_TARBALL))
+#UPSTREAM_MINGW_URI := "http://downloads.sourceforge.net/project/mingw-w64/mingw-w64/mingw-w64-release/$(subst _,-,$(UPSTREAM_MINGW_TARBALL))?r=http%3A%2F%2Fmingw-w64.sourceforge.net%2Fdownload.php&ts=1426088797&use_mirror=cznic"
 
 TOP := $(CURDIR)
 RECIPES := $(TOP)/recipes
@@ -39,6 +40,8 @@ MINGW_SRCDIR := $(SRCDIR)/mingw
 TARGET_NAME := i686-w64-mingw32
 
 PREFIX ?= /opt/netsurf/$(TARGET_NAME)/cross
+
+PRISTINE_TAR := $(TOP)/../tools/pristine-tar
 
 .PHONY: all clean distclean
 all: $(BUILDSTEPS)/gcc-final.d
@@ -95,7 +98,7 @@ $(BUILDSTEPS)/mingw-crt.d: $(BUILDSTEPS)/mingw-srcdir.d
 
 $(BUILDSTEPS)/mingw-srcdir.d: $(SOURCESDIR)/$(UPSTREAM_MINGW_TARBALL)
 	tar xaf $(SOURCESDIR)/$(UPSTREAM_MINGW_TARBALL)
-	mv mingw-w64-v$(UPSTREAM_MINGW_VERSION) $(MINGW_SRCDIR)
+	mv mingw-w64-$(UPSTREAM_MINGW_VERSION) $(MINGW_SRCDIR)
 	touch $@
 
 ###
@@ -142,22 +145,22 @@ $(BUILDSTEPS)/binutils-srcdir.d: $(SOURCESDIR)/$(UPSTREAM_BINUTILS_TARBALL)
 ###
 
 $(SOURCESDIR)/$(UPSTREAM_GCC_TARBALL):
-	wget -q -O $@ $(UPSTREAM_GCC_URI) 
+	cd $(TOP)/.. && $(PRISTINE_TAR) checkout $(subst $(SOURCESDIR)/,,$@) && mv $(TOP)/../$(subst $(SOURCESDIR)/,,$@) $@
 
 $(SOURCESDIR)/$(UPSTREAM_GMP_TARBALL):
-	wget -q -O $@ $(UPSTREAM_GMP_URI)
+	cd $(TOP)/.. && $(PRISTINE_TAR) checkout $(subst $(SOURCESDIR)/,,$@) && mv $(TOP)/../$(subst $(SOURCESDIR)/,,$@) $@
 
 $(SOURCESDIR)/$(UPSTREAM_MPFR_TARBALL):
-	wget -q -O $@ $(UPSTREAM_MPFR_URI)
+	cd $(TOP)/.. && $(PRISTINE_TAR) checkout $(subst $(SOURCESDIR)/,,$@) && mv $(TOP)/../$(subst $(SOURCESDIR)/,,$@) $@
 
 $(SOURCESDIR)/$(UPSTREAM_MPC_TARBALL):
-	wget -q -O $@ $(UPSTREAM_MPC_URI)
+	cd $(TOP)/.. && $(PRISTINE_TAR) checkout $(subst $(SOURCESDIR)/,,$@) && mv $(TOP)/../$(subst $(SOURCESDIR)/,,$@) $@
 
 $(SOURCESDIR)/$(UPSTREAM_BINUTILS_TARBALL):
-	wget -q -O $@ $(UPSTREAM_BINUTILS_URI) 
+	cd $(TOP)/.. && $(PRISTINE_TAR) checkout $(subst $(SOURCESDIR)/,,$@) && mv $(TOP)/../$(subst $(SOURCESDIR)/,,$@) $@
 
 $(SOURCESDIR)/$(UPSTREAM_MINGW_TARBALL):
-	wget -q -O $@ $(UPSTREAM_MINGW_URI)
+	cd $(TOP)/.. && $(PRISTINE_TAR) checkout $(subst $(SOURCESDIR)/,,$@) && mv $(TOP)/../$(subst $(SOURCESDIR)/,,$@) $@
 
 ###
 # Rule to create buildsteps dir
