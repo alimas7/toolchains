@@ -16,6 +16,19 @@ class ImportTool:
         self._package_version = args.package_version
         self._package_name = args.package_name
         self._package_ext = None
+        self._git_version = None
+
+    def _determine_git_version(self):
+        output = subprocess.check_output(["/usr/bin/git", "--version"])
+        parts = output.split()
+        if len(parts) != 3:
+            print("ERROR: unexpected 'git --version' format", file=sys.stderr)
+            return
+        if parts[0] != "git" or parts[1] != "version":
+            print("ERROR: unexpected 'git --version' format", file=sys.stderr)
+            return
+        major, minor, patch = parts[2].split(".")
+        self._git_version = (int(major), int(minor), int(patch))
 
     def _detect_package_details(self):
         # Compute filetype
@@ -76,8 +89,12 @@ class ImportTool:
                 cwd=worktree,
             )
             return None
+
+        show_ref_flag = "--branches"
+        if self._git_version < (2, 46, 0):
+            show_ref_flag = "--heads"
         output = subprocess.check_output(
-            ["/usr/bin/git", "show-ref", "--branches", branch_name],
+            ["/usr/bin/git", "show-ref", show_ref_flag, branch_name],
             cwd=worktree,
         )
         return output.splitlines()[0].split(None, 1)[0]
@@ -206,6 +223,7 @@ class ImportTool:
             print("ERROR: non-existent source", file=sys.stderr)
             return
 
+        self._determine_git_version()
         self._detect_package_details()
 
         print(
