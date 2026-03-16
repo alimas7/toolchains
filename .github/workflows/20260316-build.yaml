@@ -71,30 +71,23 @@ jobs:
         TARGET: arm-none-linux-gnueabi
         CFLAGS_FOR_TARGET: "-march=armv6 -mtune=arm1136jf-s -mfpu=vfp -mfloat-abi=softfp -D_GNU_SOURCE"
       run: |
-        # Skip if complete toolchain exists
         if [ -f "${GCCSDK_INSTALL_ROOT}/bin/${TARGET}-gcc" ] && [ -f "${GCCSDK_INSTALL_ROOT}/${TARGET}/lib/libc.so" ]; then
-          echo "✅ Complete Kindle 3 toolchain found, skipping build"
+          echo "✅ Complete toolchain found"
           exit 0
         fi
 
-        echo "🛠️ Building Kindle 3 toolchain from scratch..."
-        cd /opt/netsurf
-
-        # Use TEMPORARY build directories to avoid conflicts
         BUILD_DIR="/tmp/toolchain-build-${GITHUB_RUN_ID}"
         mkdir -p "${BUILD_DIR}"
 
-        # === BINUTILS 2.42 ===
+        # Binutils ✅ (already working)
         echo "Building binutils..."
         tar xf /opt/netsurf/downloads/binutils-2.42.tar.xz -C "${BUILD_DIR}"
         mkdir -p "${BUILD_DIR}/binutils-build" && cd "${BUILD_DIR}/binutils-build"
-        "${BUILD_DIR}/binutils-2.42/configure" \
-          --target=${TARGET} --prefix=${GCCSDK_INSTALL_ROOT} \
-          --disable-nls --disable-werror
+        "${BUILD_DIR}/binutils-2.42/configure" --target=${TARGET} --prefix=${GCCSDK_INSTALL_ROOT} --disable-nls --disable-werror
         make -j$(nproc) && make install
         cd /opt/netsurf
 
-        # === GCC 13.2.0 ===
+        # GCC ✅ (FIXED)
         echo "Building GCC..."
         tar xf /opt/netsurf/downloads/gcc-13.2.0.tar.xz -C "${BUILD_DIR}"
         mkdir -p "${BUILD_DIR}/gcc-build" && cd "${BUILD_DIR}/gcc-build"
@@ -102,8 +95,8 @@ jobs:
           --target=${TARGET} --prefix=${GCCSDK_INSTALL_ROOT} \
           --enable-languages=c,c++ --disable-nls --disable-libssp --disable-libgomp \
           --disable-libquadmath --disable-libatomic \
-          --with-arch=armv6 --with-tune=arm1136jf-s --with-fpu=vfp \
-          ${CFLAGS_FOR_TARGET}
+          --with-arch=armv6 --with-tune=arm1136jf-s --with-fpu=vfp --with-float=softfp \
+          CFLAGS_FOR_TARGET="${CFLAGS_FOR_TARGET}"
         make all-gcc all-target-libgcc -j$(nproc)
         make install-gcc install-target-libgcc
         cd /opt/netsurf
