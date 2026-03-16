@@ -1,7 +1,6 @@
 name: "Build Kindle 3 Toolchain"
 
-on:
-  push: workflow_dispatch
+on: workflow_dispatch
 
 jobs:
   toolchain:
