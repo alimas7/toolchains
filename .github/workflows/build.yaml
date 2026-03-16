@@ -1,25 +1,11 @@
 name: "Build"
 
-on:
-  push:
+on: workflow_dispatch
 
 jobs:
   toolchain:
-    name: '${{ matrix.toolchain }}'
+    name: 'kindle3-toolchain'
     runs-on: ubuntu-24.04
-    strategy:
-      fail-fast: false
-      matrix:
-        toolchain:
-          - arm-riscos-gnueabi
-          - arm-unknown-riscos
-          - i686-w64-mingw32
-          - m5475-atari-mint
-          - m68k-atari-mint
-          - m68k-unknown-amigaos
-          - ppc-amigaos
-          - x86_64-w64-mingw32
-
     steps:
     - name: Checkout repository
       uses: actions/checkout@v5
@@ -29,103 +15,173 @@ jobs:
     - name: Install packages
       run: sudo apt-get update -qq &&
            sudo apt-get install --no-install-recommends -y
-               autoconf
-               autoconf2.64
-               autoconf2.69
-               autogen
-               automake
-               automake1.11
-               bison
-               build-essential
-               cvs
-               flex
-               gcc-multilib
-               git
-               gperf
-               help2man
-               lhasa
-               libfl-dev
-               libtool
-               pristine-tar
-               subversion
-               texinfo
-               unzip
+               autoconf autoconf2.64 autoconf2.69 autogen automake automake1.11
+               bison build-essential cvs flex gcc-multilib git gperf help2man
+               lhasa libfl-dev libtool pristine-tar subversion texinfo unzip
+               libssl-dev pkg-config python3 gawk wget xz-utils make
 
     - name: Create output dir
       run: mkdir -p /opt/netsurf
 
-    - name: Build toolchain
+    - name: Build modern Kindle 3 toolchain (ARM1136)
       env:
-        # Avoid building GCC docs
-        gcc_cv_prog_makeinfo_modern: no
-      run: make -C ${{ matrix.toolchain }}
+        TOOLCHAIN_NAME: "arm-none-linux-gnueabi"
+        GCCSDK_INSTALL_ROOT: /opt/netsurf/${TOOLCHAIN_NAME}
+        TARGET: arm-none-linux-gnueabi
+        CFLAGS_FOR_TARGET: "-march=armv6 -mtune=arm1136jf-s -mfpu=vfp -mfloat-abi=softfp -D_GNU_SOURCE"
+      run: |
+        cd /opt/netsurf/${TOOLCHAIN_NAME}
+        
+        # Build modern binutils 2.42
+        wget https://ftp.gnu.org/gnu/binutils/binutils-2.42.tar.xz
+        tar xf binutils-2.42.tar.xz
+        mkdir binutils-build && cd binutils-build
+        ../binutils-2.42/configure \
+          --target=${TARGET} \
+          --prefix=${GCCSDK_INSTALL_ROOT} \
+          --disable-nls --disable-werror
+        make -j$(nproc) && make install
+        cd ..
+        
+        # Build GCC 13.2.0
+        wget https://ftp.gnu.org/gnu/gcc/gcc-13.2.0/gcc-13.2.0.tar.xz
+        tar xf gcc-13.2.0.tar.xz
+        mkdir gcc-build && cd gcc-build
+        ../gcc-13.2.0/configure \
+          --target=${TARGET} \
+          --prefix=${GCCSDK_INSTALL_ROOT} \
+          --enable-languages=c,c++ \
+          --disable-nls --disable-libssp --disable-libgomp \
+          --disable-libquadmath --disable-libatomic \
+          --with-arch=armv6 --with-tune=arm1136jf-s --with-fpu=vfp \
+          ${CFLAGS_FOR_TARGET}
+        make all-gcc all-target-libgcc -j$(nproc)
+        make install-gcc install-target-libgcc
+        cd ..
+        
+        # Build glibc 2.38 (TLS 1.2+ capable)
+        wget https://ftp.gnu.org/gnu/glibc/glibc-2.38.tar.xz
+        tar xf glibc-2.38.tar.xz
+        mkdir glibc-build && cd glibc-build
+        ../glibc-2.38/configure \
+          --prefix=${GCCSDK_INSTALL_ROOT}/${TARGET} \
+          --host=${TARGET} \
+          --with-headers=${GCCSDK_INSTALL_ROOT}/${TARGET}/include \
+          --enable-kernel=2.6.10 \
+          --enable-tls --enable-thread-first --with-tls=gnu2 \
+          --disable-profile --without-gd \
+          ${CFLAGS_FOR_TARGET}
+        make -j$(nproc) && make install
+        cd ..
 
-    - name: Build SDK
+    - name: Build OpenSSL 3.3.0 (TLS 1.2/1.3)
       env:
-        GCCSDK_INSTALL_CROSSBIN: /opt/netsurf/${{ matrix.toolchain }}/cross/bin
-        GCCSDK_INSTALL_ENV: /opt/netsurf/${{ matrix.toolchain }}/env
-      run: make -C sdk
+        TOOLCHAIN_NAME: "arm-none-linux-gnueabi"
+        GCCSDK_INSTALL_ROOT: /opt/netsurf/${TOOLCHAIN_NAME}
+        TARGET: arm-none-linux-gnueabi
+        PATH: ${GCCSDK_INSTALL_ROOT}/bin:${PATH}
+        CFLAGS_FOR_TARGET: "-march=armv6 -mtune=arm1136jf-s -mfpu=vfp -mfloat-abi=softfp"
+      run: |
+        cd /opt/netsurf/${TOOLCHAIN_NAME}
+        wget https://www.openssl.org/source/openssl-3.3.0.tar.gz
+        tar xzf openssl-3.3.0.tar.gz
+        cd openssl-3.3.0
+        
+        CC=${TARGET}-gcc \
+        AR=${TARGET}-ar \
+        RANLIB=${TARGET}-ranlib \
+        CFLAGS="${CFLAGS_FOR_TARGET}" \
+        ./Configure linux-armv6 \
+          --prefix=${GCCSDK_INSTALL_ROOT}/${TARGET} \
+          --openssldir=${GCCSDK_INSTALL_ROOT}/${TARGET}/ssl \
+          no-async no-shared no-legacy no-weak-ssl-ciphers \
+          -DOPENSSL_USE_NODELETE
+        
+        make -j$(nproc) build_libs
+        make install_sw install_ssldirs
+
+    - name: Build SDK environment
+      env:
+        GCCSDK_INSTALL_CROSSBIN: /opt/netsurf/arm-none-linux-gnueabi/cross/bin
+        GCCSDK_INSTALL_ENV: /opt/netsurf/arm-none-linux-gnueabi/env
+      run: |
+        mkdir -p ${GCCSDK_INSTALL_ENV}/bin
+        cat > ${GCCSDK_INSTALL_ENV}/bin/setup.sh << 'EOF'
+        #!/bin/sh
+        export PATH=/opt/netsurf/arm-none-linux-gnueabi/cross/bin:$PATH
+        export CC=arm-none-linux-gnueabi-gcc
+        export CXX=arm-none-linux-gnueabi-g++
+        export LD=arm-none-linux-gnueabi-ld
+        export AR=arm-none-linux-gnueabi-ar
+        export RANLIB=arm-none-linux-gnueabi-ranlib
+        export STRIP=arm-none-linux-gnueabi-strip
+        echo "Kindle 3 toolchain environment activated"
+        EOF
+        chmod +x ${GCCSDK_INSTALL_ENV}/bin/setup.sh
+        ln -s ${GCCSDK_INSTALL_ROOT}/bin ${GCCSDK_INSTALL_CROSSBIN}
 
     - name: Write testament
       run: |
-        echo "Date: $(date -u +"%Y-%m-%d %H:%M:%S UTC")" > /opt/netsurf/${{ matrix.toolchain }}/BUILD_INFO.txt
-        echo "Branch: ${{ github.ref_name }}" >> /opt/netsurf/${{ matrix.toolchain }}/BUILD_INFO.txt
-        echo "Commit: $(git rev-parse HEAD)" >> /opt/netsurf/${{ matrix.toolchain }}/BUILD_INFO.txt
-        echo "Subject: $(git log -1 --pretty=format:'%s')" >> /opt/netsurf/${{ matrix.toolchain }}/BUILD_INFO.txt
+        TOOLCHAIN_NAME="arm-none-linux-gnueabi"
+        cat > /opt/netsurf/${TOOLCHAIN_NAME}/BUILD_INFO.txt << EOF
+        Date: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+        Branch: ${{ github.ref_name }}
+        Commit: $(git rev-parse HEAD)
+        Subject: $(git log -1 --pretty=format:'%s')
+        Target: Kindle 3 / Kindle Keyboard 3G (Freescale i.MX353 ARM1136 @ 532MHz)
+        Architecture: ARMv6 (-march=armv6 -mtune=arm1136jf-s)
+        FPU: VFP (-mfpu=vfp -mfloat-abi=softfp)
+        Toolchain: GCC 13.2.0, glibc 2.38, OpenSSL 3.3.0
+        Features: TLS 1.2/1.3, modern libc, ARMv6 SIMD, VFP acceleration
+        Kernel: 2.6.10 compatible
+        EOF
 
-    # Have to tar first to retain permissions
-    # Exclude unneeded files to reduce size
-    - name: Make tarball
-      run: tar -czf ${{ matrix.toolchain }}.tar.gz
-               --exclude='*/env/bin/*'
-               --exclude='*/share/doc/*'
-               --exclude='*/share/man/*'
-               -C /
-               opt/netsurf
+    - name: Make Kindle 3 tarball
+      run: |
+        TOOLCHAIN_NAME="arm-none-linux-gnueabi"
+        tar -czf ${TOOLCHAIN_NAME}-kindle3-modern.tar.gz \
+               --exclude='*/env/bin/*' \
+               --exclude='*/share/doc/*' \
+               --exclude='*/share/man/*' \
+               --exclude='*.tar.xz' \
+               --exclude='*.tar.gz' \
+               -C / opt/netsurf
 
-    # Can't avoid `upload-artifact` zipping the tarball
-    # https://github.com/actions/upload-artifact/issues/426
-    - name: Upload artifact
+    - name: Upload Kindle 3 toolchain
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ matrix.toolchain }}
-        path: ${{ matrix.toolchain }}.tar.gz
-        compression-level: 0 # Avoid pointless recompression
+        name: kindle3-toolchain-modern
+        path: arm-none-linux-gnueabi-kindle3-modern.tar.gz
+        compression-level: 0
 
   release:
-    name: 'Release'
+    name: 'Release Kindle 3 Toolchain'
     needs: toolchain
     runs-on: ubuntu-24.04
     steps:
     - name: Checkout repository
       uses: actions/checkout@v5
 
-    - name: Download all artifacts
+    - name: Download Kindle 3 artifact
       uses: actions/download-artifact@v4
       with:
         path: artifacts/
+        pattern: kindle3-toolchain-modern
 
     - name: Generate release tag
       id: tag
       run: |
         if [[ "${{ github.ref }}" == refs/tags/* ]]; then
-          # Use existing tag if this was triggered by a tag push
           echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
           echo "tag_exists=true" >> $GITHUB_OUTPUT
         else
-          # Generate new tag name
           branch_name="${{ github.ref_name }}"
-          # Replace invalid characters in branch name for tag
           safe_branch=$(echo "$branch_name" | sed 's/[^a-zA-Z0-9._-]/-/g')
-          new_tag="gh-${safe_branch}-unstable"
-          
-          # Check if tag already exists
+          new_tag="kindle3-${safe_branch}-unstable"
           if git ls-remote --tags origin | grep -q "refs/tags/$new_tag$"; then
-            echo "Tag $new_tag already exists"
             echo "tag=$new_tag" >> $GITHUB_OUTPUT
             echo "tag_exists=true" >> $GITHUB_OUTPUT
           else
-            echo "Tag $new_tag does not exist, will create new release"
             echo "tag=$new_tag" >> $GITHUB_OUTPUT
             echo "tag_exists=false" >> $GITHUB_OUTPUT
           fi
@@ -142,12 +198,6 @@ jobs:
             "https://api.github.com/repos/${{ github.repository }}/releases/tags/$tag")
           release_id=$(echo "$release_data" | jq -r '.id')
           upload_url=$(echo "$release_data" | jq -r '.upload_url')
-          
-          echo "release_id=$release_id" >> $GITHUB_OUTPUT
-          echo "upload_url=$upload_url" >> $GITHUB_OUTPUT
-          echo "release_data<<EOF" >> $GITHUB_OUTPUT
-          echo "$release_data" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
         else
           echo "Creating new release for tag $tag"
           release_data=$(curl -s -X POST \
@@ -156,76 +206,33 @@ jobs:
             "https://api.github.com/repos/${{ github.repository }}/releases" \
             -d "$(jq -n \
               --arg tag "$tag" \
-              --arg name "NetSurf Toolchains $tag" \
-              --arg body "NetSurf cross-compilation toolchains built from $tag." \
-              --argjson prerelease ${{ !startsWith(github.ref, 'refs/tags/') }} \
+              --arg name "Kindle 3 Modern Toolchain $tag" \
+              --arg body "ARM1136 Kindle 3 toolchain: GCC 13.2.0 + glibc 2.38 + OpenSSL 3.3.0 (TLS 1.2/1.3 support for NetSurf)" \
+              --argjson prerelease true \
               '{tag_name: $tag, name: $name, body: $body, draft: false, prerelease: $prerelease}')")
-          
           release_id=$(echo "$release_data" | jq -r '.id')
           upload_url=$(echo "$release_data" | jq -r '.upload_url')
-          
-          echo "release_id=$release_id" >> $GITHUB_OUTPUT
-          echo "upload_url=$upload_url" >> $GITHUB_OUTPUT
         fi
+        
+        echo "release_id=$release_id" >> $GITHUB_OUTPUT
+        echo "upload_url=$upload_url" >> $GITHUB_OUTPUT
 
-    - name: Delete existing assets
-      if: steps.tag.outputs.tag_exists == 'true'
+    - name: Upload Kindle 3 toolchain asset
       run: |
-        tag="${{ steps.tag.outputs.tag }}"
-        echo "Deleting existing assets for tag $tag"
-        
-        # Use release data from previous step
-        release_data='${{ steps.release.outputs.release_data }}'
-        
-        # Get list of artifacts we actually built this run
-        built_artifacts=()
-        for toolchain_dir in artifacts/*/; do
-          if [ -d "$toolchain_dir" ]; then
-            toolchain_name=$(basename "$toolchain_dir")
-            if [ -f "$toolchain_dir/$toolchain_name.tar.gz" ]; then
-              built_artifacts+=("$toolchain_name.tar.gz")
-            fi
-          fi
-        done
-        
-        # Delete assets that match our built artifacts
-        if [ ${#built_artifacts[@]} -gt 0 ]; then
-          echo "Deleting assets for rebuilt toolchains: ${built_artifacts[*]}"
-          for asset_name in "${built_artifacts[@]}"; do
-            asset_id=$(echo "$release_data" | jq -r --arg name "$asset_name" '.assets[] | select(.name==$name) | .id')
-            if [ -n "$asset_id" ] && [ "$asset_id" != "null" ]; then
-              echo "Deleting existing asset: $asset_name (id: $asset_id)"
-              curl -s -X DELETE \
-                -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-                "https://api.github.com/repos/${{ github.repository }}/releases/assets/$asset_id"
-            else
-              echo "Asset $asset_name not found in existing release"
-            fi
-          done
-        else
-          echo "No built artifacts found to replace"
-        fi
-
-    - name: Upload toolchain assets
-      run: |
-        set -e
         upload_url="${{ steps.release.outputs.upload_url }}"
         upload_url_base="${upload_url%\{*}"
         
-        for toolchain_dir in artifacts/*/; do
-          if [ -d "$toolchain_dir" ]; then
-            toolchain_name=$(basename "$toolchain_dir")
-            asset_file="$toolchain_dir/$toolchain_name.tar.gz"
-            
+        for artifact_dir in artifacts/*/; do
+          if [ -d "$artifact_dir" ]; then
+            asset_file=$(ls $artifact_dir/*.tar.gz 2>/dev/null | head -1)
             if [ -f "$asset_file" ]; then
-              echo "Uploading $toolchain_name.tar.gz..."
+              asset_name=$(basename "$asset_file")
+              echo "Uploading $asset_name..."
               curl -s -X POST \
                 -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
                 -H "Content-Type: application/gzip" \
                 --data-binary @"$asset_file" \
-                "$upload_url_base?name=$toolchain_name.tar.gz"
-            else
-              echo "Warning: Asset file not found: $asset_file"
+                "$upload_url_base?name=$asset_name"
             fi
           fi
         done
