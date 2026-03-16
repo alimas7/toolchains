@@ -1,10 +1,6 @@
 name: "Build Kindle 3 Toolchain"
 
-on:
-  push:
-    branches: [ main, kindle3 ]
-  pull_request:
-    branches: [ main ]
+on: workflow_dispatch
 
 jobs:
   toolchain:
