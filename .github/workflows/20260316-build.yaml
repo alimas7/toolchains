@@ -64,13 +64,30 @@ jobs:
         wget -N https://ftp.gnu.org/gnu/glibc/glibc-2.38.tar.xz
         wget -N https://www.openssl.org/source/openssl-3.3.0.tar.gz
 
-    - name: Build toolchain (Binutils + GCC + glibc + OpenSSL)
+    - name: Setup ccache
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        max-size: 2G
+        cache-path: ~/.ccache
+
+    - name: Cache ccache
+      uses: actions/cache@v4
+      with:
+        path: ~/.ccache
+        key: ${{ runner.os }}-ccache-${{ hashFiles('build.yaml') }}-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-ccache-${{ hashFiles('build.yaml') }}-
+          ${{ runner.os }}-ccache-
+
+    - name: Build toolchain (w/ ccache)
       if: steps.cache-toolchain.outputs.cache-hit != 'true'
       env:
         TOOLCHAIN_NAME: "arm-none-linux-gnueabi"
         GCCSDK_INSTALL_ROOT: /opt/netsurf/${TOOLCHAIN_NAME}
         TARGET: arm-none-linux-gnueabi
         CFLAGS_FOR_TARGET: "-march=armv6 -mtune=arm1136jf-s -mfpu=vfp -mfloat-abi=softfp -D_GNU_SOURCE"
+        CCACHE_DIR: ~/.ccache
+        CCACHE_MAXSIZE: 2G
       run: |
         if [ -f "${GCCSDK_INSTALL_ROOT}/bin/${TARGET}-gcc" ] && [ -f "${GCCSDK_INSTALL_ROOT}/${TARGET}/lib/libc.so" ]; then
           echo "✅ Complete toolchain found"
@@ -79,62 +96,58 @@ jobs:
 
         BUILD_DIR="/tmp/toolchain-build-${GITHUB_RUN_ID}"
         mkdir -p "${BUILD_DIR}"
+        export PATH="${GCCSDK_INSTALL_ROOT}/bin:$PATH"
 
-        # Binutils ✅ (already working)
+        # === BINUTILS ===
         echo "Building binutils..."
         tar xf /opt/netsurf/downloads/binutils-2.42.tar.xz -C "${BUILD_DIR}"
         mkdir -p "${BUILD_DIR}/binutils-build" && cd "${BUILD_DIR}/binutils-build"
         "${BUILD_DIR}/binutils-2.42/configure" --target=${TARGET} --prefix=${GCCSDK_INSTALL_ROOT} --disable-nls --disable-werror
         make -j$(nproc) && make install
+
+        # === GCC ===
         cd /opt/netsurf
-
-        # === GCC (minimal - no libgcc) ===
-        echo "Building minimal GCC..."
-        export PATH="${GCCSDK_INSTALL_ROOT}/bin:$PATH"
-
+        echo "Building GCC..."
         tar xf /opt/netsurf/downloads/gcc-13.2.0.tar.xz -C "${BUILD_DIR}"
         mkdir -p "${BUILD_DIR}/gcc-build" && cd "${BUILD_DIR}/gcc-build"
-
         "${BUILD_DIR}/gcc-13.2.0/configure" \
           --target=${TARGET} --prefix=${GCCSDK_INSTALL_ROOT} \
-          --enable-languages=c \
-          --disable-libssp --disable-libgcc --disable-libgomp \
-          --disable-shared --disable-nls \
-          --with-arch=armv6 --with-tune=arm1136jf-s --with-fpu=vfp \
+          --enable-languages=c --disable-libgcc --disable-libssp \
+          --with-arch=armv6 --with-tune=arm1136jf-s --with-fpu=vfp --with-float=softfp \
           CFLAGS_FOR_TARGET="${CFLAGS_FOR_TARGET}"
-
         make all-gcc -j$(nproc)
         make install-gcc
-        cd /opt/netsurf
 
-        # === GLIBC 2.38 ===
+        # === GLIBC (FIXED) ===
+        cd /opt/netsurf
         echo "Building glibc..."
         tar xf /opt/netsurf/downloads/glibc-2.38.tar.xz -C "${BUILD_DIR}"
         mkdir -p "${BUILD_DIR}/glibc-build" && cd "${BUILD_DIR}/glibc-build"
+        export CC="${GCCSDK_INSTALL_ROOT}/bin/${TARGET}-gcc"
+        export CFLAGS="${CFLAGS_FOR_TARGET}"
         "${BUILD_DIR}/glibc-2.38/configure" \
           --prefix=${GCCSDK_INSTALL_ROOT}/${TARGET} \
-          --host=${TARGET} --with-headers=${GCCSDK_INSTALL_ROOT}/${TARGET}/include \
-          --enable-kernel=2.6.10 --enable-tls --enable-thread-first --with-tls=gnu2 \
-          --disable-profile --without-gd ${CFLAGS_FOR_TARGET}
+          --host=${TARGET} --build=x86_64-linux-gnu \
+          --enable-kernel=2.6.10 --enable-tls --with-tls=gnu2 \
+          --disable-profile --without-gd
         make -j$(nproc) && make install
-        cd /opt/netsurf
 
-        # === OPENSSL 3.3.0 ===
+        # === OPENSSL ===
+        cd /opt/netsurf
         echo "Building OpenSSL..."
         tar xzf /opt/netsurf/downloads/openssl-3.3.0.tar.gz -C "${BUILD_DIR}"
         cd "${BUILD_DIR}/openssl-3.3.0"
-        export PATH=${GCCSDK_INSTALL_ROOT}/bin:$PATH
-        CC=${TARGET}-gcc AR=${TARGET}-ar RANLIB=${TARGET}-ranlib CFLAGS="${CFLAGS_FOR_TARGET}" \
+        CC="${GCCSDK_INSTALL_ROOT}/bin/${TARGET}-gcc" \
+        AR="${GCCSDK_INSTALL_ROOT}/bin/${TARGET}-ar" \
+        RANLIB="${GCCSDK_INSTALL_ROOT}/bin/${TARGET}-ranlib" \
+        CFLAGS="${CFLAGS_FOR_TARGET}" \
         ./Configure linux-armv6 \
           --prefix=${GCCSDK_INSTALL_ROOT}/${TARGET} \
-          --openssldir=${GCCSDK_INSTALL_ROOT}/${TARGET}/ssl \
-          no-async no-shared no-legacy no-weak-ssl-ciphers -DOPENSSL_USE_NODELETE
-        make -j$(nproc) build_libs
-        make install_sw install_ssldirs
+          no-async no-shared no-legacy
+        make -j$(nproc) build_libs && make install_sw install_ssldirs
 
-        # Cleanup
         rm -rf "${BUILD_DIR}"
-        echo "✅ Kindle 3 toolchain build complete!"
+        echo "✅ COMPLETE!"
 
     - name: Setup SDK environment
       run: |
