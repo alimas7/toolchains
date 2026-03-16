@@ -88,18 +88,23 @@ jobs:
         make -j$(nproc) && make install
         cd /opt/netsurf
 
-        # GCC ✅ (FIXED)
-        echo "Building GCC..."
+        # === GCC (minimal - no libgcc) ===
+        echo "Building minimal GCC..."
+        export PATH="${GCCSDK_INSTALL_ROOT}/bin:$PATH"
+
         tar xf /opt/netsurf/downloads/gcc-13.2.0.tar.xz -C "${BUILD_DIR}"
         mkdir -p "${BUILD_DIR}/gcc-build" && cd "${BUILD_DIR}/gcc-build"
+
         "${BUILD_DIR}/gcc-13.2.0/configure" \
           --target=${TARGET} --prefix=${GCCSDK_INSTALL_ROOT} \
-          --enable-languages=c,c++ --disable-nls --disable-libssp --disable-libgomp \
-          --disable-libquadmath --disable-libatomic \
-          --with-arch=armv6 --with-tune=arm1136jf-s --with-fpu=vfp --with-float=softfp \
+          --enable-languages=c \
+          --disable-libssp --disable-libgcc --disable-libgomp \
+          --disable-shared --disable-nls \
+          --with-arch=armv6 --with-tune=arm1136jf-s --with-fpu=vfp \
           CFLAGS_FOR_TARGET="${CFLAGS_FOR_TARGET}"
-        make all-gcc all-target-libgcc -j$(nproc)
-        make install-gcc install-target-libgcc
+
+        make all-gcc -j$(nproc)
+        make install-gcc
         cd /opt/netsurf
 
         # === GLIBC 2.38 ===
