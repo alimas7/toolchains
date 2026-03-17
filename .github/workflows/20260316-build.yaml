@@ -98,7 +98,7 @@ jobs:
           exit 0
         fi
 
-        echo "🛠️ Building Kindle 3 ARM1136 toolchain (musl 1.1.24)..."
+        echo "🛠️ Building Kindle 3 ARM1136 toolchain (musl 1.1.14)..."
         BUILD_DIR="/tmp/toolchain-build-${GITHUB_RUN_ID}"
         mkdir -p "${BUILD_DIR}"
 
@@ -128,13 +128,13 @@ jobs:
         make install-gcc
         cd /opt/netsurf
 
-        # === MUSL 1.1.24 (PATCHED - Linux 2.6.10) ===
-        echo "Building patched musl 1.1.24..."
+        # === MUSL 1.1.14 (PATCHED - Linux 2.6.10) ===
+        echo "Building patched musl 1.1.14..."
         GCC_BIN="${GCCSDK_INSTALL_ROOT}/bin"
 
         # Disable conflicting LFS macros
-        tar xf /opt/netsurf/downloads/musl-1.1.24.tar.gz -C "${BUILD_DIR}"
-        cd "${BUILD_DIR}/musl-1.1.24"
+        tar xf /opt/netsurf/downloads/musl-1.1.14.tar.gz -C "${BUILD_DIR}"
+        cd "${BUILD_DIR}/musl-1.1.14"
 
         # Patch: Remove LFS64 macro conflicts
         sed -i 's/#define aio_.*64/#define aio_\0 0/g' include/aio.h
@@ -194,7 +194,7 @@ jobs:
         export STRIP=arm-none-linux-gnueabi-strip
         export CFLAGS="-march=armv6 -mtune=arm1136jf-s -mfpu=vfp -mfloat-abi=softfp -D_FILE_OFFSET_BITS=64"
         export LDFLAGS="-L/opt/netsurf/arm-none-linux-gnueabi/arm-none-linux-gnueabi/lib"
-        echo "✅ Kindle 3 ARM1136 toolchain active: GCC 13.2.0 + musl 1.1.24 + OpenSSL 3.3.0"
+        echo "✅ Kindle 3 ARM1136 toolchain active: GCC 13.2.0 + musl 1.1.14 + OpenSSL 3.3.0"
         EOF
         chmod +x "${GCCSDK_INSTALL_ENV}/bin/setup.sh"
 
@@ -209,7 +209,7 @@ jobs:
         Toolchain Stack:
         * GCC 13.2.0 (C only, minimal)
         * Binutils 2.42
-        * musl 1.1.24 libc (Linux 2.6.10 safe, no statx)
+        * musl 1.1.14 libc (Linux 2.6.10 safe, no statx)
         * OpenSSL 3.3.0 (TLS 1.2/1.3)
         Features: 64-bit file support, ARMv6 SIMD, VFP acceleration
         NetSurf Ready: Reddit, news sites, modern HTTPS
@@ -288,7 +288,7 @@ jobs:
           -H "Authorization: token $GITHUB_TOKEN" \
           -H "Accept: application/vnd.github+json" \
           https://api.github.com/repos/${GITHUB_REPOSITORY}/releases \
-          -d "{\"tag_name\":\"$TAG\",\"name\":\"Kindle 3 musl Toolchain $TAG\",\"body\":\"Production Kindle 3 toolchain:\\n• GCC 13.2.0 + musl 1.1.24 + OpenSSL 3.3.0\\n• TLS 1.2/1.3 (Reddit, news sites)\\n• ARMv6 + VFP optimized (i.MX353 ARM1136)\\n• Linux 2.6.10 compatible\\n• 64-bit file support\",\"prerelease\":false,\"generate_release_notes\":true}")
+          -d "{\"tag_name\":\"$TAG\",\"name\":\"Kindle 3 musl Toolchain $TAG\",\"body\":\"Production Kindle 3 toolchain:\\n• GCC 13.2.0 + musl 1.1.14 + OpenSSL 3.3.0\\n• TLS 1.2/1.3 (Reddit, news sites)\\n• ARMv6 + VFP optimized (i.MX353 ARM1136)\\n• Linux 2.6.10 compatible\\n• 64-bit file support\",\"prerelease\":false,\"generate_release_notes\":true}")
 
         HTTP_CODE="${RESPONSE##*$'\n'}"
         BODY="${RESPONSE%$'\n'*}"
