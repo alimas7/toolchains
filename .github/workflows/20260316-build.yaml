@@ -32,7 +32,8 @@ jobs:
 
     - name: Setup ccache
       run: |
-        export CCACHE_DIR="/github/home/.ccache"
+        export CCACHE_DIR="$HOME/.ccache"
+        mkdir -p "$HOME/.ccache"
         export CCACHE_MAXSIZE="2G"
         ccache -z  # Initialize stats
         ccache -M 2G
@@ -40,11 +41,14 @@ jobs:
     - name: Cache ccache
       uses: actions/cache@v4
       with:
-        path: /github/home/.ccache
-        key: ${{ runner.os }}-ccache-kindle3-${{ hashFiles('build.yaml') }}-${{ github.sha }}
+        path: $HOME/.ccache
+        key: ${{ runner.os }}-ccache-kindle3-v1-${{ hashFiles('build.yaml') }}
         restore-keys: |
-          ${{ runner.os }}-ccache-kindle3-${{ hashFiles('build.yaml') }}-
+          ${{ runner.os }}-ccache-kindle3-v1-
           ${{ runner.os }}-ccache-kindle3-
+
+    - name: Fix ccache permissions
+      run: sudo chown -R $(id -u):$(id -g) "$HOME/.ccache" 2>/dev/null || true
 
     - name: Cache toolchain source downloads
       id: cache-downloads
@@ -86,7 +90,7 @@ jobs:
         GCCSDK_INSTALL_ROOT: /opt/netsurf/arm-none-linux-gnueabi
         TARGET: arm-none-linux-gnueabi
         CFLAGS_FOR_TARGET: "-march=armv6 -mtune=arm1136jf-s -mfpu=vfp -mfloat-abi=softfp -D_GNU_SOURCE"
-        CCACHE_DIR: /github/home/.ccache
+        CCACHE_DIR: $HOME/.ccache
         CCACHE_MAXSIZE: 2G
       run: |
         # Skip if complete toolchain exists
@@ -244,7 +248,7 @@ jobs:
       if: always()
       run: |
         find / -type f 2>&1 | xz -9c > files.lst.xz
-        find . -name config.log 2>&1 -print0 | xargs -0 tar czf config.log.txz
+        find $HOME -name config.log -print0 | xargs -0 tar czf config.log.txz
         tar -czf runner-workspace.tar.gz --exclude=runner-workspace.tar.gz /home/runner
 
     - name: 13. Upload Artifacts
