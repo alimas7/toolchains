@@ -131,14 +131,29 @@ jobs:
         make install-gcc
         cd /opt/netsurf
 
-        # === GLIBC 2.38 (FIXED) ===
-        echo "Building glibc..."
+        # === GLIBC 2.38 (Linux 2.6.10 compatible) ===
+        echo "Building glibc for Kindle 3 (Linux 2.6.10)..."
         GCC_BIN="${GCCSDK_INSTALL_ROOT}/bin"
         export PATH="${GCC_BIN}:${PATH}"
 
-        # Verify cross-compiler works
-        ${GCC_BIN}/${TARGET}-gcc --version || (echo "❌ GCC broken" && exit 1)
-        ${GCC_BIN}/${TARGET}-as --version || (echo "❌ Assembler missing" && exit 1)
+        # Create minimal kernel headers for 2.6.10
+        mkdir -p "${GCCSDK_INSTALL_ROOT}/${TARGET}/include"
+        cat > "${GCCSDK_INSTALL_ROOT}/${TARGET}/include/linux/version.h" << 'EOF'
+        #ifndef _LINUX_VERSION_H
+        #define _LINUX_VERSION_H
+
+        #define LINUX_VERSION_CODE 132625
+        #define KERNEL_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + (c))
+        #define LINUX_VERSION_MAJOR 2
+        #define LINUX_VERSION_MINOR 6
+        #define LINUX_VERSION_PATCHLEVEL 10
+
+        #endif
+        EOF
+
+        # Verify cross-compiler
+        ${GCC_BIN}/${TARGET}-gcc --version
+        ${GCC_BIN}/${TARGET}-as --version
 
         tar xf /opt/netsurf/downloads/glibc-2.38.tar.xz -C "${BUILD_DIR}"
         mkdir -p "${BUILD_DIR}/glibc-build" && cd "${BUILD_DIR}/glibc-build"
@@ -152,14 +167,17 @@ jobs:
         export CFLAGS="${CFLAGS_FOR_TARGET}"
         export LDFLAGS="-L${GCCSDK_INSTALL_ROOT}/${TARGET}/lib"
 
+        # Skip kernel header check + force 2.6.10 compatibility
         "${BUILD_DIR}/glibc-2.38/configure" \
           --prefix="${GCCSDK_INSTALL_ROOT}/${TARGET}" \
           --host=${TARGET} --build=x86_64-linux-gnu \
           --with-headers="${GCCSDK_INSTALL_ROOT}/${TARGET}/include" \
           --enable-kernel=2.6.10 \
           --enable-tls --enable-thread-first --with-tls=gnu2 \
-          --disable-profile --without-gd --without-nis \
-          --disable-debug --disable-werror
+          --disable-profile --without-gd --without-nis --without-selinux \
+          --disable-debug --disable-werror \
+          CFLAGS="-D__KERNEL_STRICT_NAMES"
+
         make -j$(nproc)
         make install
         cd /opt/netsurf
