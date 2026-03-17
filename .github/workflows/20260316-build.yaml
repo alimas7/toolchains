@@ -242,8 +242,8 @@ jobs:
       if: always()
       run: |
         find / -type f 2>&1 | xz -9c > files.lst.xz
-        # find $HOME -name config.log -print0 | xargs -0 tar czf config.log.txz
-        tar -czf runner-workspace.tar.gz --exclude=runner-workspace.tar.gz /home/runner
+        # find $HOME -name config.log -print0 | xargs -0 tar cJf config.log.txz
+        tar cJf runner-workspace.txz --exclude=runner-workspace.txz /home/runner
 
     - name: 13. Upload Artifacts
       if: always()
@@ -258,6 +258,13 @@ jobs:
       with:
         name: config.log.txz
         path: config.log.txz
+
+    - name: 13c. Upload Artifacts
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: runner-workspace.txz
+        path: runner-workspace.txz
 
   release:
     name: 'Create Permanent Release'
