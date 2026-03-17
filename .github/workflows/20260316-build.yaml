@@ -80,7 +80,8 @@ jobs:
         cd /opt/netsurf/downloads
         wget -N https://ftp.gnu.org/gnu/binutils/binutils-2.42.tar.xz
         wget -N https://ftp.gnu.org/gnu/gcc/gcc-13.2.0/gcc-13.2.0.tar.xz
-        wget -N https://ftp.gnu.org/gnu/glibc/glibc-2.38.tar.xz
+        # musl instead of glibc
+        wget -N https://musl.libc.org/releases/musl-1.2.5.tar.gz
         wget -N https://www.openssl.org/source/openssl-3.3.0.tar.gz
 
     - name: Build toolchain (Binutils + GCC + glibc + OpenSSL)
@@ -95,7 +96,7 @@ jobs:
       run: |
         # Skip if complete toolchain exists
         if [ -f "${GCCSDK_INSTALL_ROOT}/bin/${TARGET}-gcc" ] && \
-           [ -f "${GCCSDK_INSTALL_ROOT}/${TARGET}/lib/libc.so" ] && \
+           [ -f "${GCCSDK_INSTALL_ROOT}/${TARGET}/lib/libc.a" ] && \
            [ -f "${GCCSDK_INSTALL_ROOT}/${TARGET}/ssl/lib/libcrypto.a" ]; then
           echo "✅ Complete Kindle 3 toolchain found, skipping build"
           exit 0
@@ -131,54 +132,29 @@ jobs:
         make install-gcc
         cd /opt/netsurf
 
-        # === GLIBC 2.38 (Linux 2.6.10 compatible) ===
-        echo "Building glibc for Kindle 3 (Linux 2.6.10)..."
+        # === MUSL 1.2.5 (Linux 2.6.10 + TLS 1.2+ compatible) ===
+        echo "Building musl libc for Kindle 3 (Linux 2.6.10)..."
         GCC_BIN="${GCCSDK_INSTALL_ROOT}/bin"
         export PATH="${GCC_BIN}:${PATH}"
 
-        # Create CORRECT kernel headers structure
-        mkdir -p "${GCCSDK_INSTALL_ROOT}/include/linux"
-        cat > "${GCCSDK_INSTALL_ROOT}/include/linux/version.h" << 'EOF'
-        #ifndef _LINUX_VERSION_H
-        #define _LINUX_VERSION_H
-        #define LINUX_VERSION_CODE 132625
-        #define KERNEL_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + (c))
-        #define LINUX_VERSION_MAJOR 2
-        #define LINUX_VERSION_MINOR 6
-        #define LINUX_VERSION_PATCHLEVEL 10
-        #endif
-        EOF
+        tar xf /opt/netsurf/downloads/musl-1.2.5.tar.gz -C "${BUILD_DIR}"
+        cd "${BUILD_DIR}/musl-1.2.5"
 
-        # Verify headers exist
-        ls -la "${GCCSDK_INSTALL_ROOT}/include/linux/version.h"
-        ${GCC_BIN}/${TARGET}-gcc --version
-        ${GCC_BIN}/${TARGET}-as --version
-
-        tar xf /opt/netsurf/downloads/glibc-2.38.tar.xz -C "${BUILD_DIR}"
-        mkdir -p "${BUILD_DIR}/glibc-build" && cd "${BUILD_DIR}/glibc-build"
-
-        export CC="${GCC_BIN}/${TARGET}-gcc"
-        export LD="${GCC_BIN}/${TARGET}-ld"
-        export AR="${GCC_BIN}/${TARGET}-ar"
-        export AS="${GCC_BIN}/${TARGET}-as"
-        export RANLIB="${GCC_BIN}/${TARGET}-ranlib"
-        export STRIP="${GCC_BIN}/${TARGET}-strip"
-        export CFLAGS="${CFLAGS_FOR_TARGET}"
-        export LDFLAGS="-L${GCCSDK_INSTALL_ROOT}/lib"
-
-        # Configure with CORRECT header path
-        "${BUILD_DIR}/glibc-2.38/configure" \
+        CC="${GCC_BIN}/${TARGET}-gcc" \
+        AR="${GCC_BIN}/${TARGET}-ar" \
+        RANLIB="${GCC_BIN}/${TARGET}-ranlib" \
+        CFLAGS="${CFLAGS_FOR_TARGET}" \
+        ./configure \
           --prefix="${GCCSDK_INSTALL_ROOT}/${TARGET}" \
-          --host=${TARGET} --build=x86_64-linux-gnu \
-          --with-headers="${GCCSDK_INSTALL_ROOT}/include" \
-          --enable-kernel=2.6.10 \
-          --enable-tls --enable-thread-first --with-tls=gnu2 \
-          --disable-profile --without-gd --without-nis --without-selinux \
-          --disable-debug --disable-werror
+          --target=${TARGET} \
+          --disable-shared
 
-        make -j$(nproc)
-        make install
+        make -j$(nproc) install
         cd /opt/netsurf
+
+        # Verify musl installed
+        ls -la "${GCCSDK_INSTALL_ROOT}/${TARGET}/lib/libc.a"
+        echo "✅ musl libc installed - TLS 1.2+ ready for NetSurf"
 
         # === OPENSSL 3.3.0 ===
         echo "Building OpenSSL..."
