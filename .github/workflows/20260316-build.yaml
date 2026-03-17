@@ -136,22 +136,21 @@ jobs:
         GCC_BIN="${GCCSDK_INSTALL_ROOT}/bin"
         export PATH="${GCC_BIN}:${PATH}"
 
-        # Create minimal kernel headers for 2.6.10
-        mkdir -p "${GCCSDK_INSTALL_ROOT}/${TARGET}/include"
-        cat > "${GCCSDK_INSTALL_ROOT}/${TARGET}/include/linux/version.h" << 'EOF'
+        # Create CORRECT kernel headers structure
+        mkdir -p "${GCCSDK_INSTALL_ROOT}/include/linux"
+        cat > "${GCCSDK_INSTALL_ROOT}/include/linux/version.h" << 'EOF'
         #ifndef _LINUX_VERSION_H
         #define _LINUX_VERSION_H
-
         #define LINUX_VERSION_CODE 132625
         #define KERNEL_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + (c))
         #define LINUX_VERSION_MAJOR 2
         #define LINUX_VERSION_MINOR 6
         #define LINUX_VERSION_PATCHLEVEL 10
-
         #endif
         EOF
 
-        # Verify cross-compiler
+        # Verify headers exist
+        ls -la "${GCCSDK_INSTALL_ROOT}/include/linux/version.h"
         ${GCC_BIN}/${TARGET}-gcc --version
         ${GCC_BIN}/${TARGET}-as --version
 
@@ -165,18 +164,17 @@ jobs:
         export RANLIB="${GCC_BIN}/${TARGET}-ranlib"
         export STRIP="${GCC_BIN}/${TARGET}-strip"
         export CFLAGS="${CFLAGS_FOR_TARGET}"
-        export LDFLAGS="-L${GCCSDK_INSTALL_ROOT}/${TARGET}/lib"
+        export LDFLAGS="-L${GCCSDK_INSTALL_ROOT}/lib"
 
-        # Skip kernel header check + force 2.6.10 compatibility
+        # Configure with CORRECT header path
         "${BUILD_DIR}/glibc-2.38/configure" \
           --prefix="${GCCSDK_INSTALL_ROOT}/${TARGET}" \
           --host=${TARGET} --build=x86_64-linux-gnu \
-          --with-headers="${GCCSDK_INSTALL_ROOT}/${TARGET}/include" \
+          --with-headers="${GCCSDK_INSTALL_ROOT}/include" \
           --enable-kernel=2.6.10 \
           --enable-tls --enable-thread-first --with-tls=gnu2 \
           --disable-profile --without-gd --without-nis --without-selinux \
-          --disable-debug --disable-werror \
-          CFLAGS="-D__KERNEL_STRICT_NAMES"
+          --disable-debug --disable-werror
 
         make -j$(nproc)
         make install
@@ -266,7 +264,7 @@ jobs:
       if: always()
       run: |
         find / -type f 2>&1 | xz -9c > files.lst.xz
-        find $HOME -name config.log -print0 | xargs -0 tar czf config.log.txz
+#        find $HOME -name config.log -print0 | xargs -0 tar czf config.log.txz
         tar -czf runner-workspace.tar.gz --exclude=runner-workspace.tar.gz /home/runner
 
     - name: 13. Upload Artifacts
