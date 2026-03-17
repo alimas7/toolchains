@@ -77,7 +77,7 @@ jobs:
         cd /opt/netsurf/downloads
         wget -N https://ftp.gnu.org/gnu/binutils/binutils-2.42.tar.xz
         wget -N https://ftp.gnu.org/gnu/gcc/gcc-13.2.0/gcc-13.2.0.tar.xz
-        wget -N https://musl.libc.org/releases/musl-1.1.24.tar.gz
+        wget -N https://musl.libc.org/releases/musl-1.1.14.tar.gz
         wget -N https://www.openssl.org/source/openssl-3.3.0.tar.gz
 
     - name: Build toolchain (Binutils + GCC + musl + OpenSSL)
@@ -128,13 +128,13 @@ jobs:
         make install-gcc
         cd /opt/netsurf
 
-        # === MUSL 1.1.24 (Linux 2.6.10 SAFE) ===
-        echo "Building musl 1.1.24 (no statx, Linux 2.6.10 compatible)..."
+        # === MUSL 1.1.14 (LEGACY SAFE) ===
+        echo "Building musl 1.1.14 (Linux 2.6.10 + no ftw64 conflicts)..."
         GCC_BIN="${GCCSDK_INSTALL_ROOT}/bin"
         export PATH="${GCC_BIN}:${PATH}"
 
-        tar xf /opt/netsurf/downloads/musl-1.1.24.tar.gz -C "${BUILD_DIR}"
-        cd "${BUILD_DIR}/musl-1.1.24"
+        tar xf /opt/netsurf/downloads/musl-1.1.14.tar.gz -C "${BUILD_DIR}"
+        cd "${BUILD_DIR}/musl-1.1.14"
 
         CC="${GCC_BIN}/${TARGET}-gcc" \
         AR="${GCC_BIN}/${TARGET}-ar" \
@@ -242,7 +242,7 @@ jobs:
       if: always()
       run: |
         find / -type f 2>&1 | xz -9c > files.lst.xz
-        # find $HOME -name config.log -print0 | xargs -0 tar czf config.log.txz
+#        find $HOME -name config.log -print0 | xargs -0 tar czf config.log.txz
         tar -czf runner-workspace.tar.gz --exclude=runner-workspace.tar.gz /home/runner
 
     - name: 13. Upload Artifacts
