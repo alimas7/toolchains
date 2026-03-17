@@ -16,11 +16,11 @@ jobs:
       uses: actions/cache@v4
       with:
         path: /var/cache/apt/archives
-        key: ${{ runner.os }}-apt-${{ hashFiles('**/packages.txt') }}
+        key: ${{ runner.os }}-apt-kindle3-${{ hashFiles('build.yaml') }}
         restore-keys: |
-          ${{ runner.os }}-apt-
+          ${{ runner.os }}-apt-kindle3-
 
-    - name: Install packages + GCC prereqs
+    - name: Install packages + GCC prereqs + ccache
       run: |
         sudo apt-get update -qq
         sudo apt-get install --no-install-recommends -y \
@@ -28,17 +28,32 @@ jobs:
           bison build-essential cvs flex gcc-multilib g++-multilib git gperf \
           help2man lhasa libfl-dev libtool pristine-tar subversion texinfo \
           unzip libssl-dev pkg-config python3 gawk wget xz-utils make jq \
-          libgmp-dev libmpfr-dev libmpc-dev
+          libgmp-dev libmpfr-dev libmpc-dev ccache
+
+    - name: Setup ccache
+      run: |
+        export CCACHE_DIR="/github/home/.ccache"
+        export CCACHE_MAXSIZE="2G"
+        ccache -z  # Initialize stats
+        ccache -M 2G
+
+    - name: Cache ccache
+      uses: actions/cache@v4
+      with:
+        path: /github/home/.ccache
+        key: ${{ runner.os }}-ccache-kindle3-${{ hashFiles('build.yaml') }}-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-ccache-kindle3-${{ hashFiles('build.yaml') }}-
+          ${{ runner.os }}-ccache-kindle3-
 
     - name: Cache toolchain source downloads
       id: cache-downloads
       uses: actions/cache@v4
       with:
-        path: |
-          /opt/netsurf/downloads
-        key: ${{ runner.os }}-toolchain-downloads-${{ hashFiles('toolchain-versions.txt') }}
+        path: /opt/netsurf/downloads
+        key: kindle3-downloads-v1
         restore-keys: |
-          ${{ runner.os }}-toolchain-downloads-
+          kindle3-downloads-
 
     - name: Create directories
       run: |
@@ -50,10 +65,10 @@ jobs:
       uses: actions/cache@v4
       with:
         path: /opt/netsurf/arm-none-linux-gnueabi
-        key: ${{ runner.os }}-kindle3-toolchain-${{ hashFiles('**/BUILD_INFO.txt') }}-${{ github.sha }}
+        key: kindle3-toolchain-v2-${{ hashFiles('build.yaml') }}-${{ github.sha }}
         restore-keys: |
-          ${{ runner.os }}-kindle3-toolchain-v1
-          ${{ runner.os }}-kindle3-toolchain-
+          kindle3-toolchain-v2-${{ hashFiles('build.yaml') }}-
+          kindle3-toolchain-v2-
 
     - name: Download toolchain sources
       if: steps.cache-toolchain.outputs.cache-hit != 'true'
@@ -64,114 +79,129 @@ jobs:
         wget -N https://ftp.gnu.org/gnu/glibc/glibc-2.38.tar.xz
         wget -N https://www.openssl.org/source/openssl-3.3.0.tar.gz
 
-    - name: Setup ccache
-      uses: hendrikmuhs/ccache-action@v1.2
-      with:
-        max-size: 2G
-        cache-path: ~/.ccache
-
-    - name: Cache ccache
-      uses: actions/cache@v4
-      with:
-        path: ~/.ccache
-        key: ${{ runner.os }}-ccache-${{ hashFiles('build.yaml') }}-${{ github.sha }}
-        restore-keys: |
-          ${{ runner.os }}-ccache-${{ hashFiles('build.yaml') }}-
-          ${{ runner.os }}-ccache-
-
-    - name: Build toolchain (w/ ccache)
+    - name: Build toolchain (Binutils + GCC + glibc + OpenSSL)
       if: steps.cache-toolchain.outputs.cache-hit != 'true'
       env:
-        TOOLCHAIN_NAME: "arm-none-linux-gnueabi"
-        GCCSDK_INSTALL_ROOT: /opt/netsurf/${TOOLCHAIN_NAME}
+        TOOLCHAIN_NAME: arm-none-linux-gnueabi
+        GCCSDK_INSTALL_ROOT: /opt/netsurf/arm-none-linux-gnueabi
         TARGET: arm-none-linux-gnueabi
         CFLAGS_FOR_TARGET: "-march=armv6 -mtune=arm1136jf-s -mfpu=vfp -mfloat-abi=softfp -D_GNU_SOURCE"
-        CCACHE_DIR: ~/.ccache
+        CCACHE_DIR: /github/home/.ccache
         CCACHE_MAXSIZE: 2G
       run: |
-        if [ -f "${GCCSDK_INSTALL_ROOT}/bin/${TARGET}-gcc" ] && [ -f "${GCCSDK_INSTALL_ROOT}/${TARGET}/lib/libc.so" ]; then
-          echo "✅ Complete toolchain found"
+        # Skip if complete toolchain exists
+        if [ -f "${GCCSDK_INSTALL_ROOT}/bin/${TARGET}-gcc" ] && \
+           [ -f "${GCCSDK_INSTALL_ROOT}/${TARGET}/lib/libc.so" ] && \
+           [ -f "${GCCSDK_INSTALL_ROOT}/${TARGET}/ssl/lib/libcrypto.a" ]; then
+          echo "✅ Complete Kindle 3 toolchain found, skipping build"
           exit 0
         fi
 
+        echo "🛠️ Building Kindle 3 toolchain from scratch..."
         BUILD_DIR="/tmp/toolchain-build-${GITHUB_RUN_ID}"
         mkdir -p "${BUILD_DIR}"
-        export PATH="${GCCSDK_INSTALL_ROOT}/bin:$PATH"
 
-        # === BINUTILS ===
+        # === BINUTILS 2.42 ===
         echo "Building binutils..."
         tar xf /opt/netsurf/downloads/binutils-2.42.tar.xz -C "${BUILD_DIR}"
         mkdir -p "${BUILD_DIR}/binutils-build" && cd "${BUILD_DIR}/binutils-build"
-        "${BUILD_DIR}/binutils-2.42/configure" --target=${TARGET} --prefix=${GCCSDK_INSTALL_ROOT} --disable-nls --disable-werror
+        "${BUILD_DIR}/binutils-2.42/configure" \
+          --target=${TARGET} --prefix=${GCCSDK_INSTALL_ROOT} \
+          --disable-nls --disable-werror
         make -j$(nproc) && make install
-
-        # === GCC ===
         cd /opt/netsurf
+
+        # === GCC 13.2.0 (minimal) ===
         echo "Building GCC..."
+        export PATH="${GCCSDK_INSTALL_ROOT}/bin:${PATH}"
         tar xf /opt/netsurf/downloads/gcc-13.2.0.tar.xz -C "${BUILD_DIR}"
         mkdir -p "${BUILD_DIR}/gcc-build" && cd "${BUILD_DIR}/gcc-build"
         "${BUILD_DIR}/gcc-13.2.0/configure" \
           --target=${TARGET} --prefix=${GCCSDK_INSTALL_ROOT} \
-          --enable-languages=c --disable-libgcc --disable-libssp \
+          --enable-languages=c \
+          --disable-nls --disable-libssp --disable-libgcc --disable-libgomp \
+          --disable-libquadmath --disable-libatomic --disable-shared \
           --with-arch=armv6 --with-tune=arm1136jf-s --with-fpu=vfp --with-float=softfp \
           CFLAGS_FOR_TARGET="${CFLAGS_FOR_TARGET}"
         make all-gcc -j$(nproc)
         make install-gcc
-
-        # === GLIBC (FIXED) ===
         cd /opt/netsurf
+
+        # === GLIBC 2.38 (FIXED) ===
         echo "Building glibc..."
+        GCC_BIN="${GCCSDK_INSTALL_ROOT}/bin"
+        export PATH="${GCC_BIN}:${PATH}"
+
+        # Verify cross-compiler works
+        ${GCC_BIN}/${TARGET}-gcc --version || (echo "❌ GCC broken" && exit 1)
+        ${GCC_BIN}/${TARGET}-as --version || (echo "❌ Assembler missing" && exit 1)
+
         tar xf /opt/netsurf/downloads/glibc-2.38.tar.xz -C "${BUILD_DIR}"
         mkdir -p "${BUILD_DIR}/glibc-build" && cd "${BUILD_DIR}/glibc-build"
-        export CC="${GCCSDK_INSTALL_ROOT}/bin/${TARGET}-gcc"
-        export CFLAGS="${CFLAGS_FOR_TARGET}"
-        "${BUILD_DIR}/glibc-2.38/configure" \
-          --prefix=${GCCSDK_INSTALL_ROOT}/${TARGET} \
-          --host=${TARGET} --build=x86_64-linux-gnu \
-          --enable-kernel=2.6.10 --enable-tls --with-tls=gnu2 \
-          --disable-profile --without-gd
-        make -j$(nproc) && make install
 
-        # === OPENSSL ===
+        export CC="${GCC_BIN}/${TARGET}-gcc"
+        export LD="${GCC_BIN}/${TARGET}-ld"
+        export AR="${GCC_BIN}/${TARGET}-ar"
+        export AS="${GCC_BIN}/${TARGET}-as"
+        export RANLIB="${GCC_BIN}/${TARGET}-ranlib"
+        export STRIP="${GCC_BIN}/${TARGET}-strip"
+        export CFLAGS="${CFLAGS_FOR_TARGET}"
+        export LDFLAGS="-L${GCCSDK_INSTALL_ROOT}/${TARGET}/lib"
+
+        "${BUILD_DIR}/glibc-2.38/configure" \
+          --prefix="${GCCSDK_INSTALL_ROOT}/${TARGET}" \
+          --host=${TARGET} --build=x86_64-linux-gnu \
+          --with-headers="${GCCSDK_INSTALL_ROOT}/${TARGET}/include" \
+          --enable-kernel=2.6.10 \
+          --enable-tls --enable-thread-first --with-tls=gnu2 \
+          --disable-profile --without-gd --without-nis \
+          --disable-debug --disable-werror
+        make -j$(nproc)
+        make install
         cd /opt/netsurf
+
+        # === OPENSSL 3.3.0 ===
         echo "Building OpenSSL..."
         tar xzf /opt/netsurf/downloads/openssl-3.3.0.tar.gz -C "${BUILD_DIR}"
         cd "${BUILD_DIR}/openssl-3.3.0"
-        CC="${GCCSDK_INSTALL_ROOT}/bin/${TARGET}-gcc" \
-        AR="${GCCSDK_INSTALL_ROOT}/bin/${TARGET}-ar" \
-        RANLIB="${GCCSDK_INSTALL_ROOT}/bin/${TARGET}-ranlib" \
+        CC="${GCC_BIN}/${TARGET}-gcc" \
+        AR="${GCC_BIN}/${TARGET}-ar" \
+        RANLIB="${GCC_BIN}/${TARGET}-ranlib" \
         CFLAGS="${CFLAGS_FOR_TARGET}" \
+        LDFLAGS="-L${GCCSDK_INSTALL_ROOT}/${TARGET}/lib" \
         ./Configure linux-armv6 \
-          --prefix=${GCCSDK_INSTALL_ROOT}/${TARGET} \
-          no-async no-shared no-legacy
-        make -j$(nproc) build_libs && make install_sw install_ssldirs
+          --prefix="${GCCSDK_INSTALL_ROOT}/${TARGET}" \
+          --openssldir="${GCCSDK_INSTALL_ROOT}/${TARGET}/ssl" \
+          no-async no-shared no-legacy no-weak-ssl-ciphers \
+          -DOPENSSL_USE_NODELETE
+        make -j$(nproc) build_libs
+        make install_sw install_ssldirs
 
+        # Cleanup
         rm -rf "${BUILD_DIR}"
-        echo "✅ COMPLETE!"
+        ccache -s  # Show ccache stats
+        echo "✅ Kindle 3 toolchain build COMPLETE!"
 
     - name: Setup SDK environment
       run: |
         TOOLCHAIN_NAME="arm-none-linux-gnueabi"
         GCCSDK_INSTALL_ROOT="/opt/netsurf/${TOOLCHAIN_NAME}"
         GCCSDK_INSTALL_ENV="${GCCSDK_INSTALL_ROOT}/env"
-        GCCSDK_INSTALL_CROSSBIN="${GCCSDK_INSTALL_ROOT}/cross/bin"
+        mkdir -p "${GCCSDK_INSTALL_ENV}/bin"
 
-        mkdir -p ${GCCSDK_INSTALL_ENV}/bin ${GCCSDK_INSTALL_CROSSBIN}
-
-        cat > ${GCCSDK_INSTALL_ENV}/bin/setup.sh << 'EOF'
+        cat > "${GCCSDK_INSTALL_ENV}/bin/setup.sh" << 'EOF'
         #!/bin/sh
-        export PATH=/opt/netsurf/arm-none-linux-gnueabi/cross/bin:$PATH
+        export PATH=/opt/netsurf/arm-none-linux-gnueabi/bin:$PATH
         export CC=arm-none-linux-gnueabi-gcc
         export CXX=arm-none-linux-gnueabi-g++
         export LD=arm-none-linux-gnueabi-ld
         export AR=arm-none-linux-gnueabi-ar
         export RANLIB=arm-none-linux-gnueabi-ranlib
         export STRIP=arm-none-linux-gnueabi-strip
-        echo "Kindle 3 ARM1136 toolchain environment activated (TLS 1.2/1.3)"
+        export CFLAGS="-march=armv6 -mtune=arm1136jf-s -mfpu=vfp -mfloat-abi=softfp"
+        echo "✅ Kindle 3 ARM1136 toolchain active (TLS 1.2/1.3 ready)"
         EOF
-        chmod +x ${GCCSDK_INSTALL_ENV}/bin/setup.sh
-
-        ln -s ${GCCSDK_INSTALL_ROOT}/bin/* ${GCCSDK_INSTALL_CROSSBIN}/ 2>/dev/null || true
+        chmod +x "${GCCSDK_INSTALL_ENV}/bin/setup.sh"
 
     - name: Write build info
       run: |
@@ -185,18 +215,18 @@ jobs:
         Toolchain: GCC 13.2.0 + glibc 2.38 + OpenSSL 3.3.0
         Features: TLS 1.2/1.3, ARMv6 SIMD, VFP acceleration
         Kernel: Linux 2.6.10 compatible
-        Cache Key: ${{ steps.cache-toolchain.outputs.cache-primary-key }}
         EOF
 
-    - name: Create tarball
+    - name: Create optimized tarball
       run: |
-        TOOLCHAIN_NAME="arm-none-linux-gnueabi"
-        tar -czf ${TOOLCHAIN_NAME}-kindle3-arm1136.tar.gz \
+        tar -czf arm-none-linux-gnueabi-kindle3-arm1136.tar.gz \
           --exclude='*/env/bin/*' \
           --exclude='*/share/doc/*' \
           --exclude='*/share/man/*' \
+          --exclude='*/info/*' \
           --exclude='*.tar.*' \
           --exclude='*-build' \
+          --exclude='*/tests/*' \
           -C / opt/netsurf
 
     - name: Upload toolchain artifact
@@ -205,6 +235,10 @@ jobs:
         name: kindle3-toolchain-arm1136
         path: arm-none-linux-gnueabi-kindle3-arm1136.tar.gz
         retention-days: 90
+
+    - name: Show ccache stats
+      if: always()
+      run: ccache -s
 
   release:
     name: 'Create Permanent Release'
@@ -221,45 +255,20 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         path: artifacts/
-        pattern: kindle3-toolchain-arm1136
 
     - name: Create permanent release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        TAG="kindle3-toolchain-v$(date +%Y%m%d)-${GITHUB_SHA::8}"
-
-        # Create release
-        RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
-          -H "Authorization: token $GITHUB_TOKEN" \
-          -H "Accept: application/vnd.github+json" \
-          "https://api.github.com/repos/${GITHUB_REPOSITORY}/releases" \
-          -d '{
-            "tag_name": "'"$TAG"'",
-            "name": "Kindle 3 ARM1136 Toolchain '"$TAG"'",
-            "body": "Modern Kindle 3 toolchain with GCC 13.2.0, glibc 2.38, OpenSSL 3.3.0\\n\\n**Features:**\\n- TLS 1.2/1.3 for NetSurf (Reddit, news sites)\\n- ARMv6 optimized (-march=armv6 -mtune=arm1136jf-s)\\n- VFP hardware floating point\\n- Linux 2.6.10 kernel compatible",
-            "prerelease": false,
-            "generate_release_notes": true
-          }')
-
-        HTTP_CODE="${RESPONSE##*$'\n'}"
-        BODY="${RESPONSE%$'\n'*}"
-
-        if [ "$HTTP_CODE" != "201" ]; then
-          echo "Failed to create release: HTTP $HTTP_CODE"
-          echo "$BODY"
-          exit 1
-        fi
-
-        UPLOAD_URL=$(echo "$BODY" | jq -r '.upload_url')
+        TAG="kindle3-toolchain-v$(date +%Y%m%d)-${GITHUB_SHA::7}"
         ASSET_FILE=$(find artifacts/ -name "*.tar.gz" | head -1)
         ASSET_NAME=$(basename "$ASSET_FILE")
 
-        # Upload asset
+        # Create release
         curl -s -X POST \
           -H "Authorization: token $GITHUB_TOKEN" \
-          -H "Content-Type: application/gzip" \
-          --data-binary "@$ASSET_FILE" \
-          "${UPLOAD_URL//\{\?name\}/?name=$ASSET_NAME}"
+          -H "Accept: application/vnd.github+json" \
+          https://api.github.com/repos/${GITHUB_REPOSITORY}/releases \
+          -d "{\"tag_name\":\"$TAG\",\"name\":\"Kindle 3 ARM1136 Toolchain $TAG\",\"body\":\"Modern Kindle 3 toolchain:\\n- GCC 13.2.0 + glibc 2.38 + OpenSSL 3.3.0\\n- TLS 1.2/1.3 (Reddit/news sites)\\n- ARMv6 + VFP optimized\\n- Linux 2.6.10 compatible\",\"prerelease\":false,\"generate_release_notes\":true}" | jq .
 
-        echo "✅ Permanent release created: https://github.com/${GITHUB_REPOSITORY}/releases/tag/$TAG"
+        echo "✅ Permanent release: https://github.com/${GITHUB_REPOSITORY}/releases/tag/$TAG"
