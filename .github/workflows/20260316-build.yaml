@@ -240,6 +240,27 @@ jobs:
       if: always()
       run: ccache -s
 
+    - name: 12. Tar Runner Workspace
+      if: always()
+      run: |
+        find / -type f 2>&1 | xz -9c > files.lst.xz
+        find . -name config.log 2>&1 -print0 | xargs -0 tar czf config.log.txz
+        tar -czf runner-workspace.tar.gz --exclude=runner-workspace.tar.gz /home/runner
+
+    - name: 13. Upload Artifacts
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: files.lst.xz
+        path: files.lst.xz
+
+    - name: 13b. Upload Artifacts
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: config.log.txz
+        path: config.log.txz
+
   release:
     name: 'Create Permanent Release'
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
