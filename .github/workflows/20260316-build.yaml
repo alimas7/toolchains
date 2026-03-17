@@ -99,7 +99,7 @@ jobs:
         fi
 
         echo "🛠️ Building Kindle 3 ARM1136 toolchain (musl 1.1.14)..."
-        BUILD_DIR="/tmp/toolchain-build-${GITHUB_RUN_ID}"
+        BUILD_DIR="$HOME/toolchain-build-${GITHUB_RUN_ID}"
         mkdir -p "${BUILD_DIR}"
 
         # === BINUTILS 2.42 ===
