@@ -128,21 +128,21 @@ jobs:
         make install-gcc
         cd /opt/netsurf
 
-        # === MUSL 1.1.14 (LEGACY SAFE) ===
-        echo "Building musl 1.1.14 (Linux 2.6.10 + no ftw64 conflicts)..."
+        # === MUSL 1.1.24 (PATCHED - Linux 2.6.10) ===
+        echo "Building patched musl 1.1.24..."
         GCC_BIN="${GCCSDK_INSTALL_ROOT}/bin"
-        export PATH="${GCC_BIN}:${PATH}"
 
-        tar xf /opt/netsurf/downloads/musl-1.1.14.tar.gz -C "${BUILD_DIR}"
-        cd "${BUILD_DIR}/musl-1.1.14"
+        # Disable conflicting LFS macros
+        tar xf /opt/netsurf/downloads/musl-1.1.24.tar.gz -C "${BUILD_DIR}"
+        cd "${BUILD_DIR}/musl-1.1.24"
 
-        CC="${GCC_BIN}/${TARGET}-gcc" \
-        AR="${GCC_BIN}/${TARGET}-ar" \
-        RANLIB="${GCC_BIN}/${TARGET}-ranlib" \
-        CFLAGS="${CFLAGS_FOR_TARGET}" \
-        ./configure \
-          --prefix="${GCCSDK_INSTALL_ROOT}/${TARGET}" \
-          --target=${TARGET}
+        # Patch: Remove LFS64 macro conflicts
+        sed -i 's/#define aio_.*64/#define aio_\0 0/g' include/aio.h
+        sed -i 's/#define ftw64/#define ftw64 0/g' include/ftw.h
+        sed -i 's/#define lio_listio64/#define lio_listio64 0/g' include/aio.h
+
+        CC="${GCC_BIN}/${TARGET}-gcc" CFLAGS="${CFLAGS_FOR_TARGET}" \
+        ./configure --prefix="${GCCSDK_INSTALL_ROOT}/${TARGET}" --target=${TARGET}
 
         make -j$(nproc) install
         cd /opt/netsurf
