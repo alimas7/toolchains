@@ -242,7 +242,7 @@ jobs:
       if: always()
       run: |
         find / -type f 2>&1 | xz -9c > files.lst.xz
-#        find $HOME -name config.log -print0 | xargs -0 tar czf config.log.txz
+        # find $HOME -name config.log -print0 | xargs -0 tar czf config.log.txz
         tar -czf runner-workspace.tar.gz --exclude=runner-workspace.tar.gz /home/runner
 
     - name: 13. Upload Artifacts
