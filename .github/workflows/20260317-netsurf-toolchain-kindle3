@@ -1,0 +1,87 @@
+name: netsurf-toolchain-kindle3
+
+on:
+  workflow_dispatch:
+
+env:
+  TARGET: arm-linux-gnueabi
+  CPU: arm1136jf-s
+  FLOAT: softfp
+
+jobs:
+  build-toolchain:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y \
+            build-essential git autoconf automake libtool \
+            bison flex gperf texinfo help2man gawk \
+            libncurses-dev python3 wget
+
+      - name: Clone NetSurf toolchains
+        run: |
+          git clone https://github.com/netsurf-browser/toolchains.git
+          cd toolchains
+
+      - name: Configure environment
+        run: |
+          mkdir -p $HOME/x-tools
+          echo "PREFIX=$HOME/x-tools/${TARGET}" >> $GITHUB_ENV
+
+      - name: Configure Crosstool-NG (custom)
+        run: |
+          cd toolchains
+          ./ct-ng distclean || true
+
+          cat > .config << 'EOF'
+          CT_TARGET=arm-linux-gnueabi
+          CT_ARCH=arm
+          CT_ARCH_CPU="arm1136jf-s"
+          CT_ARCH_FLOAT="softfp"
+          CT_ARCH_FPU="vfp"
+          CT_ARCH_ARM_MODE="arm"
+
+          CT_KERNEL_linux=y
+          CT_KERNEL_VERSION="5.4"
+
+          CT_BINUTILS_VERSION="2.40"
+          CT_CC_GCC=y
+          CT_CC_GCC_VERSION="13.2.0"
+
+          CT_LIBC_GLIBC=y
+          CT_LIBC_VERSION="2.38"
+
+          CT_THREADS=y
+          CT_THREADS_POSIX=y
+
+          CT_PREFIX_DIR="${HOME}/x-tools/${CT_TARGET}"
+          EOF
+
+      - name: Build toolchain
+        run: |
+          cd toolchains
+          ./ct-ng build
+
+      - name: Export environment
+        run: |
+          echo "export PATH=$HOME/x-tools/${TARGET}/bin:\$PATH" >> $GITHUB_ENV
+
+      - name: Test compiler
+        run: |
+          ${TARGET}-gcc -v
+          echo 'int main(){}' > test.c
+          ${TARGET}-gcc test.c -o test
+
+      - name: Package toolchain
+        run: |
+          ### tar -C $HOME/x-tools -cJf kindle3-toolchain.tar.xz ${TARGET}
+          tar -C $HOME -cJf kindle3-toolchain.tar.xz
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kindle3-toolchain
+          path: kindle3-toolchain.tar.xz
