@@ -136,10 +136,10 @@ jobs:
         tar xf /opt/netsurf/downloads/musl-1.1.14.tar.gz -C "${BUILD_DIR}"
         cd "${BUILD_DIR}/musl-1.1.14"
 
-        # Patch: Remove LFS64 macro conflicts
-        sed -i 's/#define aio_.*64/#define aio_\0 0/g' include/aio.h
-        sed -i 's/#define ftw64/#define ftw64 0/g' include/ftw.h
-        sed -i 's/#define lio_listio64/#define lio_listio64 0/g' include/aio.h
+        # # Patch: Remove LFS64 macro conflicts
+        # sed -i 's/#define aio_.*64/#define aio_\0 0/g' include/aio.h
+        # sed -i 's/#define ftw64/#define ftw64 0/g' include/ftw.h
+        # sed -i 's/#define lio_listio64/#define lio_listio64 0/g' include/aio.h
 
         CC="${GCC_BIN}/${TARGET}-gcc" CFLAGS="${CFLAGS_FOR_TARGET}" \
         ./configure --prefix="${GCCSDK_INSTALL_ROOT}/${TARGET}" --target=${TARGET}
